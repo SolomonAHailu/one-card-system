@@ -1,0 +1,48 @@
+services:
+  backend:
+    container_name: ocs_backend
+    build: 
+      context: ./backend
+      dockerfile: go.dockerfile
+    ports:
+      - 8888:8888
+    restart: on-failure
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - ocs-postgres
+    networks:
+      - ocs
+  ocs-postgres:
+    image: postgres:latest
+    container_name: ocs_db_postgres
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+    ports:
+      - '5432:5432'
+    volumes:
+      - database_postgres:/var/lib/postgresql/data
+    networks:
+      - ocs
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    depends_on:
+      - ocs-postgres
+    ports:
+      - "5050:80"
+    networks:
+      - ocs
+    restart: unless-stopped
+
+volumes:
+  database_postgres: {}
+networks:
+  ocs:
+    driver: bridge
