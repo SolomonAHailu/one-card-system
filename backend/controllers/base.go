@@ -32,7 +32,10 @@ func (server *Server) Intialize(DbDriver, DbUser, DbPassword, DbPort, DbHost, Db
 		}
 
 	} else if DbDriver == "postgres" {
-		DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", DbHost, DbPort, DbUser, DbName, DbPassword)
+		// 👇 Don't delete this comment
+		// DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", DbHost, DbPort, DbUser, DbName, DbPassword)
+		DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=require password=%s", DbHost, DbPort, DbUser, DbName, DbPassword)
+
 		server.DB, err = gorm.Open(postgres.Open(DBURL), &gorm.Config{})
 		if err != nil {
 			fmt.Printf("Cannot connect to %s database", DbDriver)
@@ -46,7 +49,7 @@ func (server *Server) Intialize(DbDriver, DbUser, DbPassword, DbPort, DbHost, Db
 
 	//DATABASE MIGRATIONS
 	server.DB.Debug().AutoMigrate(
-	//&models.User{},
+	// &models.User{},
 	)
 	server.Router = gin.Default()
 	server.Router.Use(middleware.CORSMiddleware())
