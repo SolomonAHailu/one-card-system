@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/SolomonAHailu/one-card-system/initializers"
-	"github.com/SolomonAHailu/one-card-system/models"
+	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
 )
 
 func init() {
@@ -17,5 +17,5 @@ func main() {
 	if initializers.DB == nil {
 		log.Fatal("Database connection is not initialized")
 	}
-	initializers.DB.Debug().AutoMigrate(&models.Person{})
+	initializers.DB.Debug().AutoMigrate(adminmodels.Roles{}, adminmodels.Permissions{}, adminmodels.RolePermissions{}, adminmodels.Users{}, adminmodels.UserPermissions{})
 }
