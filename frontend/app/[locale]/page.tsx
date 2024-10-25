@@ -1,4 +1,5 @@
 import MaxWidthWrapper from "@/components/common/MaxSizeWrapper";
+import { ThemeSelector } from "@/components/common/ThemeSelector";
 import { Link } from "@/navigation";
 import { useTranslations } from "next-intl";
 
