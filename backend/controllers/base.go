@@ -17,8 +17,6 @@ type Server struct {
 	Router *gin.Engine
 }
 
-// var errList = make(map[string]string)
-
 func (server *Server) Intialize(DbDriver, DbUser, DbPassword, DbPort, DbHost, DbName string) {
 	var err error
 	if DbDriver == "mysql" {
@@ -47,10 +45,7 @@ func (server *Server) Intialize(DbDriver, DbUser, DbPassword, DbPort, DbHost, Db
 		fmt.Println("UNKOWN DRIVER")
 	}
 
-	//DATABASE MIGRATIONS
-	server.DB.Debug().AutoMigrate(
-	// &models.User{},
-	)
+	server.DB.Debug().AutoMigrate()
 	server.Router = gin.Default()
 	server.Router.Use(middleware.CORSMiddleware())
 	server.initializeRoutes()

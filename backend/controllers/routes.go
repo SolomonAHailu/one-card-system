@@ -4,7 +4,6 @@ import "fmt"
 
 func (s *Server) initializeRoutes() {
 	v1 := s.Router.Group("/api/v1")
-	//THIS IS SIMPLE TO REMOVE THE NOT USED ERROR
 	fmt.Println(v1.BasePath())
 
 	// Home Route
