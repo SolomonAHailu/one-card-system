@@ -3,11 +3,12 @@ package adminroutes
 import (
 	"github.com/SolomonAHailu/one-card-system/controllers/admincontrollers"
 	"github.com/SolomonAHailu/one-card-system/initializers"
+	"github.com/SolomonAHailu/one-card-system/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterAdminRolePermissionManagementRoutes(r *gin.Engine) {
-	v1 := r.Group("/api/v1/admin")
+	v1 := r.Group("/api/v1/admin").Use(middlewares.AuthMiddleware(), middlewares.RoleRequired(1))
 	{
 		//create role permission
 		v1.POST("/rolepermission", func(c *gin.Context) {

@@ -16,13 +16,13 @@ func CreateUser(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid input", err)
 		return
 	}
-	if user.UserName == "" {
-		utils.ResponseWithError(c, http.StatusBadRequest, "username cannot be empty", nil)
+	if user.Email == "" {
+		utils.ResponseWithError(c, http.StatusBadRequest, "email cannot be empty", nil)
 		return
 	}
 	var existingUser adminmodels.Users
-	if err := db.Where("user_name = ?", user.UserName).First(&existingUser).Error; err == nil {
-		utils.ResponseWithError(c, http.StatusBadRequest, "username already exists", nil)
+	if err := db.Where("email = ?", user.Email).First(&existingUser).Error; err == nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "email already exists", nil)
 		return
 	}
 	if err := db.Create(&user).Error; err != nil {
