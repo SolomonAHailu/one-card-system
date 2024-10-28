@@ -3,8 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import Navbar from "@/components/common/Navbar";
-import Footer from "@/components/common/Footer";
 import StoreProvider from "@/store/store-provider";
 import { ThemeProvider } from "@/lib/ThemeProvider";
 
@@ -17,33 +15,29 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   const messages = await getMessages();
 
   return (
-    <NextIntlClientProvider messages={messages}>
-      <StoreProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <html lang="en">
-            <body className={inter.className}>
-              <main className="relative flex flex-col min-h-screen">
-                <div className="flex-grow flex-1">
-                  <Navbar />
-                  {children}
-                </div>
-                <Footer />
-              </main>
-            </body>
-          </html>
-        </ThemeProvider>
-      </StoreProvider>
-    </NextIntlClientProvider>
+    <html lang="en">
+      <body className={inter.className}>
+        <NextIntlClientProvider messages={messages}>
+          <StoreProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <div className="relative flex flex-col min-h-screen">
+                <main className="flex-1">{children}</main>
+              </div>
+            </ThemeProvider>
+          </StoreProvider>
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }

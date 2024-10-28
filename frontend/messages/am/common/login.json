@@ -1,0 +1,15 @@
+{
+  "login": {
+    "welcome": "እንኳን በሰላም መጣችሁ",
+    "logintocontinue": "ለመቀጠል ግባ",
+    "email": "የተጠቃሚው ኢሜል",
+    "enteremail": "የተጠቃሚ ኢሜሎን ያስገቡ",
+    "password": "የይለፍ ቃል",
+    "enterpassword": "የይለፍ ቃልዎን ያስገቡ",
+    "login": "ግባ",
+    "emailrequired": "የተጠቃሚ ኢሜል ያስፈልጋል",
+    "passwordrerequired": "የይለፍ ቃል ያስፈልጋል",
+    "invalidemail": "ትክክለኛ ኢሜል አይደለም",
+    "passwordminlength": "የይለፍ ቃል ቢያንስ 6 ፊደላት መሆን አለበት"
+  }
+}

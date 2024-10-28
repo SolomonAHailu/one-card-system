@@ -4,115 +4,116 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-// import  {GoogleIcon } from "lucide-react"; // Ensure you have the icons installed
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useTranslations } from "next-intl";
+import { createLoginSchema } from "@/validators/common/login-validator";
+import { FaEye, FaSpinner } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { handleLogin } from "@/store/slices/authSlice";
+import { useRouter } from "next/navigation";
+import { IoMdEyeOff } from "react-icons/io";
+import { cn } from "@/lib/utils";
 
 interface LoginFormInputs {
   email: string;
   password: string;
 }
-import axios from "axios";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-type Props = {};
-const schema = yup
-  .object({
-    email: yup.string().email("Invalid email").required("Email is required"),
-    password: yup
-      .string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
-  })
-  .required();
-const LoginPage = (props: Props) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Initialize form with React Hook Form and Yup resolver
+const LoginPage = () => {
+  const t = useTranslations("login");
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { isLoading, error } = useSelector((state: RootState) => state.auth);
+  const [visible, setVisible] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(createLoginSchema(t)),
   });
 
-  const onSubmit = async (data: any) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.post(
-        "https://your-backend-api.com/login",
-        data
-      );
-      console.log("Login successful:", response.data);
-    } catch (err) {
-      setError("Invalid email or password");
-      console.error("Login failed:", err);
-    } finally {
-      setLoading(false);
-    }
+  const onSubmit = async (data: LoginFormInputs) => {
+    dispatch<any>(handleLogin({ data, router }));
   };
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-background">
       <Card className="w-full max-w-md p-8 shadow-lg rounded-lg">
         <CardHeader className="text-center mb-4">
-          <CardTitle className="text-2xl font-semibold">Welcome Back</CardTitle>
-          <p className="text-gray-600">Login to continue</p>
+          <CardTitle className="text-2xl font-semibold">
+            {t("welcome")}
+          </CardTitle>
+          <p className="text-foreground">{t("logintocontinue")}</p>
         </CardHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             {error && <p className="text-red-500 text-center">{error}</p>}
-
             <div>
               <Label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                htmlFor="username"
+                className="block text-sm font-medium text-muted-foreground"
               >
-                Email
+                {t("email")}
               </Label>
               <Input
                 id="email"
-                type="email"
-                placeholder="Enter your email"
+                type="text"
+                placeholder={t("enteremail")}
                 {...register("email")}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                className={cn(
+                  { "focus-visible:ring-red-600": errors.email },
+                  "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
+                )}
               />
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.email.message}
-                </p>
+                <p className="text-red-500 mt-1">{errors.email.message}</p>
               )}
             </div>
-
-            <div>
-              <Label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                {...register("password")}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
+            <div className="grid gap-2 py-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center justify-center gap-2 relative">
+                <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2">
+                  {visible ? (
+                    <IoMdEyeOff
+                      size={22}
+                      className="cursor-pointer text-primary"
+                      onClick={() => setVisible(!visible)}
+                    />
+                  ) : (
+                    <FaEye
+                      size={22}
+                      className="cursor-pointer text-primary"
+                      onClick={() => setVisible(!visible)}
+                    />
+                  )}
+                </div>
+                <Input
+                  id="password"
+                  type={visible ? "text" : "password"}
+                  placeholder={t("enterpassword")}
+                  {...register("password")}
+                  className={cn(
+                    { "focus-visible:ring-red-600": errors.password },
+                    "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
+                  )}
+                />
+              </div>
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.password.message}
-                </p>
+                <p className="text-red-500 mt-1">{errors.password.message}</p>
               )}
             </div>
-
             <Button
               type="submit"
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-md transition duration-150"
-              disabled={loading}
+              disabled={isLoading}
             >
-              {loading ? "Loading..." : "Login"}
+              <span>{t("login")}</span>
+              {isLoading && <FaSpinner className="animate-spin ml-2" />}
             </Button>
           </CardContent>
         </form>

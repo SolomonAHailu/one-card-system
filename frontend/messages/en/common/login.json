@@ -1,0 +1,15 @@
+{
+  "login": {
+    "welcome": "Welcome",
+    "logintocontinue": "Log in to continue",
+    "email": "Email",
+    "enteremail": "Enter your email",
+    "password": "Password",
+    "enterpassword": "Enter your password",
+    "login": "Login",
+    "emailrequired": "Email is required",
+    "passwordrerequired": "Password is required",
+    "invalidemail": "Invalid email",
+    "passwordminlength": "Password must be at least 6 characters"
+  }
+}

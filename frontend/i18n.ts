@@ -8,10 +8,13 @@ export default getRequestConfig(async ({ locale }: { locale: string }) => {
 
   const homepageImport = (await import(`./messages/${locale}/home.json`))
     .default;
+  const logininImport = (await import(`./messages/${locale}/common/login.json`))
+    .default;
 
   return {
     messages: {
       ...homepageImport,
+      ...logininImport,
     },
   };
 });

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/SolomonAHailu/one-card-system/routes/adminroutes"
+	"github.com/SolomonAHailu/one-card-system/routes/userroutes"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,4 +12,5 @@ func RegisterRoutes(r *gin.Engine) {
 	adminroutes.RegisterAdminRolePermissionManagementRoutes(r)
 	adminroutes.RegisterUserManagementRoutes(r)
 	adminroutes.RegisterUserPermissionManagementRoutes(r)
+	userroutes.RegisterUserRoutes(r)
 }

@@ -13,7 +13,7 @@ type Users struct {
 	FirstName        string `gorm:"type:varchar(255);not null;" json:"first_name"`
 	FatherName       string `gorm:"type:varchar(255);not null;" json:"father_name"`
 	GrandFatherName  string `gorm:"type:varchar(255);not null;" json:"grand_father_name"`
-	UserName         string `gorm:"type:varchar(255);not null;unique;" json:"user_name"`
+	Email            string `gorm:"type:varchar(255);not null;unique;" json:"email"`
 	Password         string `gorm:"type:varchar(255);not null;" json:"-"`
 	UnhashedPassword string `gorm:"-" json:"password"`
 	RoleId           int    `gorm:"not null;" json:"role_id"`
