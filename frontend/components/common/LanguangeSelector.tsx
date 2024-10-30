@@ -25,11 +25,11 @@ const LanguangeSelector = () => {
     <DropdownMenu>
       <DropdownMenuTrigger className="px-2 py-1 flex gap-2 justify-center items-center">
         {selectedLanguage === "EN" ? (
-          <FaGlobe className="text-blue-400 text-xl"/>
+          <FaGlobe className="text-blue-400 text-xl" />
         ) : (
-          <ReactCountryFlag countryCode="ET" svg className="text-xl"/>
+          <ReactCountryFlag countryCode="ET" svg className="text-xl" />
         )}
-        <p>{selectedLanguage}</p>
+        <p>{selectedLanguage === "AM" ? "አማ" : "EN"}</p>
         <IoIosArrowDown />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-10">
@@ -37,7 +37,7 @@ const LanguangeSelector = () => {
           onClick={handleSelectedLanguage("EN")}
           className="flex items-center gap-2"
         >
-          <FaGlobe className="text-blue-400 text-xl"/>
+          <FaGlobe className="text-blue-400 text-xl" />
           <p>EN</p>
         </DropdownMenuItem>
         <hr className="border-[#5A7184] border-opacity-20" />
@@ -45,8 +45,8 @@ const LanguangeSelector = () => {
           onClick={handleSelectedLanguage("AM")}
           className="flex items-center gap-2"
         >
-          <ReactCountryFlag countryCode="ET" svg className="text-xl"/>
-          <p>ET</p>
+          <ReactCountryFlag countryCode="ET" svg className="text-xl" />
+          <p>አማ</p>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -3,29 +3,29 @@ import axios, { AxiosRequestConfig } from "axios";
 import { AppDispatch } from "..";
 
 // Define your types
-interface LoginUser {
+export interface LoginUserSendData {
   email: string;
   password: string;
 }
 
-interface Data {
-  data: User;
+export interface DataRecievedWhileUserLogin {
+  data: UserRecieved;
 }
-interface User {
+interface UserRecieved {
   ID: number;
   first_name: string;
   father_name: string;
   grand_father_name: string;
   email: string;
   role_id: number;
-  role: Role;
+  role: RoleRecieved;
   CreatedAt: Date;
   UpdatedAt: Date;
   DeletedAt: Date | null;
   password: null;
 }
 
-interface Role {
+interface RoleRecieved {
   ID: number;
   CreatedAt: Date;
   UpdatedAt: Date;
@@ -35,7 +35,7 @@ interface Role {
 }
 
 interface AuthState {
-  user: User | null;
+  user: UserRecieved | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -74,7 +74,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(handleLogin.fulfilled, (state, action) => {
-        state.user = (action.payload as Data).data;
+        state.user = (action.payload as DataRecievedWhileUserLogin).data;
         state.isAuthenticated = true;
         state.isLoading = false;
         state.error = null;
@@ -88,14 +88,15 @@ const authSlice = createSlice({
 
 // Thunk for handling login
 export const handleLogin = createAsyncThunk<
-  Data,
-  { data: LoginUser; router: any }
+  DataRecievedWhileUserLogin,
+  { data: LoginUserSendData; router: any }
 >("auth/login", async ({ data, router }) => {
   const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/user/login`;
   const config: AxiosRequestConfig = {
     url,
     method: "POST",
     data: data,
+    withCredentials: true,
   };
 
   try {

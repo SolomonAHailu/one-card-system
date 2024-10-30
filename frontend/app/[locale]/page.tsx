@@ -11,7 +11,6 @@ import LoadingOverlay from "@/components/common/LoadingOverlay";
 
 export default function Home() {
   const router = useRouter();
-  const t = useTranslations("home");
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const role = useSelector((state: RootState) => state.auth.user?.role);
   const role_name = role?.role_name.toLocaleLowerCase().trim();

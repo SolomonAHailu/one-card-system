@@ -1,0 +1,8 @@
+{
+  "adminsidebar": {
+    "users": "Users",
+    "roles": "Roles",
+    "permissions": "Permissions",
+    "devices": "Devices"
+  }
+}

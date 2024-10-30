@@ -12,7 +12,11 @@ import (
 // This enables us interact with the React Frontend
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		origin := c.Request.Header.Get("Origin")
+		if origin == "http://localhost:3000" {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+		}
+		// c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH, DELETE")
@@ -29,29 +33,34 @@ func CORSMiddleware() gin.HandlerFunc {
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			utils.ResponseWithError(c, http.StatusUnauthorized, "Authorization header required")
-			c.Abort()
-			return
+		var tokenString string
+
+		if authHeader != "" {
+			parts := strings.Split(authHeader, "Bearer ")
+			if len(parts) == 2 {
+				tokenString = parts[1]
+			} else {
+				utils.ResponseWithError(c, http.StatusUnauthorized, "Authorization format must be Bearer <token>")
+				c.Abort()
+				return
+			}
+		} else {
+			cookie, err := c.Cookie("token")
+			if err != nil {
+				utils.ResponseWithError(c, http.StatusUnauthorized, "Authorization token required")
+				c.Abort()
+				return
+			}
+			tokenString = cookie
 		}
 
-		// Split "Bearer <token>"
-		tokenString := strings.Split(authHeader, "Bearer ")
-		if len(tokenString) != 2 {
-			utils.ResponseWithError(c, http.StatusUnauthorized, "Authorization format must be Bearer <token>")
-			c.Abort()
-			return
-		}
-
-		// Verify the token
-		claims, err := security.VerifyToken(tokenString[1])
+		claims, err := security.VerifyToken(tokenString)
 		if err != nil {
 			utils.ResponseWithError(c, http.StatusUnauthorized, "Invalid or expired token", err)
 			c.Abort()
 			return
 		}
 
-		// Set user information in context
 		c.Set("userId", claims.UserId)
 		c.Set("userEmail", claims.UserEmail)
 		c.Set("userRole", claims.UserRole)
@@ -64,13 +73,27 @@ func AuthMiddleware() gin.HandlerFunc {
 func RoleRequired(roles ...int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get the token from the request header
-		tokenString := c.Request.Header.Get("Authorization")
-		if tokenString == "" {
-			utils.ResponseWithError(c, http.StatusUnauthorized, "No authorization token provided", nil)
-			c.Abort()
-			return
-		}
+		authHeader := c.GetHeader("Authorization")
+		var tokenString string
 
+		if authHeader != "" {
+			parts := strings.Split(authHeader, "Bearer ")
+			if len(parts) == 2 {
+				tokenString = parts[1]
+			} else {
+				utils.ResponseWithError(c, http.StatusUnauthorized, "Authorization format must be Bearer <token>")
+				c.Abort()
+				return
+			}
+		} else {
+			cookie, err := c.Cookie("token")
+			if err != nil {
+				utils.ResponseWithError(c, http.StatusUnauthorized, "Authorization token required")
+				c.Abort()
+				return
+			}
+			tokenString = cookie
+		}
 		// Verify the token and extract claims
 		claims, err := security.VerifyToken(strings.TrimSpace(strings.Replace(tokenString, "Bearer ", "", 1)))
 		if err != nil {

@@ -1,0 +1,11 @@
+{
+  "roles": {
+    "admin": "Admin",
+    "registrar": "Registrar",
+    "cafe": "Cafe",
+    "dormitory": "Dormitory",
+    "gate": "Gate",
+    "librarian": "Librarian",
+    "searchrole": "በሚና መፈለግ"
+  }
+}
