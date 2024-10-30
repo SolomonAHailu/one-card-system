@@ -1,0 +1,33 @@
+{
+  "adminusers": {
+    "searchbyname": "Search by name",
+    "searchbynamerequired": "Name is required",
+    "createuser": "Create User",
+    "firstname": "First Name",
+    "enterfirstname": "Enter First Name",
+    "fathername": "Father Name",
+    "enterfathername": "Enter Father Name",
+    "grandfathername": "Grand Father Name",
+    "entergrandfathername": "Enter Grand Father Name",
+    "email": "Email",
+    "enteremail": "Enter Email",
+    "role": "Role",
+    "firstnamerequired": "First name is required",
+    "firstnameminlength": "First name must be at least 3 characters",
+    "fathernamerequired": "Father name is required",
+    "fathernameminlength": "Father name must be at least 3 characters",
+    "grandfathernamerequired": "Grandfather name is required",
+    "grandfathernameminlength": "Grandfather name must be at least 3 characters",
+    "emailrequired": "Email is required",
+    "invalidemail": "Invalid email",
+    "roleidrequired": "Role is required",
+    "selectrole": "Select Role",
+    "admin": "Admin",
+    "registrar": "Registrar",
+    "cafe": "Cafe",
+    "dormitory": "Dormitory",
+    "gate": "Gate",
+    "librarian": "Librarian",
+    "searchrole": "Search by role"
+  }
+}

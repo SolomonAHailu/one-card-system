@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import StoreProvider from "@/store/store-provider";
 import { ThemeProvider } from "@/lib/ThemeProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,6 +35,7 @@ export default async function RootLayout({
               <div className="relative flex flex-col min-h-screen">
                 <main className="flex-1">{children}</main>
               </div>
+              <Toaster />
             </ThemeProvider>
           </StoreProvider>
         </NextIntlClientProvider>

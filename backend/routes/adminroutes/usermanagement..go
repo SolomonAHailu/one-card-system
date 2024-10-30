@@ -30,5 +30,9 @@ func RegisterUserManagementRoutes(r *gin.Engine) {
 		v1.DELETE("/user/:id", func(c *gin.Context) {
 			admincontrollers.DeleteUserById(c, initializers.DB)
 		})
+		//get users using role id
+		v1.GET("/users/:id", func(c *gin.Context) {
+			admincontrollers.GetUsersByRoleId(c, initializers.DB)
+		})
 	}
 }

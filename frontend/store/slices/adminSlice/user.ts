@@ -1,0 +1,178 @@
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios, { AxiosRequestConfig } from "axios";
+
+interface DataSendToFetchUsers {
+  role_id: number;
+  page: number;
+  limit: number;
+  name?: string;
+}
+export interface DataSendToCreateUser {
+  first_name: string;
+  father_name: string;
+  grand_father_name: string;
+  email: string;
+  role_id: number;
+}
+
+export interface RoleRecieved {
+  ID: number;
+  CreatedAt: Date;
+  UpdatedAt: Date;
+  DeletedAt: Date | null;
+  role_name: string;
+  description: string;
+}
+
+export interface DataRecievedWhileFetchUser {
+  currentPage: number;
+  totalPages: number;
+  totalUsers: number;
+  data: UserRecieved[];
+}
+export interface DataRecievedWhileCreateUser {
+  data: UserRecieved;
+}
+export interface UserRecieved {
+  ID: number;
+  CreatedAt: Date;
+  UpdatedAt: Date;
+  DeletedAt: Date | null;
+  first_name: string;
+  father_name: string;
+  grand_father_name: string;
+  email: string;
+  password: "";
+  role_id: number;
+  role: RoleRecieved;
+}
+
+export interface UserState {
+  users: UserRecieved[];
+  user: UserRecieved | null;
+  currentPageUserCreate: number;
+  isUserLoading: boolean;
+  isUserCreateLoading: boolean;
+  isUserError: string | null;
+  isUserCreateError: string | null;
+  currentPage: number;
+  totalPages: number;
+  totalUsers: number;
+}
+
+const initialState: UserState = {
+  users: [],
+  user: null,
+  currentPageUserCreate: 1,
+  isUserLoading: false,
+  isUserError: null,
+  isUserCreateLoading: false,
+  isUserCreateError: null,
+  currentPage: 0,
+  totalPages: 0,
+  totalUsers: 0,
+};
+
+const userSlice = createSlice({
+  name: "user",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(handleFetchUser.pending, (state) => {
+        state.isUserLoading = true;
+        state.isUserError = null;
+      })
+      .addCase(
+        handleFetchUser.fulfilled,
+        (state, action: PayloadAction<DataRecievedWhileFetchUser>) => {
+          state.users = action.payload.data;
+          state.currentPage = action.payload.currentPage;
+          state.totalPages = action.payload.totalPages;
+          state.totalUsers = action.payload.totalUsers;
+          state.isUserLoading = false;
+          state.isUserError = null;
+        }
+      )
+      .addCase(handleFetchUser.rejected, (state, action) => {
+        state.isUserLoading = false;
+        state.isUserError = action.error.message || "Fetch users failed";
+      });
+    builder
+      .addCase(handleCreateUser.pending, (state) => {
+        state.isUserCreateLoading = true;
+        state.isUserCreateError = null;
+      })
+      .addCase(handleCreateUser.fulfilled, (state, action) => {
+        state.user = action.payload.data;
+        state.isUserCreateLoading = false;
+        state.isUserCreateError = null;
+        state.currentPageUserCreate += 1;
+      })
+      .addCase(handleCreateUser.rejected, (state, action) => {
+        state.isUserCreateLoading = false;
+        state.isUserCreateError = action.error.message || "Create user failed";
+      });
+  },
+});
+
+export const handleFetchUser = createAsyncThunk<
+  DataRecievedWhileFetchUser,
+  DataSendToFetchUsers
+>("user/fetchUser", async (data) => {
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/users/${data.role_id}`;
+
+  const config: AxiosRequestConfig = {
+    url,
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: { page: data.page, limit: data.limit, name: data.name },
+    withCredentials: true,
+  };
+
+  try {
+    const response = await axios(config);
+    if (response.data) {
+      console.log("RESPONSE FOUND FOR USER", response);
+      return response.data;
+    } else {
+      throw new Error("Fetch users failed");
+    }
+  } catch (error: any) {
+    throw new Error(error.response?.data?.error || "Fetch users failed");
+  }
+});
+
+export const handleCreateUser = createAsyncThunk<
+  DataRecievedWhileCreateUser,
+  DataSendToCreateUser
+>("user/createUser", async (data) => {
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/createuser`;
+
+  const config: AxiosRequestConfig = {
+    url,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: data,
+    withCredentials: true,
+  };
+
+  try {
+    const response = await axios(config);
+    if (response.data) {
+      console.log("RESPONSE FOUND TO CREATE USER", response);
+      return response.data;
+    } else {
+      throw new Error("Create users failed");
+    }
+  } catch (error: any) {
+    throw new Error(error.response?.data?.error || "Create users failed");
+  }
+});
+
+export const {} = userSlice.actions;
+export default userSlice.reducer;

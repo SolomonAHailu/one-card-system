@@ -41,84 +41,80 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-full max-w-md p-8 shadow-lg rounded-lg">
-        <CardHeader className="text-center mb-4">
-          <CardTitle className="text-2xl font-semibold">
-            {t("welcome")}
-          </CardTitle>
-          <p className="text-foreground">{t("logintocontinue")}</p>
-        </CardHeader>
+    <Card className="w-full py-16 px-0 md:px-8 shadow-lg rounded-lg max-w-xs sm:max-w-lg md:max-w-xl h-fit">
+      <CardHeader className="text-center mb-4">
+        <CardTitle className="text-2xl font-semibold">{t("welcome")}</CardTitle>
+        <p className="text-foreground">{t("logintocontinue")}</p>
+      </CardHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            {error && <p className="text-red-500 text-center">{error}</p>}
-            <div>
-              <Label
-                htmlFor="username"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                {t("email")}
-              </Label>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <CardContent className="space-y-4">
+          {error && <p className="text-red-500 text-center">{error}</p>}
+          <div>
+            <Label
+              htmlFor="username"
+              className="block text-sm font-medium text-muted-foreground"
+            >
+              {t("email")}
+            </Label>
+            <Input
+              id="email"
+              type="text"
+              placeholder={t("enteremail")}
+              {...register("email")}
+              className={cn(
+                { "focus-visible:ring-red-600": errors.email },
+                "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
+              )}
+            />
+            {errors.email && (
+              <p className="text-red-500 mt-1">{errors.email.message}</p>
+            )}
+          </div>
+          <div className="grid gap-2 py-2">
+            <Label htmlFor="password">Password</Label>
+            <div className="flex items-center justify-center gap-2 relative">
+              <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2">
+                {visible ? (
+                  <IoMdEyeOff
+                    size={22}
+                    className="cursor-pointer text-primary"
+                    onClick={() => setVisible(!visible)}
+                  />
+                ) : (
+                  <FaEye
+                    size={22}
+                    className="cursor-pointer text-primary"
+                    onClick={() => setVisible(!visible)}
+                  />
+                )}
+              </div>
               <Input
-                id="email"
-                type="text"
-                placeholder={t("enteremail")}
-                {...register("email")}
+                id="password"
+                type={visible ? "text" : "password"}
+                placeholder={t("enterpassword")}
+                {...register("password")}
                 className={cn(
-                  { "focus-visible:ring-red-600": errors.email },
+                  { "focus-visible:ring-red-600": errors.password },
                   "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
                 )}
               />
-              {errors.email && (
-                <p className="text-red-500 mt-1">{errors.email.message}</p>
-              )}
             </div>
-            <div className="grid gap-2 py-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="flex items-center justify-center gap-2 relative">
-                <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2">
-                  {visible ? (
-                    <IoMdEyeOff
-                      size={22}
-                      className="cursor-pointer text-primary"
-                      onClick={() => setVisible(!visible)}
-                    />
-                  ) : (
-                    <FaEye
-                      size={22}
-                      className="cursor-pointer text-primary"
-                      onClick={() => setVisible(!visible)}
-                    />
-                  )}
-                </div>
-                <Input
-                  id="password"
-                  type={visible ? "text" : "password"}
-                  placeholder={t("enterpassword")}
-                  {...register("password")}
-                  className={cn(
-                    { "focus-visible:ring-red-600": errors.password },
-                    "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
-                  )}
-                />
-              </div>
-              {errors.password && (
-                <p className="text-red-500 mt-1">{errors.password.message}</p>
-              )}
-            </div>
-            <Button
-              type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-md transition duration-150"
-              disabled={isLoading}
-            >
-              <span>{t("login")}</span>
-              {isLoading && <FaSpinner className="animate-spin ml-2" />}
-            </Button>
-          </CardContent>
-        </form>
-      </Card>
-    </div>
+            {errors.password && (
+              <p className="text-red-500 mt-1">{errors.password.message}</p>
+            )}
+          </div>
+          <Button
+            type="submit"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-md transition duration-150"
+            disabled={isLoading}
+          >
+            <span>{t("login")}</span>
+            {isLoading && <FaSpinner className="animate-spin ml-2" />}
+          </Button>
+        </CardContent>
+      </form>
+    </Card>
   );
 };
 

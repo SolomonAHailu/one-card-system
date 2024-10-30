@@ -1,7 +1,9 @@
 package admincontrollers
 
 import (
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
 	"github.com/SolomonAHailu/one-card-system/utils"
@@ -92,4 +94,56 @@ func DeleteUserById(c *gin.Context, db *gorm.DB) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": user})
+}
+
+// get users by using role_id with limit and page number and name of the user if provided
+func GetUsersByRoleId(c *gin.Context, db *gorm.DB) {
+	var users []adminmodels.Users
+	var total int64
+	roleID := c.Param("id")
+
+	page := c.DefaultQuery("page", "1")
+	limit := c.DefaultQuery("limit", "10")
+	name := c.Query("name") // Get the optional 'name' query parameter
+
+	pageInt, err := strconv.Atoi(page)
+	if err != nil || pageInt < 1 {
+		pageInt = 1
+	}
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil || limitInt < 1 {
+		limitInt = 10
+	}
+
+	// Start building the query
+	query := db.Model(&adminmodels.Users{}).Where("role_id = ?", roleID)
+
+	// Apply name filter if provided
+	if name != "" {
+		query = query.Where("LOWER(first_name) LIKE LOWER(?) OR LOWER(father_name) LIKE LOWER(?) OR LOWER(grand_father_name) LIKE LOWER(?)", "%"+name+"%", "%"+name+"%", "%"+name+"%")
+	}
+
+	// Get total count for pagination
+	if err := query.Count(&total).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching users count", err)
+		return
+	}
+
+	// Fetch the paginated data with preload and name filtering
+	if err := query.Preload("Role").
+		Limit(limitInt).
+		Offset((pageInt - 1) * limitInt).
+		Find(&users).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching users", err)
+		return
+	}
+
+	totalPages := int64(math.Ceil(float64(total) / float64(limitInt)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":        users,
+		"currentPage": pageInt,
+		"totalPages":  totalPages,
+		"totalUsers":  total,
+	})
 }

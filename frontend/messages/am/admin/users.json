@@ -1,0 +1,28 @@
+{
+  "adminusers": {
+    "searchbyname": "በስም መፈለግ",
+    "searchbynamerequired": "ስሙን ኣላስገቡም",
+    "createuser": "Create User",
+    "firstname": "First Name",
+    "fathername": "Father Name",
+    "grandfathername": "Grand Father Name",
+    "email": "Email",
+    "role": "Role",
+    "firstnamerequired": "First name is required",
+    "firstnameminlength": "First name must be at least 3 characters",
+    "fathernamerequired": "Father name is required",
+    "fathernameminlength": "Father name must be at least 3 characters",
+    "grandfathernamerequired": "Grandfather name is required",
+    "grandfathernameminlength": "Grandfather name must be at least 3 characters",
+    "emailrequired": "Email is required",
+    "invalidemail": "Invalid email",
+    "roleidrequired": "Role is required",
+    "admin": "Admin",
+    "registrar": "Registrar",
+    "cafe": "Cafe",
+    "dormitory": "Dormitory",
+    "gate": "Gate",
+    "librarian": "Librarian",
+    "searchrole": "Search by role"
+  }
+}

@@ -1,7 +1,6 @@
 package usercontrollers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
@@ -36,9 +35,6 @@ func Login(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	// Debug: log the stored hashed password
-	log.Printf("Stored Hashed Password: %s", user.Password)
-
 	// Compare the provided password with the stored hashed password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.UnhashedPassword)); err != nil {
 		utils.ResponseWithError(c, http.StatusUnauthorized, "Invalid password", err)
@@ -55,7 +51,5 @@ func Login(c *gin.Context, db *gorm.DB) {
 		return
 	}
 	c.SetCookie("token", token, 60*60*24, "/", "localhost", false, true)
-
-	// Successful login
 	c.JSON(http.StatusOK, gin.H{"data": user, "token": token})
 }

@@ -7,9 +7,11 @@ export default function LoginLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex flex-col min-h-screen">
+    <div className="relative flex flex-col h-[100vh]">
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main className="flex-grow flex-1 flex items-center justify-center h-[calc(100vh-64px)]">
+        {children}
+      </main>
     </div>
   );
 }
