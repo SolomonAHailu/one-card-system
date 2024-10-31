@@ -44,6 +44,7 @@ const BasicInformationForm = () => {
     register,
     handleSubmit,
     setValue,
+    clearErrors,
     formState: { errors },
   } = useForm<DataSendToCreateUser>({
     resolver: yupResolver(createUserSchema(t)),
@@ -187,6 +188,7 @@ const BasicInformationForm = () => {
                               ? ""
                               : currentroleSelect
                           );
+                          clearErrors("role_id");
                           setValue("role_id", role.ID);
                           setOpen(false);
                         }}
@@ -211,9 +213,15 @@ const BasicInformationForm = () => {
             <p className="text-red-500 mt-1">{errors.role_id.message}</p>
           )}
         </div>
-        <Button type="submit" disabled={isUserCreateLoading}>
+        <Button
+          type="submit"
+          disabled={isUserCreateLoading}
+          className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
+        >
           <span>{t("createuser")}</span>
-          {isUserCreateLoading && <FaSpinner className="animate-spin ml-2 text-red-500" />}
+          {isUserCreateLoading && (
+            <FaSpinner className="animate-spin ml-2 text-white" />
+          )}
         </Button>
       </div>
       <CreateUserFooter />

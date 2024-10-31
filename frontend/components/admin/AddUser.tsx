@@ -13,6 +13,7 @@ import { RootState } from "@/store";
 import { useSelector } from "react-redux";
 import BasicInformationForm from "./createuser/BasicInformationForm";
 import AdditionalInformationForm from "./createuser/AdditionalInformationForm";
+import CreateUserSuccess from "./createuser/CreateUserSuccess";
 
 const AddUser = () => {
   const { currentPageUserCreate } = useSelector(
@@ -20,20 +21,30 @@ const AddUser = () => {
   );
   return (
     <Dialog>
-      <DialogTrigger className="h-14 w-14 bg-green-500 hover:bg-green-400 flex items-center justify-center rounded-sm">
-        <MdOutlinePersonAddAlt1 className="text-xl" />
+      <DialogTrigger className="h-14 w-14 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm">
+        <MdOutlinePersonAddAlt1 className="text-xl text-white" />
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[700px] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create user</DialogTitle>
+          <DialogTitle>
+            {currentPageUserCreate == 1
+              ? " Create user"
+              : currentPageUserCreate == 2
+              ? "Assign permission"
+              : "Get user password"}
+          </DialogTitle>
           <DialogDescription>
-            Be carefull when you fill the information
+            {currentPageUserCreate === 3
+              ? "Please take care of the password"
+              : " Be carefull when you fill the information"}
           </DialogDescription>
         </DialogHeader>
         {currentPageUserCreate === 1 ? (
           <BasicInformationForm />
         ) : currentPageUserCreate === 2 ? (
           <AdditionalInformationForm />
+        ) : currentPageUserCreate === 3 ? (
+          <CreateUserSuccess />
         ) : null}
       </DialogContent>
     </Dialog>

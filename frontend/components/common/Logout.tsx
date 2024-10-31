@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { handleLogout } from "@/store/slices/authSlice";
+import { handleLogout } from "@/store/slices/common/authSlice";
 import { useDispatch } from "react-redux";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
