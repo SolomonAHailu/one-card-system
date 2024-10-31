@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -101,7 +102,7 @@ func RoleRequired(roles ...int) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
+		fmt.Println("ROLE OF THE USER", roles)
 		// Check if the user role is allowed to access the route
 		for _, role := range roles {
 			if claims.UserRole == role {

@@ -10,10 +10,13 @@ import {
   persistStore,
 } from "redux-persist";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
-import authReducer from "./slices/authSlice";
+import modalSlice from "./slices/common/modalSlice";
+import authReducer from "./slices/common/authSlice";
 import roleReducer from "./slices/adminSlice/role";
 import userReducer from "./slices/adminSlice/user";
 import permissionReducer from "./slices/adminSlice/permission";
+import rolePermissionReducer from "./slices/adminSlice/rolepermission";
+import userPermissionReducer from "./slices/adminSlice/userpermission";
 
 const createNoopStorage = () => {
   return {
@@ -41,10 +44,13 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  modal: modalSlice,
   auth: authReducer,
   role: roleReducer,
   user: userReducer,
   permission: permissionReducer,
+  rolePermission: rolePermissionReducer,
+  userPermission: userPermissionReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

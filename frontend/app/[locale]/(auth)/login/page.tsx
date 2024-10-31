@@ -11,7 +11,7 @@ import { createLoginSchema } from "@/validators/common/login-validator";
 import { FaEye, FaSpinner } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { handleLogin } from "@/store/slices/authSlice";
+import { handleLogin } from "@/store/slices/common/authSlice";
 import { useRouter } from "next/navigation";
 import { IoMdEyeOff } from "react-icons/io";
 import { cn } from "@/lib/utils";

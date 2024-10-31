@@ -1,6 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosRequestConfig } from "axios";
-import { AppDispatch } from "..";
+import { AppDispatch } from "../..";
 
 // Define your types
 export interface LoginUserSendData {

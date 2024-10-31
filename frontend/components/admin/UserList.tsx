@@ -26,7 +26,11 @@ const UserList = ({
   role_id,
   limit,
   name,
+  page,
+  setPage,
 }: {
+  page: number;
+  setPage: (prev: number) => void;
   role_id: number;
   limit: number;
   name?: string;
@@ -40,7 +44,6 @@ const UserList = ({
     totalPages,
     totalUsers,
   } = useSelector((state: RootState) => state.user);
-  const [page, setPage] = useState<number>(1);
 
   console.log("USER NAME TO BE FETCHED", name);
 
@@ -69,8 +72,8 @@ const UserList = ({
             href="#"
             className={
               currentPage === i
-                ? "rounded-full border-2 border-primary m-2"
-                : "bg-transparent rounded-full hover:bg-background/90 hover:rounded-full"
+                ? "rounded-sm border-2 border-primary m-2 text-xs h-10 w-10 flex items-center justify-center"
+                : "bg-transparent rounded-sm hover:bg-background/90 hover:rounded-sm hover:h-8 hover:w-8"
             }
             onClick={() => setPage(i)}
           >
@@ -93,9 +96,9 @@ const UserList = ({
 
   if (isUserLoading) {
     return (
-      <div className="flex flex-col items-center w-full gap-y-2">
-        <div className="flex flex-col items-center w-full gap-y-4">
-          {Array.from({ length: 10 }).map((_, index) => (
+      <div className="h-[calc(100vh-165px)] flex flex-col items-center justify-between w-full">
+        <div className="flex flex-col items-center w-full gap-y-8">
+          {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
           ))}
         </div>
@@ -149,9 +152,9 @@ const UserList = ({
                     currentPage === 1
                       ? "bg-primary-foreground opacity-25 cursor-default"
                       : ""
-                  } bg-primary-foreground hover:bg-primary-foreground`
+                  } bg-primary-foreground hover:bg-primary-foreground text-xs`
                 )}
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                onClick={() => setPage(Math.max(currentPage - 1, 1))}
               />
             </PaginationItem>
 
@@ -165,11 +168,9 @@ const UserList = ({
                     currentPage === totalPages
                       ? "bg-primary-foreground opacity-25 cursor-default"
                       : ""
-                  } bg-primary-foreground hover:bg-primary-foreground`
+                  } bg-primary-foreground hover:bg-primary-foreground text-xs`
                 )}
-                onClick={() =>
-                  setPage((prev) => Math.min(prev + 1, totalPages))
-                }
+                onClick={() => setPage(Math.min(currentPage + 1, totalPages))}
               />
             </PaginationItem>
           </PaginationContent>

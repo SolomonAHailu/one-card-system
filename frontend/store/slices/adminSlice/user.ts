@@ -76,7 +76,15 @@ const initialState: UserState = {
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    increareCurrentPage: (state) => {
+      state.currentPageUserCreate += 1;
+    },
+    removeCurrentUser: (state) => {
+      state.user = null;
+      state.currentPageUserCreate = 1;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(handleFetchUser.pending, (state) => {
@@ -174,5 +182,5 @@ export const handleCreateUser = createAsyncThunk<
   }
 });
 
-export const {} = userSlice.actions;
+export const { increareCurrentPage, removeCurrentUser } = userSlice.actions;
 export default userSlice.reducer;

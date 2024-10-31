@@ -61,6 +61,7 @@ const permissionSlice = createSlice({
   },
 });
 
+//handle fetch all permissions
 export const handleFetchPermissions = createAsyncThunk<PermissionsRecievedData>(
   "permission/fetchPermission",
   async () => {
