@@ -17,5 +17,5 @@ func main() {
 	if initializers.DB == nil {
 		log.Fatal("Database connection is not initialized")
 	}
-	initializers.DB.Debug().AutoMigrate(adminmodels.Roles{}, adminmodels.Permissions{}, adminmodels.RolePermissions{}, adminmodels.Users{}, adminmodels.UserPermissions{})
+	initializers.DB.Debug().AutoMigrate(adminmodels.Roles{}, adminmodels.Permissions{}, adminmodels.RolePermissions{}, adminmodels.Users{}, adminmodels.UserPermissions{}, adminmodels.Devices{})
 }
