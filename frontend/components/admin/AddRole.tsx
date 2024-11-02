@@ -20,7 +20,7 @@ import {
 } from "@/store/slices/adminSlice/role";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { createRoleSchema } from "@/validators/admin/create-role-validators";
+import { createRoleSchema } from "@/Validators/admin/create-role-validators";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
