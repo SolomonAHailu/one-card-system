@@ -23,7 +23,6 @@ import {
 import { cn } from "@/lib/utils";
 
 const DeviceList = ({
-  role_id,
   limit,
   name,
   page,
@@ -31,7 +30,6 @@ const DeviceList = ({
 }: {
   page: number;
   setPage: (prev: number) => void;
-  role_id: number;
   limit: number;
   name?: string;
 }) => {
@@ -46,10 +44,11 @@ const DeviceList = ({
   } = useSelector((state: RootState) => state.device);
 
   console.log("DEVICE NAME TO BE FETCHED", name);
+  console.log(devices)
 
   useEffect(() => {
-    dispatch<any>(handleFetchDevice({ role_id, page, limit, name: name ?? "" }));
-  }, [dispatch, role_id, page, limit, name]);
+    dispatch<any>(handleFetchDevice({page, limit, name: name ?? "" }));
+  }, [dispatch, page, limit, name]);
 
   const renderPageNumbers = () => {
     let pagesToDisplay = [];
@@ -134,11 +133,11 @@ const DeviceList = ({
                     "hover:bg-primary-foreground"
                   )}
                 >
-                  <TableCell>{device.device_name}</TableCell>
-                  <TableCell>{device.device_serial_number}</TableCell>
+                  <TableCell>{device.name}</TableCell>
+                  <TableCell>{device.serial_number}</TableCell>
                   <TableCell>{device.ip_address}</TableCell>
                   <TableCell>{device.port}</TableCell>
-                  <TableCell>{device.location}</TableCell>
+                  <TableCell>{device.Location}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

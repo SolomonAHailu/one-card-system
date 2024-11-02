@@ -2,19 +2,16 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosRequestConfig } from "axios";
 
 interface DataSendToFetchDevices {
-  role_id: number;
   page: number;
   limit: number;
   name?: string;
 }
 export interface DataSendToCreateDevice {
-  device_name: string;
-  device_serial_number: string;
+  name: string;
+  serial_number: string;
   ip_address: string;
   port: string;
-  location: string;
-  role_id: number;
-
+  Location: string;
 }
 
 export interface DataRecievedWhileFetchDevice {
@@ -28,15 +25,11 @@ export interface DataRecievedWhileCreateDevice {
 }
 export interface DeviceRecieved {
   ID: number;
-  CreatedAt: Date;
-  UpdatedAt: Date;
-  DeletedAt: Date | null;
-  first_name: string;
-  father_name: string;
-  grand_father_name: string;
-  email: string;
-  password: "";
-  role_id: number;
+  name: string;
+  serial_number: string;
+  ip_address: string;
+  port: string;
+  Location: string;
 }
 
 export interface DeviceState {
@@ -120,7 +113,7 @@ export const handleFetchDevice = createAsyncThunk<
   DataRecievedWhileFetchDevice,
   DataSendToFetchDevices
 >("device/fetchDevice", async (data) => {
-  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/devices/${data.role_id}`;
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/devices`;
 
   const config: AxiosRequestConfig = {
     url,
@@ -164,10 +157,10 @@ export const handleCreateDevice = createAsyncThunk<
   try {
     const response = await axios(config);
     if (response.data) {
-      console.log("RESPONSE FOUND TO CREATE USER", response);
+      console.log("RESPONSE FOUND TO CREATE dEVICES", response);
       return response.data;
     } else {
-      throw new Error("Create users failed");
+      throw new Error("Create devices failed");
     }
   } catch (error: any) {
     throw new Error(error.response?.data?.error || "Create users failed");

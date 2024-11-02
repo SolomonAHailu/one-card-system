@@ -12,9 +12,7 @@ import { RootState } from "@/store";
 import { handleFetchDevice } from "@/store/slices/adminSlice/device";
 
 const DevicesPage = () => {
-  const t = useTranslations("roles");
   const dispatch = useDispatch();
-  const [usersRoleId, setUsersRoleId] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [name, setName] = useState<string>("");
   const [page, setPage] = useState<number>(1);
@@ -27,7 +25,6 @@ const DevicesPage = () => {
     }, 500);
     dispatch<any>(
       handleFetchDevice({
-        role_id: usersRoleId,
         page,
         limit,
         name: name ?? "",
@@ -62,7 +59,6 @@ const DevicesPage = () => {
         
       </div>
       <DeviceList
-        role_id={usersRoleId}
         limit={limit}
         name={name}
         page={page}
