@@ -31,17 +31,17 @@ const Sidebar = ({ open }: { open: boolean }) => {
     <div
       className={
         open
-          ? "min-w-72 bg-secondary rounded-xl py-6 px-3 flex flex-col gap-y-4"
+          ? "min-w-72 bg-secondary/60 rounded-tl-2xl rounded-bl-2xl py-8 px-5 flex flex-col gap-y-4"
           : "hidden"
       }
     >
       {currentSidebarItems.map((role, index) => (
         <div
           key={index}
-          className={`px-1 py-0.5 cursor-pointer ${
+          className={`px-1 py-2 cursor-pointer ${
             role.permission.toLowerCase().trim() === currentPath
               ? "border-l-4 border-[#3A5DD9]"
-              : "hover:bg-primary-foreground hover:p-2 hover:rounded-xl"
+              : "hover:bg-primary-foreground hover:rounded-xs"
           }`}
           onClick={() =>
             router.push(

@@ -82,10 +82,10 @@ export const handleFetchPermissions = createAsyncThunk<PermissionsRecievedData>(
         console.log("RESPONSE FOUND", response);
         return response.data;
       } else {
-        throw new Error("Get role Failed");
+        throw new Error("Get permission Failed");
       }
     } catch (error: any) {
-      throw new Error(error.response?.data?.error || "Get role Failed");
+      throw new Error(error.response?.data?.error || "Get permission Failed");
     }
   }
 );
