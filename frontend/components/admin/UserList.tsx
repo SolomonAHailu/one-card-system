@@ -21,6 +21,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { usePathname, useRouter } from "next/navigation";
+import { Dialog, DialogTrigger } from "../ui/dialog";
+import EditUser from "./EditUser";
 
 const UserList = ({
   role_id,
@@ -36,6 +39,8 @@ const UserList = ({
   name?: string;
 }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const locale = usePathname().split("/")[1];
   const {
     users,
     isUserError,
@@ -122,6 +127,8 @@ const UserList = ({
                 <TableHead>Father Name</TableHead>
                 <TableHead>Grand Father Name</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead className="text-center">Detail</TableHead>
+                <TableHead className="text-center">Edit</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -137,6 +144,26 @@ const UserList = ({
                   <TableCell>{user.father_name}</TableCell>
                   <TableCell>{user.grand_father_name}</TableCell>
                   <TableCell>{user.email}</TableCell>
+                  <TableCell
+                    onClick={() => {
+                      router.push(`/${locale}/admin/users/${user.ID}`);
+                    }}
+                  >
+                    <div className="bg-[#86EFAC] hover:bg-[#7ee0a2] flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
+                      Details
+                    </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <Dialog>
+                      <DialogTrigger asChild className="w-full">
+                        <div className="bg-[#FEF08A] hover:bg-[#efe382] flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
+                          Edit
+                        </div>
+                      </DialogTrigger>
+                      <EditUser user={user} />
+                    </Dialog>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

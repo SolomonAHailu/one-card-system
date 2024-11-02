@@ -1,10 +1,10 @@
+"use client";
 import {
   DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { RoleRecieved } from "@/store/slices/adminSlice/user";
 import { FaSpinner } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -15,78 +15,83 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import {
-  handleUpdateRole,
-  resetRoleUpdateSuccess,
-  RoleSend,
-} from "@/store/slices/adminSlice/role";
+  CreatePermissionDataSend,
+  resetPermissionUpdateSuccess,
+  handleUpdatePermission,
+  PermissionRecieved,
+} from "@/store/slices/adminSlice/permission";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { createPermissionSchema } from "@/validators/admin/create-permission-validator";
+import { useEffect, useState } from "react";
 
-import { createRoleSchema } from "@/Validators/admin/create-role-validators";
-import { useEffect } from "react";
-import { toast } from "sonner";
-
-const EditRole = ({ role }: { role: RoleRecieved }) => {
+const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {
   const t = useTranslations("admin");
   const dispatch = useDispatch();
-  const { isRoleError, isRoleCreateLoading, isRoleUpdateSuccess } = useSelector(
-    (state: RootState) => state.role
-  );
+  const {
+    isPermissionCreateSuccess,
+    isPermissionError,
+    isPermissionCreateLoading,
+    isPermissionUpdateSuccess,
+  } = useSelector((state: RootState) => state.permission);
 
   const [hasChanges, setHasChanges] = useState(false);
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
-  } = useForm<RoleSend>({
-    resolver: yupResolver(createRoleSchema(t)),
+  } = useForm<CreatePermissionDataSend>({
+    resolver: yupResolver(createPermissionSchema(t)),
     defaultValues: {
-      role_name: role.role_name,
-      description: role.description,
+      permissions_name: permission.permissions_name,
+      description: permission.description,
     },
   });
 
-  const onSubmit = (data: RoleSend) => {
-    data = { ...data, id: role.ID };
-    dispatch<any>(handleUpdateRole(data));
-    setHasChanges(false); // Reset changes state after submission
+  const onSubmit = (data: CreatePermissionDataSend) => {
+    data = { ...data, id: permission.ID };
+    dispatch<any>(handleUpdatePermission(data));
+    setHasChanges(false);
   };
 
   const handleInputChange = () => {
     setHasChanges(true);
-    dispatch(resetRoleUpdateSuccess());
+    dispatch(resetPermissionUpdateSuccess());
   };
 
   return (
     <div>
       <DialogContent>
-        <DialogHeader >
-          <DialogTitle>{t("editRoleTitle")}</DialogTitle>
+        <DialogHeader>
+          <DialogTitle>{t("editPermissionTitle")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="text-center flex flex-col gap-y-4">
-            {isRoleError && <p className="text-red-500">{isRoleError}</p>}
+            {isPermissionError && (
+              <p className="text-red-500">{isPermissionError}</p>
+            )}
             <div className="flex flex-col gap-y-1 items-start">
               <Label
-                htmlFor="role_name"
+                htmlFor="permissions_name"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("roleName")}
+                {t("permissionName")}
               </Label>
               <Input
-                id="role_name"
+                id="permissions_name"
                 type="text"
-                placeholder={t("enterRoleName")}
-                {...register("role_name")}
+                placeholder={t("enterPermissionName")}
+                {...register("permissions_name")}
                 onChange={handleInputChange}
                 className={cn(
-                  { "focus-visible:ring-red-600": errors.role_name },
+                  { "focus-visible:ring-red-600": errors.permissions_name },
                   "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
                 )}
               />
-              {errors.role_name && (
-                <p className="text-red-500 mt-1">{errors.role_name.message}</p>
+              {errors.permissions_name && (
+                <p className="text-red-500 mt-1">
+                  {errors.permissions_name.message}
+                </p>
               )}
             </div>
             <div className="flex flex-col gap-y-1 items-start">
@@ -113,10 +118,10 @@ const EditRole = ({ role }: { role: RoleRecieved }) => {
                 </p>
               )}
             </div>
-            {isRoleUpdateSuccess && !hasChanges ? (
+            {isPermissionUpdateSuccess && !hasChanges ? (
               <DialogClose
                 type="button"
-                onClick={() => dispatch(resetRoleUpdateSuccess())}
+                onClick={() => dispatch(resetPermissionUpdateSuccess())}
                 className="bg-green-600 hover:bg-green-700 py-3.5 rounded-sm text-white"
               >
                 {t("close")}
@@ -124,11 +129,11 @@ const EditRole = ({ role }: { role: RoleRecieved }) => {
             ) : (
               <Button
                 type="submit"
-                disabled={isRoleCreateLoading}
+                disabled={isPermissionCreateLoading}
                 className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
               >
-                <span>{t("updateRole")}</span>
-                {isRoleCreateLoading && (
+                <span>{t("updatePermission")}</span>
+                {isPermissionCreateLoading && (
                   <FaSpinner className="animate-spin ml-2 text-white" />
                 )}
               </Button>
@@ -140,4 +145,4 @@ const EditRole = ({ role }: { role: RoleRecieved }) => {
   );
 };
 
-export default EditRole;
+export default EditPermission;

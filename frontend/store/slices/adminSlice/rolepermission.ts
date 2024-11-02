@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PermissionRecieved } from "./permission";
 import { RoleRecieved } from "./role";
 import axios, { AxiosRequestConfig } from "axios";
+import { toast } from "sonner";
 
 export interface RolePermissionSend {
   role_id: number;
@@ -26,6 +27,7 @@ export interface RolePermissionState {
   rolePermissions: RolePermissionRecieved[];
   rolePermission: RolePermissionRecieved | null;
   isRolePermissionLoading: boolean;
+  isRolePermissionUpdateLoading: boolean;
   isRolePermissionError: string | null;
 }
 
@@ -33,6 +35,7 @@ const initialState: RolePermissionState = {
   rolePermissions: [],
   rolePermission: null,
   isRolePermissionLoading: false,
+  isRolePermissionUpdateLoading: false,
   isRolePermissionError: null,
 };
 
@@ -62,19 +65,19 @@ const rolePermissionSlice = createSlice({
         }
       )
       .addCase(handleUpdateRolePermissionByRoleId.pending, (state) => {
-        state.isRolePermissionLoading = true;
+        state.isRolePermissionUpdateLoading = true;
         state.isRolePermissionError = null;
       })
       .addCase(
         handleUpdateRolePermissionByRoleId.fulfilled,
         (state, action: PayloadAction<RolePermissionRecievedData>) => {
           state.rolePermissions = action.payload.data;
-          state.isRolePermissionLoading = false;
+          state.isRolePermissionUpdateLoading = false;
           state.isRolePermissionError = null;
         }
       )
       .addCase(handleUpdateRolePermissionByRoleId.rejected, (state, action) => {
-        state.isRolePermissionLoading = false;
+        state.isRolePermissionUpdateLoading = false;
         state.isRolePermissionError = action.error.message as string;
       });
   },
@@ -99,9 +102,11 @@ export const handleFetchPermissionForSpecificRole = createAsyncThunk<
     if (response.data) {
       return response.data;
     } else {
+      toast.error("Fetch role permissions failed");
       throw new Error("Fetch role permissions failed");
     }
   } catch (error: any) {
+    toast.error(error.response?.data?.error || "Fetch role permissions failed");
     throw new Error(
       error.response?.data?.error || "Fetch role permissions failed"
     );
@@ -133,11 +138,15 @@ export const handleUpdateRolePermissionByRoleId = createAsyncThunk<
     try {
       const response = await axios(config);
       if (response.data) {
+        toast.success("Permissions updated successfully");
         return response.data;
       } else {
         throw new Error("Update role permissions failed");
       }
     } catch (error: any) {
+      toast.error(
+        error.response?.data?.error || "Update role permissions failed"
+      );
       throw new Error(
         error.response?.data?.error || "Update role permissions failed"
       );

@@ -14,5 +14,9 @@ func RegisterUserPermissionManagementRoutes(r *gin.Engine) {
 		v1.POST("/createuserpermission", func(c *gin.Context) {
 			admincontrollers.CreateUserPermission(c, initializers.DB)
 		})
+		//get permission for the specific user
+		v1.GET("/userpermission/:id", func(c *gin.Context) {
+			admincontrollers.GetUserPermission(c, initializers.DB)
+		})
 	}
 }

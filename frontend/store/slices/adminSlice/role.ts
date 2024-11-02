@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosRequestConfig } from "axios";
 import { DataSendToCreateUser } from "./user";
+import { toast } from "sonner";
 
 export interface RoleSend {
   role_name: string;
@@ -124,6 +125,10 @@ const roleSlice = createSlice({
         state.roles = state.roles.filter(
           (role) => role.ID !== action.payload.ID
         );
+      })
+      .addCase(handleDeleteRole.rejected, (state, action) => {
+        state.isRoleDeleteLoading = false;
+        state.isRoleError = action.error.message as string;
       });
   },
 });
@@ -148,9 +153,11 @@ export const handleFetchRole = createAsyncThunk<DataRecievedWhileFecthRoles>(
         console.log("RESPONSE FOUND", response);
         return response.data;
       } else {
+        toast.error("Get role Failed");
         throw new Error("Get role Failed");
       }
     } catch (error: any) {
+      toast.error(error.response?.data?.error || "Get role Failed");
       throw new Error(error.response?.data?.error || "Get role Failed");
     }
   }
@@ -174,12 +181,15 @@ export const handleCreateRole = createAsyncThunk<RoleRecieved, RoleSend>(
     try {
       const response = await axios(config);
       if (response.data) {
+        toast.success("Role created successfully");
         console.log("RESPONSE FOUND", response);
         return response.data.data;
       } else {
+        toast.error("Create role Failed");
         throw new Error("Create role Failed");
       }
     } catch (error: any) {
+      toast.error(error.response?.data?.error || "Create role Failed");
       throw new Error(error.response?.data?.error || "Create role Failed");
     }
   }
@@ -204,11 +214,14 @@ export const handleUpdateRole = createAsyncThunk<RoleRecieved, RoleSend>(
       const response = await axios(config);
       if (response.data) {
         console.log("RESPONSE FOUND", response);
+        toast.success("Role updated successfully");
         return response.data.data;
       } else {
+        toast.error("Update role Failed");
         throw new Error("Update role Failed");
       }
     } catch (error: any) {
+      toast.error(error.response?.data?.error || "Update role Failed");
       throw new Error(error.response?.data?.error || "Update role Failed");
     }
   }
@@ -231,11 +244,14 @@ export const handleDeleteRole = createAsyncThunk<RoleRecieved, { id: number }>(
       const response = await axios(config);
       if (response.data) {
         console.log("RESPONSE FOUND", response);
+        toast.success("Role deleted successfully");
         return response.data.data;
       } else {
+        toast.error("Delete role Failed");
         throw new Error("Delete role Failed");
       }
     } catch (error: any) {
+      toast.error(error.response?.data?.error || "Delete role Failed");
       throw new Error(error.response?.data?.error || "Delete role Failed");
     }
   }

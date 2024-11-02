@@ -1,6 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosRequestConfig } from "axios";
 import { AppDispatch } from "../..";
+import { toast } from "sonner";
 
 // Define your types
 export interface LoginUserSendData {
@@ -103,11 +104,14 @@ export const handleLogin = createAsyncThunk<
     const response = await axios(config);
     if (response.data.data) {
       router.push(`${response.data.data.role?.role_name.toLowerCase().trim()}`);
+      toast.success("Login Successfully");
       return response.data;
     } else {
+      toast.error("Invalid login data");
       throw new Error("Invalid login data");
     }
   } catch (error: any) {
+    toast.error(`${error.response?.data?.error} || "Login failed"`);
     throw new Error(error.response?.data?.error || "Login failed");
   }
 });
@@ -120,6 +124,7 @@ export const handleLogout = createAsyncThunk(
     { dispatch }: { dispatch: AppDispatch }
   ) => {
     dispatch(clearAuthUser());
+    toast.success("Logout Successfully");
     router.push(`/${languagePrefix}/login`);
   }
 );

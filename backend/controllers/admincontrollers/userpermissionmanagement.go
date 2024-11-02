@@ -18,8 +18,6 @@ type UserPermissionRequest struct {
 // CreateUserPermission creates new permissions for a user based on an array of PermissionIds
 func CreateUserPermission(c *gin.Context, db *gorm.DB) {
 	var req UserPermissionRequest
-
-	// Bind JSON to req
 	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
 		return
@@ -38,7 +36,6 @@ func CreateUserPermission(c *gin.Context, db *gorm.DB) {
 
 	// Iterate over each PermissionId and handle creation
 	for _, permissionId := range req.PermissionIds {
-		// Check if the permission exists for the user's role in RolePermissions table
 		var rolePermission adminmodels.RolePermissions
 		if err := db.Where("role_id = ? AND permission_id = ?", user.RoleId, permissionId).First(&rolePermission).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
@@ -53,10 +50,8 @@ func CreateUserPermission(c *gin.Context, db *gorm.DB) {
 		// Check for existing user permission
 		var existingPermission adminmodels.UserPermissions
 		if err := db.Where("user_id = ? AND permission_id = ?", req.UserId, permissionId).First(&existingPermission).Error; err == nil {
-			// If a record exists, skip to the next permissionId
 			continue
 		} else if err != gorm.ErrRecordNotFound {
-			// If there's an unexpected error, return it
 			utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 			return
 		}
@@ -71,7 +66,22 @@ func CreateUserPermission(c *gin.Context, db *gorm.DB) {
 			return
 		}
 	}
-
-	// Return a success message after creating the user permissions
 	c.JSON(http.StatusCreated, gin.H{"message": "User permissions created successfully"})
+}
+
+// get permission specific to the user
+func GetUserPermission(c *gin.Context, db *gorm.DB) {
+	userId := c.Param("id")
+	var userPermission []adminmodels.UserPermissions
+	if err := db.
+		Preload("User").
+		Preload("User.Role").
+		Preload("Permission").
+		Where("user_id = ?", userId).
+		Find(&userPermission).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching user permissions", err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": userPermission})
 }
