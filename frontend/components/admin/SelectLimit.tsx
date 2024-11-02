@@ -64,7 +64,7 @@ const SelectLimitInput = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[100px] justify-between  h-14"
+          className="w-[100px] justify-between"
         >
           {limit
             ? limitsFound.find((limits) => limits.value === limit)?.label

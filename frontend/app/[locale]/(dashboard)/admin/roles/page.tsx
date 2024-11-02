@@ -15,7 +15,7 @@ const AllrolesPage = () => {
   );
   const [refetchRole, setRefetchRole] = useState<boolean>(false);
 
-  const refetchUsers = () => {
+  const refetchRoles = () => {
     setRefetchRole(true);
     setTimeout(() => {
       setRefetchRole(false);
@@ -34,7 +34,7 @@ const AllrolesPage = () => {
         <div className="flex items-center justify-end gap-x-4">
           <div
             className="h-10 w-10 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer"
-            onClick={refetchUsers}
+            onClick={refetchRoles}
           >
             <ImLoop2
               className={`text-sm transition-transform duration-500 text-white ${

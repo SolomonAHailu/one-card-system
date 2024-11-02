@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux";
-import CreateUserFooter from "./CreateUserFooter";
 import { useEffect, useState } from "react";
 import { handleFetchPermissionForSpecificRole } from "@/store/slices/adminSlice/rolepermission";
 import { RootState } from "@/store";
@@ -23,8 +22,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   DataSendToCreateUserPermission,
   handleCreateUserPermission,
+  handleFetchUserPermission,
 } from "@/store/slices/adminSlice/userpermission";
 import { increareCurrentPage } from "@/store/slices/adminSlice/user";
+import UpdateUserFooter from "./UpdateUserFooter";
 
 const AdditionalInformationForm = () => {
   const dispatch = useDispatch();
@@ -49,8 +50,9 @@ const AdditionalInformationForm = () => {
       dispatch<any>(
         handleFetchPermissionForSpecificRole({ role_id: user.role_id })
       );
+      dispatch<any>(handleFetchUserPermission(user.ID));
     }
-  }, [dispatch, user?.role_id]);
+  }, [dispatch, user?.role_id, user?.ID]);
 
   const FormSchema = z.object({
     selectedPermissions: z.array(z.number()).optional(),
@@ -59,21 +61,18 @@ const AdditionalInformationForm = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      selectedPermissions: [],
+      selectedPermissions: Array.isArray(userPermission) ? userPermission.map((perm) => perm.permission_id) : [],
     },
   });
 
   const onSubmit = async (data: { selectedPermissions?: number[] }) => {
-    console.log("DATA TO CREATE USER PERMISSION", data);
     if (data.selectedPermissions?.length === 0) {
-      console.log("REACH HERE WHILE NOT ASSIGNING PERMISSION");
       if (!userTryToAssign) {
         setUserTryToAssign(true);
         return;
       }
     }
     if (user?.ID !== undefined) {
-      console.log("REACH HERE WHILE ASSIGNING PERMISSION");
       dispatch<any>(
         handleCreateUserPermission({
           user_id: user.ID,
@@ -81,7 +80,7 @@ const AdditionalInformationForm = () => {
         })
       );
     } else {
-      toast.error("User ID is Selected");
+      toast.error("User ID is missing");
     }
   };
 
@@ -114,7 +113,7 @@ const AdditionalInformationForm = () => {
                     <FormControl>
                       <Checkbox
                         checked={
-                          field?.value?.includes(permission.id!) ?? false
+                          (field.value ?? []).includes(permission.id)
                         }
                         onCheckedChange={(checked) => {
                           field.onChange(
@@ -137,38 +136,24 @@ const AdditionalInformationForm = () => {
                 )}
               />
             ))}
-            {allowedUserPermissions.length === 0 ? (
-              <Button
-                type="button"
-                className="bg-green-500 hover:bg-green-600 w-full px-4 py-7 rounded-md text-white text-sm"
-                onClick={() => dispatch<any>(increareCurrentPage())}
-              >
-                Get password
-              </Button>
-            ) : userPermission || userTryToAssign ? (
-              <Button
-                type="button"
-                className="bg-green-500 hover:bg-green-600 w-full px-4 py-7 rounded-md text-white text-sm"
-                onClick={() => dispatch<any>(increareCurrentPage())}
-              >
-                Get Password
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                className="bg-[#3A5DD9] hover:bg-[#2a4bc6] w-full px-4 py-7 rounded-md text-white text-sm"
-                disabled={isUserPermissionCreateLoading}
-              >
-                Assign
-                {isUserPermissionCreateLoading && (
+            <Button
+              type="submit"
+              className="bg-[#3A5DD9] hover:bg-[#2a4bc6] w-full px-4 py-7 rounded-md text-white text-sm"
+              disabled={isUserPermissionCreateLoading}
+            >
+              {isUserPermissionCreateLoading ? (
+                <>
+                  Assign
                   <FaSpinner className="animate-spin ml-2 text-white" />
-                )}
-              </Button>
-            )}
+                </>
+              ) : (
+                "Assign"
+              )}
+            </Button>
           </form>
         </Form>
       )}
-      <CreateUserFooter />
+      <UpdateUserFooter />
     </div>
   );
 };

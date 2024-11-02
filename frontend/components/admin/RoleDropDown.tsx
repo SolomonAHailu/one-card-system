@@ -41,7 +41,7 @@ const RoleDropDown = ({
           variant="outline"
           role="combobox"
           aria-expanded={isOpen}
-          className="w-[300px] justify-between h-14"
+          className="w-[300px] justify-between"
         >
           {value
             ? t(

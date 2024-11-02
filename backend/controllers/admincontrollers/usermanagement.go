@@ -61,22 +61,62 @@ func GetUserById(c *gin.Context, db *gorm.DB) {
 // update user by id
 func UpdateUserById(c *gin.Context, db *gorm.DB) {
 	var user adminmodels.Users
-	if err := db.First(&user, c.Param("id")).Error; err != nil {
+	userId := c.Param("id")
+
+	// Begin a transaction
+	tx := db.Begin()
+	if tx.Error != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error starting transaction", tx.Error)
+		return
+	}
+
+	// Fetch the current user within the transaction
+	if err := tx.First(&user, userId).Error; err != nil {
+		tx.Rollback()
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching user", err)
 		return
 	}
+
+	// Store the current RoleID for comparison
+	currentRoleID := user.RoleId
+
+	// Bind the JSON input to update user fields
 	if err := c.ShouldBindJSON(&user); err != nil {
+		tx.Rollback()
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid input", err)
 		return
 	}
-	if err := db.Save(&user).Error; err != nil {
+
+	// Check if RoleID has changed
+	if user.RoleId != currentRoleID {
+		// Delete all entries in UserPermissions where UserId matches
+		if err := tx.Where("user_id = ?", userId).Delete(&adminmodels.UserPermissions{}).Error; err != nil {
+			tx.Rollback()
+			utils.ResponseWithError(c, http.StatusInternalServerError, "Error deleting user permissions", err)
+			return
+		}
+	}
+
+	// Save the updated user data
+	if err := tx.Save(&user).Error; err != nil {
+		tx.Rollback()
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error updating user", err)
 		return
 	}
-	if err := db.Preload("Role").First(&user, user.ID).Error; err != nil {
+
+	// Preload the Role to include role details
+	if err := tx.Preload("Role").First(&user, user.ID).Error; err != nil {
+		tx.Rollback()
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching user role", err)
 		return
 	}
+
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error committing transaction", err)
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"data": user})
 }
 
