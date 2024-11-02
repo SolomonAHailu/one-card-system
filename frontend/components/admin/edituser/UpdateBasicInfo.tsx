@@ -1,10 +1,11 @@
 import { Label } from "@/components/ui/label";
-import CreateUserFooter from "./CreateUserFooter";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   DataSendToCreateUser,
   handleCreateUser,
+  handleUpdateUser,
+  UserRecieved,
 } from "@/store/slices/adminSlice/user";
 import { useForm } from "react-hook-form";
 import { createUserSchema } from "@/validators/admin/create-user-validator";
@@ -27,11 +28,12 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { useDispatch } from "react-redux";
+import UpdateUserFooter from "./UpdateUserFooter";
 
-const BasicInformationForm = () => {
+const UpdateBasicInfo = ({ user }: { user: UserRecieved }) => {
   const t = useTranslations("adminusers");
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -48,11 +50,29 @@ const BasicInformationForm = () => {
     formState: { errors },
   } = useForm<DataSendToCreateUser>({
     resolver: yupResolver(createUserSchema(t)),
+    defaultValues: {
+      first_name: user.first_name,
+      father_name: user.father_name,
+      grand_father_name: user.grand_father_name,
+      email: user.email,
+      role_id: user.role_id,
+    },
   });
+
+  useEffect(() => {
+    const currentRole = roles.find(
+      (role) => role.ID === user.role_id
+    )?.role_name;
+    if (currentRole) {
+      setRoleSelect(currentRole);
+      setValue("role_id", user.role_id);
+    }
+  }, [roles, user.role_id, setValue]);
 
   const onSubmit = (data: DataSendToCreateUser) => {
     console.log("Form Data:", data);
-    dispatch<any>(handleCreateUser(data));
+    const updatedData = { ...data, id: user.ID };
+    dispatch<any>(handleUpdateUser(updatedData));
   };
 
   return (
@@ -162,13 +182,7 @@ const BasicInformationForm = () => {
                 aria-expanded={open}
                 className="w-full justify-between h-12"
               >
-                {roleSelect
-                  ? t(
-                      roles
-                        .find((role) => role.role_name === roleSelect)
-                        ?.role_name.toLowerCase() ?? t("selectrole")
-                    )
-                  : t("selectrole")}
+                {roleSelect ? t(roleSelect.toLowerCase()) : t("selectrole")}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -181,11 +195,11 @@ const BasicInformationForm = () => {
                     {roles.map((role) => (
                       <CommandItem
                         key={role.ID}
-                        onSelect={(currentroleSelect) => {
+                        onSelect={(currentRoleSelect) => {
                           setRoleSelect(
-                            currentroleSelect === roleSelect
+                            currentRoleSelect === roleSelect
                               ? ""
-                              : currentroleSelect
+                              : currentRoleSelect
                           );
                           clearErrors("role_id");
                           setValue("role_id", role.ID);
@@ -223,9 +237,9 @@ const BasicInformationForm = () => {
           )}
         </Button>
       </div>
-      <CreateUserFooter />
+      <UpdateUserFooter />
     </form>
   );
 };
 
-export default BasicInformationForm;
+export default UpdateBasicInfo;

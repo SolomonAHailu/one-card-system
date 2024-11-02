@@ -30,9 +30,11 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
   const { permissions, isPermissionLoading } = useSelector(
     (state: RootState) => state.permission
   );
-  const { rolePermissions, isRolePermissionLoading } = useSelector(
-    (state: RootState) => state.rolePermission
-  );
+  const {
+    rolePermissions,
+    isRolePermissionLoading,
+    isRolePermissionUpdateLoading,
+  } = useSelector((state: RootState) => state.rolePermission);
   const currentRole = roles.find((role) => role.ID === parseInt(params.roleId));
 
   // Define schema for form validation
@@ -69,7 +71,6 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
         permission_ids: data.selectedPermissions ?? [],
       })
     );
-    toast.success("Permissions updated successfully");
   };
 
   return (
@@ -91,7 +92,7 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
         </div>
       </div>
       <div className="col-span-2 bg-secondary/60 p-6 rounded-tr-2xl rounded-br-2xl flex-1 overflow-y-auto">
-        {isPermissionLoading ? (
+        {isPermissionLoading || isRolePermissionLoading ? (
           <div className="grid grid-cols-2 gap-4">
             <Skeleton className="w-60 h-[50px] col-span-2" />
             {Array.from({ length: 8 }).map((_, index) => (
@@ -142,7 +143,7 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
                 className="py-6 bg-[#3A5DD9] hover:bg-[#2a4bc6] absolute bottom-0 right-0 text-white"
               >
                 Save Changes
-                {isRolePermissionLoading && (
+                {isRolePermissionUpdateLoading && (
                   <FaSpinner className="animate-spin ml-2" />
                 )}
               </Button>

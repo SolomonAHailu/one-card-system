@@ -21,7 +21,7 @@ const AddUser = () => {
   );
   return (
     <Dialog>
-      <DialogTrigger className="h-14 w-14 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm">
+      <DialogTrigger className="h-10 w-10 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm">
         <MdOutlinePersonAddAlt1 className="text-xl text-white" />
       </DialogTrigger>
       <DialogContent className="max-h-[700px] overflow-y-auto">

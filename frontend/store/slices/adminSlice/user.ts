@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosRequestConfig } from "axios";
+import { toast } from "sonner";
 
 interface DataSendToFetchUsers {
   role_id: number;
@@ -8,6 +9,7 @@ interface DataSendToFetchUsers {
   name?: string;
 }
 export interface DataSendToCreateUser {
+  id?: number;
   first_name: string;
   father_name: string;
   grand_father_name: string;
@@ -120,6 +122,26 @@ const userSlice = createSlice({
       .addCase(handleCreateUser.rejected, (state, action) => {
         state.isUserCreateLoading = false;
         state.isUserCreateError = action.error.message || "Create user failed";
+      })
+      .addCase(handleUpdateUser.pending, (state) => {
+        state.isUserCreateLoading = true;
+        state.isUserCreateError = null;
+      })
+      .addCase(handleUpdateUser.fulfilled, (state, action) => {
+        state.users = state.users.map((user) => {
+          if (user.ID === action.payload.data.ID) {
+            return action.payload.data;
+          }
+          return user;
+        });
+        state.user = action.payload.data;
+        state.isUserCreateLoading = false;
+        state.isUserCreateError = null;
+        state.currentPageUserCreate += 1;
+      })
+      .addCase(handleUpdateUser.rejected, (state, action) => {
+        state.isUserCreateLoading = false;
+        state.isUserCreateError = action.error.message || "Update user failed";
       });
   },
 });
@@ -146,9 +168,11 @@ export const handleFetchUser = createAsyncThunk<
       console.log("RESPONSE FOUND FOR USER", response);
       return response.data;
     } else {
+      toast.error("Fetch users failed");
       throw new Error("Fetch users failed");
     }
   } catch (error: any) {
+    toast.error(error.response?.data?.error || "Fetch users failed");
     throw new Error(error.response?.data?.error || "Fetch users failed");
   }
 });
@@ -172,13 +196,48 @@ export const handleCreateUser = createAsyncThunk<
   try {
     const response = await axios(config);
     if (response.data) {
+      toast.success("User created successfully");
       console.log("RESPONSE FOUND TO CREATE USER", response);
       return response.data;
     } else {
+      toast.error("Create users failed");
       throw new Error("Create users failed");
     }
   } catch (error: any) {
+    toast.error(error.response?.data?.error || "Create users failed");
     throw new Error(error.response?.data?.error || "Create users failed");
+  }
+});
+
+export const handleUpdateUser = createAsyncThunk<
+  DataRecievedWhileCreateUser,
+  DataSendToCreateUser
+>("user/updateUser", async (data) => {
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/user/${data.id}`;
+
+  const config: AxiosRequestConfig = {
+    url,
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: data,
+    withCredentials: true,
+  };
+
+  try {
+    const response = await axios(config);
+    if (response.data) {
+      toast.success("User updated successfully");
+      console.log("RESPONSE FOUND TO CREATE USER", response);
+      return response.data;
+    } else {
+      toast.error("Update user failed");
+      throw new Error("Update user failed");
+    }
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Update user failed");
+    throw new Error(error.response?.data?.error || "Update user failed");
   }
 });
 
