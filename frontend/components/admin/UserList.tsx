@@ -142,7 +142,7 @@ const UserList = ({
             </TableBody>
           </Table>
         </div>
-        <Pagination className="bg-secondary rounded-xl">
+        <Pagination className=" rounded-none">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
