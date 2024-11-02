@@ -26,5 +26,9 @@ func RegisterAdminRolePermissionManagementRoutes(r *gin.Engine) {
 		v1.DELETE("/rolepermission/:id", func(c *gin.Context) {
 			admincontrollers.DeleteRolePermissionById(c, initializers.DB)
 		})
+		//update role permissions by role id
+		v1.PATCH("/rolepermission/:id", func(c *gin.Context) {
+			admincontrollers.UpdateRolePermissions(c, initializers.DB)
+		})
 	}
 }
