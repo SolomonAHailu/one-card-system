@@ -21,7 +21,7 @@ import {
   PermissionRecieved,
 } from "@/store/slices/adminSlice/permission";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { createPermissionSchema } from "@/validators/admin/create-permission-validator";
+import { createPermissionSchema } from "@/Validators/admin/create-permission-validator";
 import { useEffect, useState } from "react";
 
 const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {

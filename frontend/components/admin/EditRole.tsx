@@ -22,7 +22,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { createRoleSchema } from "@/Validators/admin/create-role-validators";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const EditRole = ({ role }: { role: RoleRecieved }) => {
@@ -61,7 +61,7 @@ const EditRole = ({ role }: { role: RoleRecieved }) => {
   return (
     <div>
       <DialogContent>
-        <DialogHeader >
+        <DialogHeader>
           <DialogTitle>{t("editRoleTitle")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>

@@ -21,12 +21,12 @@ import {
 } from "@/store/slices/adminSlice/permission";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { createRoleSchema } from "@/validators/admin/create-role-validators";
+import { createRoleSchema } from "@/Validators/admin/create-role-validators";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useEffect } from "react";
-import { createPermissionSchema } from "@/validators/admin/create-permission-validator";
+import { createPermissionSchema } from "@/Validators/admin/create-permission-validator";
 
 const AddPermissions = () => {
   const t = useTranslations("admin");
