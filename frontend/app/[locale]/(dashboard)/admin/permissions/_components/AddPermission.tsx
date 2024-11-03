@@ -1,69 +1,71 @@
 "use client";
 import {
-  DialogClose,
+  Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { FaSpinner } from "react-icons/fa";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import { MdAddModerator } from "react-icons/md";
+import { Label } from "@/components/ui/label";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { Label } from "../ui/label";
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   CreatePermissionDataSend,
-  resetPermissionUpdateSuccess,
-  handleUpdatePermission,
-  PermissionRecieved,
+  resetRoleCreateSuccess,
+  handleCreatePermission,
 } from "@/store/slices/adminSlice/permission";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { createPermissionSchema } from "@/validators/admin/create-permission-validator";
-import { useEffect, useState } from "react";
+import { createRoleSchema } from "@/Validators/admin/create-role-validators";
+import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { useEffect } from "react";
+import { createPermissionSchema } from "@/Validators/admin/create-permission-validator";
 
-const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {
+const AddPermissions = () => {
   const t = useTranslations("admin");
   const dispatch = useDispatch();
   const {
     isPermissionCreateSuccess,
     isPermissionError,
     isPermissionCreateLoading,
-    isPermissionUpdateSuccess,
   } = useSelector((state: RootState) => state.permission);
-
-  const [hasChanges, setHasChanges] = useState(false);
 
   const {
     register,
     handleSubmit,
+    setValue,
+    clearErrors,
+    reset,
     formState: { errors },
   } = useForm<CreatePermissionDataSend>({
     resolver: yupResolver(createPermissionSchema(t)),
-    defaultValues: {
-      permissions_name: permission.permissions_name,
-      description: permission.description,
-    },
   });
 
+  useEffect(() => {
+    if (isPermissionCreateSuccess) {
+      dispatch(resetRoleCreateSuccess());
+      reset();
+    }
+  }, [isPermissionCreateSuccess, reset, dispatch]);
+
   const onSubmit = (data: CreatePermissionDataSend) => {
-    data = { ...data, id: permission.ID };
-    dispatch<any>(handleUpdatePermission(data));
-    setHasChanges(false);
+    dispatch<any>(handleCreatePermission(data));
   };
-
-  const handleInputChange = () => {
-    setHasChanges(true);
-    dispatch(resetPermissionUpdateSuccess());
-  };
-
   return (
-    <div>
+    <Dialog>
+      <DialogTrigger className="h-10 w-10 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer">
+        <MdAddModerator className="text-xl text-white" />
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("editPermissionTitle")}</DialogTitle>
+          <DialogTitle>ADD PERMISSION</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="text-center flex flex-col gap-y-4">
@@ -72,17 +74,16 @@ const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {
             )}
             <div className="flex flex-col gap-y-1 items-start">
               <Label
-                htmlFor="permissions_name"
+                htmlFor="firstname"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("permissionName")}
+                Permission Name
               </Label>
               <Input
-                id="permissions_name"
+                id="firstname"
                 type="text"
-                placeholder={t("enterPermissionName")}
+                placeholder="Enter Role Name"
                 {...register("permissions_name")}
-                onChange={handleInputChange}
                 className={cn(
                   { "focus-visible:ring-red-600": errors.permissions_name },
                   "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
@@ -96,17 +97,16 @@ const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {
             </div>
             <div className="flex flex-col gap-y-1 items-start">
               <Label
-                htmlFor="description"
+                htmlFor="fathername"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("description")}
+                {t("fathername")}
               </Label>
               <Input
-                id="description"
+                id="fathername"
                 type="text"
-                placeholder={t("enterDescription")}
+                placeholder={t("enterfathername")}
                 {...register("description")}
-                onChange={handleInputChange}
                 className={cn(
                   { "focus-visible:ring-red-600": errors.description },
                   "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
@@ -118,31 +118,21 @@ const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {
                 </p>
               )}
             </div>
-            {isPermissionUpdateSuccess && !hasChanges ? (
-              <DialogClose
-                type="button"
-                onClick={() => dispatch(resetPermissionUpdateSuccess())}
-                className="bg-green-600 hover:bg-green-700 py-3.5 rounded-sm text-white"
-              >
-                {t("close")}
-              </DialogClose>
-            ) : (
-              <Button
-                type="submit"
-                disabled={isPermissionCreateLoading}
-                className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
-              >
-                <span>{t("updatePermission")}</span>
-                {isPermissionCreateLoading && (
-                  <FaSpinner className="animate-spin ml-2 text-white" />
-                )}
-              </Button>
-            )}
+            <Button
+              type="submit"
+              disabled={isPermissionCreateLoading}
+              className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
+            >
+              <span>Create Permission</span>
+              {isPermissionCreateLoading && (
+                <FaSpinner className="animate-spin ml-2 text-white" />
+              )}
+            </Button>
           </div>
         </form>
       </DialogContent>
-    </div>
+    </Dialog>
   );
 };
 
-export default EditPermission;
+export default AddPermissions;

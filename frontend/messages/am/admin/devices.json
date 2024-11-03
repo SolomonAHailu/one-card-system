@@ -1,0 +1,22 @@
+{
+    "adminDevice":{
+        "name":"ስም",
+        "serial_number":"ስሪያል ቁጥር",
+        "ip_address":"የአይፒ አድራሻ",
+        "port":"ፖርት",
+        "Location":"አድራሻ",
+        "namerequired":"ስም ያስፈልጋል",
+ "serialnumberrequired":"መለያ ቁጥር ያስፈልጋል",
+ "ipaddressrequired":"አይ ፒ አድራሻ ያስፈልጋል",
+ "portrequired":"ፖርት ያስፈልጋል",
+ "locationrequired":"መገኛ ያስፈልጋል",
+ "createdevice":"መሣሪያ ፍጠር",
+ "enterdevicename":"የመሣሪያ ስም አስገባ",
+ "enterdeviceserialnumber":"የመሣሪያ መለያ ቁጥር አስገባ",
+ "enterdeviceipaddress":"የመሣሪያ አይፒ አድራሻ አስገባ",
+ "enterdeviceport":"የመሣሪያ ፖርት አስገባ",
+ "enterdevicelocation":"የመሣሪያ መገኛ አስገባ"
+
+    
+    }
+}

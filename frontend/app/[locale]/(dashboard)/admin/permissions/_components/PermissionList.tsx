@@ -1,5 +1,4 @@
-import { RootState } from "@/store";
-import { useDispatch, useSelector } from "react-redux";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -9,41 +8,39 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "../ui/skeleton";
-import { TbListDetails } from "react-icons/tb";
-import { usePathname, useRouter } from "next/navigation";
-import { Dialog, DialogClose, DialogContent, DialogHeader } from "../ui/dialog";
+import { RootState } from "@/store";
+import { handleDeletePermission } from "@/store/slices/adminSlice/permission";
+import { resetRoleUpdateSuccess } from "@/store/slices/adminSlice/role";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import EditRole from "./EditRole";
-import { Button } from "../ui/button";
-import {
-  handleDeleteRole,
-  resetRoleDeleteSuccess,
-  resetRoleUpdateSuccess,
-} from "@/store/slices/adminSlice/role";
+import { usePathname, useRouter } from "next/navigation";
 import { FaSpinner } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+} from "@/components/ui/dialog";
+import EditPermission from "./EditPermission";
 
-const RoleList = () => {
+const PermissionList = () => {
   const dispatch = useDispatch();
-  const locale = usePathname().split("/")[1];
-  const {
-    roles,
-    isRoleError,
-    isRoleLoading,
-    isRoleDeleteLoading,
-    isRoleDeleteSuccess,
-  } = useSelector((state: RootState) => state.role);
   const router = useRouter();
+  const locale = usePathname().split("/")[1];
+  const { permissions, isPermissionLoading, isPermissionDeleteLoading } =
+    useSelector((state: RootState) => state.permission);
+
   return (
     <div className="relative rounded-xl p-0 h-[calc(100vh-150px)] flex flex-col gap-y-2">
-      {isRoleLoading ? (
+      {isPermissionLoading ? (
         <div className="flex flex-col items-center w-full gap-y-8">
           {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
           ))}
         </div>
-      ) : roles.length === 0 ? (
-        <p>No role found</p>
+      ) : permissions.length === 0 ? (
+        <p>No permission found</p>
       ) : (
         <Table>
           <TableHeader>
@@ -56,27 +53,26 @@ const RoleList = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {roles.map((role, index) => (
+            {permissions.map((permission, index) => (
               <TableRow
-                key={role.ID}
+                key={permission.ID}
                 className={cn(
                   index % 2 === 0 ? "" : "bg-secondary",
                   "hover:bg-primary-foreground"
                 )}
               >
-                <TableCell>{role.role_name}</TableCell>
+                <TableCell>{permission.permissions_name}</TableCell>
                 <TableCell>
-                  {role.description.length > 70
-                    ? `${role.description.slice(0, 70)}...`
-                    : `${role.description}`}
+                  {permission.description.length > 70
+                    ? `${permission.description.slice(0, 70)}...`
+                    : `${permission.description}`}
                 </TableCell>
-                <TableCell className="">
-                  <div
-                    className="bg-[#86EFAC] hover:bg-[#7ee0a2 flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer"
-                    onClick={() =>
-                      router.push(`/${locale}/admin/roles/${role.ID}`)
-                    }
-                  >
+                <TableCell
+                  onClick={() =>
+                    router.push(`/${locale}/admin/permissions/${permission.ID}`)
+                  }
+                >
+                  <div className="bg-[#86EFAC] hover:bg-[#7ee0a2 flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
                     Details
                   </div>
                 </TableCell>
@@ -90,7 +86,7 @@ const RoleList = () => {
                         Edit
                       </div>
                     </DialogTrigger>
-                    <EditRole role={role} />
+                    <EditPermission permission={permission} />
                   </Dialog>
                 </TableCell>
                 <TableCell>
@@ -113,11 +109,13 @@ const RoleList = () => {
                         <Button
                           className="bg-green-500 hover:bg-green-400 px-7 text-white lowercase"
                           onClick={() =>
-                            dispatch<any>(handleDeleteRole({ id: role.ID }))
+                            dispatch<any>(
+                              handleDeletePermission({ id: permission.ID })
+                            )
                           }
                         >
                           Confirm
-                          {isRoleDeleteLoading && (
+                          {isPermissionDeleteLoading && (
                             <FaSpinner className="animate-spin ml-2 text-white text-xs" />
                           )}
                         </Button>
@@ -134,4 +132,4 @@ const RoleList = () => {
   );
 };
 
-export default RoleList;
+export default PermissionList;

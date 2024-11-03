@@ -18,6 +18,9 @@ export default getRequestConfig(async ({ locale }: { locale: string }) => {
   const adminUserImport = (
     await import(`./messages/${locale}/admin/users.json`)
   ).default;
+  const adminDeviceImport = (
+    await import(`./messages/${locale}/admin/devices.json`)
+  ).default;
   return {
     messages: {
       ...logininImport,
@@ -25,6 +28,7 @@ export default getRequestConfig(async ({ locale }: { locale: string }) => {
       ...adminSidebarImport,
       ...adminRoleImport,
       ...adminUserImport,
+      ...adminDeviceImport,
     },
   };
 });

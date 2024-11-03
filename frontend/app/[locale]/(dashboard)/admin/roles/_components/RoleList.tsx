@@ -9,39 +9,46 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "../../../../../../components/ui/skeleton";
 import { TbListDetails } from "react-icons/tb";
 import { usePathname, useRouter } from "next/navigation";
-import { Dialog, DialogClose, DialogContent, DialogHeader } from "../ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+} from "../../../../../../components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import EditRole from "./EditRole";
-import { Button } from "../ui/button";
+import { Button } from "../../../../../../components/ui/button";
 import {
   handleDeleteRole,
   resetRoleDeleteSuccess,
   resetRoleUpdateSuccess,
 } from "@/store/slices/adminSlice/role";
 import { FaSpinner } from "react-icons/fa";
-import EditPermission from "./EditPermission";
-import { handleDeletePermission } from "@/store/slices/adminSlice/permission";
 
-const PermissionList = () => {
+const RoleList = () => {
   const dispatch = useDispatch();
-  const router = useRouter();
   const locale = usePathname().split("/")[1];
-  const { permissions, isPermissionLoading, isPermissionDeleteLoading } =
-    useSelector((state: RootState) => state.permission);
-
+  const {
+    roles,
+    isRoleError,
+    isRoleLoading,
+    isRoleDeleteLoading,
+    isRoleDeleteSuccess,
+  } = useSelector((state: RootState) => state.role);
+  const router = useRouter();
   return (
     <div className="relative rounded-xl p-0 h-[calc(100vh-150px)] flex flex-col gap-y-2">
-      {isPermissionLoading ? (
+      {isRoleLoading ? (
         <div className="flex flex-col items-center w-full gap-y-8">
           {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
           ))}
         </div>
-      ) : permissions.length === 0 ? (
-        <p>No permission found</p>
+      ) : roles.length === 0 ? (
+        <p>No role found</p>
       ) : (
         <Table>
           <TableHeader>
@@ -54,26 +61,27 @@ const PermissionList = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {permissions.map((permission, index) => (
+            {roles.map((role, index) => (
               <TableRow
-                key={permission.ID}
+                key={role.ID}
                 className={cn(
                   index % 2 === 0 ? "" : "bg-secondary",
                   "hover:bg-primary-foreground"
                 )}
               >
-                <TableCell>{permission.permissions_name}</TableCell>
+                <TableCell>{role.role_name}</TableCell>
                 <TableCell>
-                  {permission.description.length > 70
-                    ? `${permission.description.slice(0, 70)}...`
-                    : `${permission.description}`}
+                  {role.description.length > 70
+                    ? `${role.description.slice(0, 70)}...`
+                    : `${role.description}`}
                 </TableCell>
-                <TableCell
-                  onClick={() =>
-                    router.push(`/${locale}/admin/permissions/${permission.ID}`)
-                  }
-                >
-                  <div className="bg-[#86EFAC] hover:bg-[#7ee0a2 flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
+                <TableCell className="">
+                  <div
+                    className="bg-[#86EFAC] hover:bg-[#7ee0a2 flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer"
+                    onClick={() =>
+                      router.push(`/${locale}/admin/roles/${role.ID}`)
+                    }
+                  >
                     Details
                   </div>
                 </TableCell>
@@ -87,7 +95,7 @@ const PermissionList = () => {
                         Edit
                       </div>
                     </DialogTrigger>
-                    <EditPermission permission={permission} />
+                    <EditRole role={role} />
                   </Dialog>
                 </TableCell>
                 <TableCell>
@@ -110,13 +118,11 @@ const PermissionList = () => {
                         <Button
                           className="bg-green-500 hover:bg-green-400 px-7 text-white lowercase"
                           onClick={() =>
-                            dispatch<any>(
-                              handleDeletePermission({ id: permission.ID })
-                            )
+                            dispatch<any>(handleDeleteRole({ id: role.ID }))
                           }
                         >
                           Confirm
-                          {isPermissionDeleteLoading && (
+                          {isRoleDeleteLoading && (
                             <FaSpinner className="animate-spin ml-2 text-white text-xs" />
                           )}
                         </Button>
@@ -133,4 +139,4 @@ const PermissionList = () => {
   );
 };
 
-export default PermissionList;
+export default RoleList;

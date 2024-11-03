@@ -1,0 +1,22 @@
+{
+    "adminDevice":{
+        "name":"Name",
+        "serial_number":"serial Number",
+        "ip_address":"IP Address",
+        "port":"Port",
+        "Location":"Location",
+        "namerequired":"Name required",
+        "serialnumberrequired":"Serial Number required",
+        "ipaddressrequired":"IP Address required",
+        "portrequired":"Port required",
+        "locationrequired":"Location required",  
+        "createdevice":"Create Device",
+        "enterdevicename":"Enter Device Name",
+        "enterdeviceserialnumber":"Enter Device Serial Number",
+        "enterdeviceipaddress":"Enter Device IP Address",
+        "enterdeviceport":"Enter Device Port",
+        "enterdevicelocation":"Enter Device Location"
+
+    
+    }
+}

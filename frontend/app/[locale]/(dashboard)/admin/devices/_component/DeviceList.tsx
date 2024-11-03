@@ -1,8 +1,8 @@
 import { RootState } from "@/store";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Skeleton } from "../ui/skeleton";
-import { handleFetchUser } from "@/store/slices/adminSlice/user";
+import { Skeleton } from "@/components/ui/skeleton";
+import { handleFetchDevice } from "@/store/slices/adminSlice/device";
 import {
   Pagination,
   PaginationContent,
@@ -21,12 +21,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { usePathname, useRouter } from "next/navigation";
-import { Dialog, DialogTrigger } from "../ui/dialog";
-import EditUser from "./EditUser";
 
-const UserList = ({
-  role_id,
+const DeviceList = ({
   limit,
   name,
   page,
@@ -34,27 +30,25 @@ const UserList = ({
 }: {
   page: number;
   setPage: (prev: number) => void;
-  role_id: number;
   limit: number;
   name?: string;
 }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
-  const locale = usePathname().split("/")[1];
   const {
-    users,
-    isUserError,
-    isUserLoading,
+    devices,
+    isDeviceError,
+    isDeviceLoading,
     currentPage,
     totalPages,
-    totalUsers,
-  } = useSelector((state: RootState) => state.user);
+    totalDevices,
+  } = useSelector((state: RootState) => state.device);
 
-  console.log("USER NAME TO BE FETCHED", name);
+  console.log("DEVICE NAME TO BE FETCHED", name);
+  console.log(devices);
 
   useEffect(() => {
-    dispatch<any>(handleFetchUser({ role_id, page, limit, name: name ?? "" }));
-  }, [dispatch, role_id, page, limit, name]);
+    dispatch<any>(handleFetchDevice({ page, limit, name: name ?? "" }));
+  }, [dispatch, page, limit, name]);
 
   const renderPageNumbers = () => {
     let pagesToDisplay = [];
@@ -99,7 +93,7 @@ const UserList = ({
     return pagesToDisplay;
   };
 
-  if (isUserLoading) {
+  if (isDeviceLoading) {
     return (
       <div className="h-[calc(100vh-165px)] flex flex-col items-center justify-between w-full">
         <div className="flex flex-col items-center w-full gap-y-8">
@@ -114,8 +108,10 @@ const UserList = ({
         </div>
       </div>
     );
-  } else if (users.length === 0) {
-    return <div className="text-[#3A5DD9]">There is no user for this role</div>;
+  } else if (devices.length === 0) {
+    return (
+      <div className="text-[#3A5DD9]">There is no Device for this role</div>
+    );
   } else {
     return (
       <div className="relative rounded-xl p-0 h-[calc(100vh-165px)] flex flex-col gap-y-2">
@@ -123,47 +119,27 @@ const UserList = ({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>First Name</TableHead>
-                <TableHead>Father Name</TableHead>
-                <TableHead>Grand Father Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead className="text-center">Detail</TableHead>
-                <TableHead className="text-center">Edit</TableHead>
+                <TableHead>Device Name</TableHead>
+                <TableHead>Device Serial Number</TableHead>
+                <TableHead>IP Address</TableHead>
+                <TableHead>Port</TableHead>
+                <TableHead>Location</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user, index) => (
+              {devices.map((device, index) => (
                 <TableRow
-                  key={user.ID}
+                  key={device.ID}
                   className={cn(
                     index % 2 === 0 ? "" : "bg-secondary",
                     "hover:bg-primary-foreground"
                   )}
                 >
-                  <TableCell>{user.first_name}</TableCell>
-                  <TableCell>{user.father_name}</TableCell>
-                  <TableCell>{user.grand_father_name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell
-                    onClick={() => {
-                      router.push(`/${locale}/admin/users/${user.ID}`);
-                    }}
-                  >
-                    <div className="bg-[#86EFAC] hover:bg-[#7ee0a2] flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
-                      Details
-                    </div>
-                  </TableCell>
-
-                  <TableCell>
-                    <Dialog>
-                      <DialogTrigger asChild className="w-full">
-                        <div className="bg-[#FEF08A] hover:bg-[#efe382] flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
-                          Edit
-                        </div>
-                      </DialogTrigger>
-                      <EditUser user={user} />
-                    </Dialog>
-                  </TableCell>
+                  <TableCell>{device.name}</TableCell>
+                  <TableCell>{device.serial_number}</TableCell>
+                  <TableCell>{device.ip_address}</TableCell>
+                  <TableCell>{device.port}</TableCell>
+                  <TableCell>{device.Location}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -207,4 +183,4 @@ const UserList = ({
   }
 };
 
-export default UserList;
+export default DeviceList;
