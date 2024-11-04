@@ -21,7 +21,7 @@ import {
 } from "@/store/slices/adminSlice/role";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { createRoleSchema } from "@/Validators/admin/create-role-validators";
+import { createRoleSchema } from "@/validators/admin/create-role-validators";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslations } from "next-intl";
-import { createLoginSchema } from "@/Validators/common/login-validator";
+import { createLoginSchema } from "@/validators/common/login-validator";
 import { FaEye, FaSpinner } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
