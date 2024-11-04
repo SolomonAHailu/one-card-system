@@ -8,7 +8,7 @@ import {
   UserRecieved,
 } from "@/store/slices/adminSlice/user";
 import { useForm } from "react-hook-form";
-import { createUserSchema } from "@/validators/admin/create-user-validator";
+import { createUserSchema } from "@/Validators/admin/create-user-validator";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

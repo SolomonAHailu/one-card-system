@@ -21,9 +21,9 @@ import {
 } from "@/store/slices/adminSlice/role";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { createRoleSchema } from "@/validators/admin/create-role-validators";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { createRoleSchema } from "@/validators/admin/create-role-validators";
 
 const EditRole = ({ role }: { role: RoleRecieved }) => {
   const t = useTranslations("admin");
