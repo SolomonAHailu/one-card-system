@@ -10,7 +10,7 @@ export interface DataSendToCreateUserPermission {
 }
 
 export interface DataReceivedWhileCreateUserPermission {
-  message: string;
+  data: ReceivedWhileFetchUserPermission[];
 }
 
 export interface ReceivedWhileFetchUserPermission {
@@ -28,7 +28,6 @@ export interface DataReceivedWhileFetchUserPermission {
 }
 
 interface UserPermissionState {
-  userPermission: DataReceivedWhileCreateUserPermission | null;
   userPermissions: ReceivedWhileFetchUserPermission[] | [];
   isUserPermissionLoading: boolean;
   isUserPermissionCreateLoading: boolean;
@@ -36,7 +35,6 @@ interface UserPermissionState {
 }
 
 const initialState: UserPermissionState = {
-  userPermission: null,
   userPermissions: [],
   isUserPermissionLoading: false,
   isUserPermissionCreateLoading: false,
@@ -49,7 +47,7 @@ const userPermissionSlice = createSlice({
   initialState,
   reducers: {
     resetUserPermissionState: (state) => {
-      state.userPermission = null;
+      state.userPermissions = [];
       state.isUserPermissionCreateLoading = false;
       state.isUserPermissionError = null;
     },
@@ -61,7 +59,7 @@ const userPermissionSlice = createSlice({
         state.isUserPermissionError = null;
       })
       .addCase(handleCreateUserPermission.fulfilled, (state, action) => {
-        state.userPermission = action.payload;
+        state.userPermissions = action.payload.data;
         state.isUserPermissionCreateLoading = false;
         state.isUserPermissionError = null;
       })
@@ -75,19 +73,34 @@ const userPermissionSlice = createSlice({
         state.isUserPermissionError = null;
       })
       .addCase(handleFetchUserPermission.fulfilled, (state, action) => {
+        console.log("USER PERMISSIONS", action.payload.data);
         state.userPermissions = action.payload.data;
         state.isUserPermissionLoading = false;
         state.isUserPermissionError = null;
+        console.log("USER PERMISSIONS FOUDN ORIGINAL", state.userPermissions);
       })
       .addCase(handleFetchUserPermission.rejected, (state, action) => {
         state.isUserPermissionLoading = false;
+        state.isUserPermissionError =
+          (action.payload as string) || "An error occurred";
+      })
+      .addCase(handleUpdateUserPermission.pending, (state) => {
+        state.isUserPermissionCreateLoading = true;
+        state.isUserPermissionError = null;
+      })
+      .addCase(handleUpdateUserPermission.fulfilled, (state, action) => {
+        state.userPermissions = action.payload.data;
+        state.isUserPermissionCreateLoading = false;
+        state.isUserPermissionError = null;
+      })
+      .addCase(handleUpdateUserPermission.rejected, (state, action) => {
+        state.isUserPermissionCreateLoading = false;
         state.isUserPermissionError =
           (action.payload as string) || "An error occurred";
       });
   },
 });
 
-// Define the async thunk
 export const handleCreateUserPermission = createAsyncThunk<
   DataReceivedWhileCreateUserPermission,
   DataSendToCreateUserPermission
@@ -145,6 +158,7 @@ export const handleFetchUserPermission = createAsyncThunk<
   try {
     const response = await axios(config);
     if (response.data) {
+      console.log("RESPONSE FOUND TO FETCH USER PERMISSION", response);
       return response.data;
     } else {
       toast.error("Fetch user permission failed");
@@ -157,6 +171,45 @@ export const handleFetchUserPermission = createAsyncThunk<
     );
   }
 });
+
+// Update user permission
+export const handleUpdateUserPermission = createAsyncThunk<
+  DataReceivedWhileCreateUserPermission,
+  DataSendToCreateUserPermission
+>(
+  "userPermission/updateUserPermission",
+  async (data, { rejectWithValue, dispatch }) => {
+    const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/updateuserpermission`;
+
+    const config: AxiosRequestConfig = {
+      url,
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data,
+      withCredentials: true,
+    };
+
+    try {
+      const response = await axios(config);
+      if (response.data) {
+        console.log("RESPONSE FOUND TO CREATE USER", response);
+        dispatch<any>(increareCurrentPage());
+        toast.success("User permission updated successfully");
+        return response.data;
+      } else {
+        toast.error("Update users failed");
+        throw new Error("Update users failed");
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Update users failed");
+      return rejectWithValue(
+        error.response?.data?.error || "Update users failed"
+      );
+    }
+  }
+);
 
 export const { resetUserPermissionState } = userPermissionSlice.actions;
 export default userPermissionSlice.reducer;

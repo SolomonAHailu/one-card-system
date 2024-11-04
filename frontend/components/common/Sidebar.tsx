@@ -5,11 +5,12 @@ import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
-const Sidebar = ({ open }: { open: boolean }) => {
+const Sidebar = () => {
   const router = useRouter();
   const currentPath = usePathname().split("/")[3];
   const locale = usePathname().split("/")[1];
   const { user } = useSelector((state: RootState) => state.auth);
+  const { isOpen } = useSelector((state: RootState) => state.sidebar);
   const userRole = user?.role.role_name.toLowerCase().trim();
   const t = useTranslations("adminsidebar");
   // const adminTranslations = useTranslations("adminsidebar");
@@ -30,7 +31,7 @@ const Sidebar = ({ open }: { open: boolean }) => {
   return (
     <div
       className={
-        open
+        isOpen
           ? "min-w-72 bg-secondary/60 rounded-tl-2xl rounded-bl-2xl py-8 px-5 flex flex-col gap-y-4"
           : "hidden"
       }
