@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { handleFetchPermissionForSpecificRole } from "@/store/slices/adminSlice/rolepermission";
 import { RootState } from "@/store";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,35 +10,19 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
-import Link from "next/link";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { FaSpinner } from "react-icons/fa";
-import { DialogClose } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  DataSendToCreateUserPermission,
-  handleCreateUserPermission,
-  handleFetchUserPermission,
-  handleUpdateUserPermission,
-} from "@/store/slices/adminSlice/userpermission";
-import { increareCurrentPage } from "@/store/slices/adminSlice/user";
-import UpdateUserFooter from "./UpdateUserFooter";
+import { UserRecieved } from "@/store/slices/adminSlice/user";
+import { handleFetchUserPermission } from "@/store/slices/adminSlice/userpermission";
 
-const AdditionalInformationForm = () => {
+const AdditionalInformationForm = ({ user }: { user: UserRecieved }) => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.user);
   const { rolePermissions, isRolePermissionLoading, isRolePermissionError } =
     useSelector((state: RootState) => state.rolePermission);
-  const {
-    userPermissions,
-    isUserPermissionCreateLoading,
-    isUserPermissionError,
-  } = useSelector((state: RootState) => state.userPermission);
-  const [userTryToAssign, setUserTryToAssign] = useState<boolean>(false);
+  const { userPermissions } = useSelector(
+    (state: RootState) => state.userPermission
+  );
 
   const allowedUserPermissions = rolePermissions.map((permission) => ({
     id: permission.permission_id,
@@ -60,46 +44,17 @@ const AdditionalInformationForm = () => {
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
     defaultValues: {
       selectedPermissions: userPermissions.map((perm) => perm.permission_id),
     },
   });
-
-  const { reset } = form;
-
-  useEffect(() => {
-    // Reset form values when userPermissions change
-    reset({
-      selectedPermissions: userPermissions.map((perm) => perm.permission_id),
-    });
-  }, [userPermissions, reset]);
-
-  const onSubmit = async (data: { selectedPermissions?: number[] }) => {
-    if (data.selectedPermissions?.length === 0) {
-      if (!userTryToAssign) {
-        setUserTryToAssign(true);
-        return;
-      }
-    }
-    if (user?.ID !== undefined) {
-      dispatch<any>(
-        handleUpdateUserPermission({
-          user_id: user.ID,
-          permission_ids: data.selectedPermissions ?? [],
-        })
-      );
-    } else {
-      toast.error("User ID is missing");
-    }
-  };
 
   return (
     <div className="flex flex-col gap-y-4">
       <p>
         {allowedUserPermissions.length === 0
           ? "No permission found for this role"
-          : "Assign permission to the user"}
+          : "Assigned permissions for the user"}
       </p>
       {isRolePermissionError && (
         <p className="text-red-500">{isRolePermissionError}</p>
@@ -112,7 +67,7 @@ const AdditionalInformationForm = () => {
         </div>
       ) : (
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form className="space-y-6">
             {allowedUserPermissions.map((permission) => (
               <FormField
                 key={permission.id}
@@ -123,17 +78,8 @@ const AdditionalInformationForm = () => {
                     <FormControl>
                       <Checkbox
                         checked={(field.value ?? []).includes(permission.id)}
-                        onCheckedChange={(checked) => {
-                          field.onChange(
-                            checked
-                              ? [...(field.value ?? []), permission.id]
-                              : (field.value ?? []).filter(
-                                  (id) => id !== permission.id
-                                )
-                          );
-                          setUserTryToAssign(false);
-                        }}
-                        disabled={isUserPermissionCreateLoading}
+                        onCheckedChange={() => {}}
+                        disabled // Disable checkbox to make it read-only
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
@@ -144,24 +90,10 @@ const AdditionalInformationForm = () => {
                 )}
               />
             ))}
-            <Button
-              type="submit"
-              className="bg-[#3A5DD9] hover:bg-[#2a4bc6] w-full px-4 py-7 rounded-md text-white text-sm"
-              disabled={isUserPermissionCreateLoading}
-            >
-              {isUserPermissionCreateLoading ? (
-                <>
-                  Update
-                  <FaSpinner className="animate-spin ml-2 text-white" />
-                </>
-              ) : (
-                "Assign"
-              )}
-            </Button>
+            {/* Removing the submit button to make the form view-only */}
           </form>
         </Form>
       )}
-      <UpdateUserFooter />
     </div>
   );
 };

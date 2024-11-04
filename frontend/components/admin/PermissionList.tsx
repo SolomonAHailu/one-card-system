@@ -23,7 +23,12 @@ import {
 } from "@/store/slices/adminSlice/role";
 import { FaSpinner } from "react-icons/fa";
 import EditPermission from "./EditPermission";
-import { handleDeletePermission } from "@/store/slices/adminSlice/permission";
+import {
+  handleDeletePermission,
+  resetPermissionUpdateSuccess,
+} from "@/store/slices/adminSlice/permission";
+import { EditIcon } from "lucide-react";
+import { MdDelete } from "react-icons/md";
 
 const PermissionList = () => {
   const dispatch = useDispatch();
@@ -48,7 +53,6 @@ const PermissionList = () => {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead className="text-center">Details</TableHead>
               <TableHead className="text-center">Edit</TableHead>
               <TableHead className="text-center">Delete</TableHead>
             </TableRow>
@@ -68,47 +72,40 @@ const PermissionList = () => {
                     ? `${permission.description.slice(0, 70)}...`
                     : `${permission.description}`}
                 </TableCell>
-                <TableCell
-                  onClick={() =>
-                    router.push(`/${locale}/admin/permissions/${permission.ID}`)
-                  }
-                >
-                  <div className="bg-[#86EFAC] hover:bg-[#7ee0a2 flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
-                    Details
-                  </div>
-                </TableCell>
                 <TableCell>
                   <Dialog>
                     <DialogTrigger
-                      className="w-full"
-                      onClick={() => dispatch<any>(resetRoleUpdateSuccess())}
+                      asChild
+                      className="w-full cursor-pointer text-center"
+                      onClick={() => dispatch(resetPermissionUpdateSuccess())}
                     >
-                      <div className="bg-[#FEF08A] hover:bg-[#efe382] flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
-                        Edit
-                      </div>
+                      <EditIcon size={20} className="text-yellow-600" />
                     </DialogTrigger>
                     <EditPermission permission={permission} />
                   </Dialog>
                 </TableCell>
                 <TableCell>
                   <Dialog>
-                    <DialogTrigger className="w-full">
-                      <div className="bg-[#FCA5A5] hover:bg-[#ed9b9b] flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
-                        Delete
-                      </div>
+                    <DialogTrigger
+                      asChild
+                      className="w-full cursor-pointer text-center"
+                    >
+                      <MdDelete size={20} className="text-red-600" />
                     </DialogTrigger>
                     <DialogContent className="max-w-sm text-center flex flex-col gap-y-8">
                       <DialogHeader className="mt-4 mx-2">
                         <p className="text-center">
-                          Are you sure you want to delete this role?
+                          Are you sure you want to delete this permission
+                          <span className="text-[#3A5DD9]">{`${permission.permissions_name} `}</span>
+                          ?
                         </p>
                       </DialogHeader>
                       <div className="flex items-center justify-evenly">
-                        <DialogClose className="bg-red-500 hover:bg-red-400 px-7 py-2 rounded-sm text-white lowercase">
+                        <DialogClose className="bg-red-700 hover:bg-red-800 px-7 py-2 rounded-sm text-white lowercase">
                           Cancel
                         </DialogClose>
                         <Button
-                          className="bg-green-500 hover:bg-green-400 px-7 text-white lowercase"
+                          className="bg-green-700 hover:bg-green-800 px-7 text-white lowercase"
                           onClick={() =>
                             dispatch<any>(
                               handleDeletePermission({ id: permission.ID })

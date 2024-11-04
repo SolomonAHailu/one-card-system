@@ -21,7 +21,9 @@ import {
   resetRoleDeleteSuccess,
   resetRoleUpdateSuccess,
 } from "@/store/slices/adminSlice/role";
-import { FaSpinner } from "react-icons/fa";
+import { FaListAlt, FaSpinner } from "react-icons/fa";
+import { EditIcon } from "lucide-react";
+import { MdDelete } from "react-icons/md";
 
 const RoleList = () => {
   const dispatch = useDispatch();
@@ -70,48 +72,49 @@ const RoleList = () => {
                     ? `${role.description.slice(0, 70)}...`
                     : `${role.description}`}
                 </TableCell>
-                <TableCell className="">
-                  <div
-                    className="bg-[#86EFAC] hover:bg-[#7ee0a2 flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer"
+                <TableCell className="flex justify-center">
+                  <FaListAlt
+                    size={20}
+                    className="text-green-600 cursor-pointer"
                     onClick={() =>
                       router.push(`/${locale}/admin/roles/${role.ID}`)
                     }
-                  >
-                    Details
-                  </div>
+                  />
                 </TableCell>
                 <TableCell>
                   <Dialog>
                     <DialogTrigger
-                      className="w-full"
+                      asChild
+                      className="w-full cursor-pointer text-center"
                       onClick={() => dispatch<any>(resetRoleUpdateSuccess())}
                     >
-                      <div className="bg-[#FEF08A] hover:bg-[#efe382] flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
-                        Edit
-                      </div>
+                      <EditIcon size={20} className="text-yellow-600" />
                     </DialogTrigger>
                     <EditRole role={role} />
                   </Dialog>
                 </TableCell>
                 <TableCell>
                   <Dialog>
-                    <DialogTrigger className="w-full">
-                      <div className="bg-[#FCA5A5] hover:bg-[#ed9b9b] flex items-center justify-center rounded-xl py-1 px-2 text-xs text-black cursor-pointer">
-                        Delete
-                      </div>
+                    <DialogTrigger
+                      asChild
+                      className="w-full cursor-pointer text-center"
+                    >
+                      <MdDelete size={20} className="text-red-600" />
                     </DialogTrigger>
                     <DialogContent className="max-w-sm text-center flex flex-col gap-y-8">
                       <DialogHeader className="mt-4 mx-2">
                         <p className="text-center">
-                          Are you sure you want to delete this role?
+                          Are you sure you want to delete this role{" "}
+                          <span className="text-[#3A5DD9]">{`${role.role_name} `}</span>
+                          ?
                         </p>
                       </DialogHeader>
                       <div className="flex items-center justify-evenly">
-                        <DialogClose className="bg-red-500 hover:bg-red-400 px-7 py-2 rounded-sm text-white lowercase">
+                        <DialogClose className="bg-red-700 hover:bg-red-800 px-7 py-2 rounded-sm text-white lowercase">
                           Cancel
                         </DialogClose>
                         <Button
-                          className="bg-green-500 hover:bg-green-400 px-7 text-white lowercase"
+                          className="bg-green-700 hover:bg-green-800 px-7 text-white lowercase"
                           onClick={() =>
                             dispatch<any>(handleDeleteRole({ id: role.ID }))
                           }

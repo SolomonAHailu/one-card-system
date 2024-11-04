@@ -142,6 +142,21 @@ const userSlice = createSlice({
       .addCase(handleUpdateUser.rejected, (state, action) => {
         state.isUserCreateLoading = false;
         state.isUserCreateError = action.error.message || "Update user failed";
+      })
+      .addCase(handleDeleteUser.pending, (state, action) => {
+        state.isUserCreateLoading = true;
+        state.isUserError = null;
+      })
+      .addCase(handleDeleteUser.fulfilled, (state, action) => {
+        state.users = state.users.filter(
+          (user) => user.ID !== action.payload.data.ID
+        );
+        state.isUserCreateLoading = false;
+        state.isUserError = null;
+      })
+      .addCase(handleDeleteUser.rejected, (state, action) => {
+        state.isUserCreateLoading = false;
+        state.isUserError = null;
       });
   },
 });
@@ -238,6 +253,38 @@ export const handleUpdateUser = createAsyncThunk<
   } catch (error: any) {
     toast.error(error.response?.data?.error || "Update user failed");
     throw new Error(error.response?.data?.error || "Update user failed");
+  }
+});
+
+export const handleDeleteUser = createAsyncThunk<
+  DataRecievedWhileCreateUser,
+  { id: number }
+>("user/deleteUser", async (data) => {
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/user/${data.id}`;
+
+  const config: AxiosRequestConfig = {
+    url,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: data,
+    withCredentials: true,
+  };
+
+  try {
+    const response = await axios(config);
+    if (response.data) {
+      toast.success("User deleted successfully");
+      console.log("RESPONSE FOUND TO DELETE USER", response);
+      return response.data;
+    } else {
+      toast.error("Delete user failed");
+      throw new Error("Delete user failed");
+    }
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Delete user failed");
+    throw new Error(error.response?.data?.error || "Delete user failed");
   }
 });
 
