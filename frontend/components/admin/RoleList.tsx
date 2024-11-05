@@ -24,8 +24,10 @@ import {
 import { FaListAlt, FaSpinner } from "react-icons/fa";
 import { EditIcon } from "lucide-react";
 import { MdDelete } from "react-icons/md";
+import { useTranslations } from "next-intl";
 
 const RoleList = () => {
+  const t = useTranslations("roles");
   const dispatch = useDispatch();
   const locale = usePathname().split("/")[1];
   const {
@@ -45,16 +47,16 @@ const RoleList = () => {
           ))}
         </div>
       ) : roles.length === 0 ? (
-        <p>No role found</p>
+        <p>{"norolefound"}</p>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-center">Details</TableHead>
-              <TableHead className="text-center">Edit</TableHead>
-              <TableHead className="text-center">Delete</TableHead>
+              <TableHead>{t("rolename")}</TableHead>
+              <TableHead>{t("roledescription")}</TableHead>
+              <TableHead className="text-center">{t("details")}</TableHead>
+              <TableHead className="text-center">{t("edit")}</TableHead>
+              <TableHead className="text-center">{t("delete")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -104,14 +106,14 @@ const RoleList = () => {
                     <DialogContent className="max-w-sm text-center flex flex-col gap-y-8">
                       <DialogHeader className="mt-4 mx-2">
                         <p className="text-center">
-                          Are you sure you want to delete this role{" "}
-                          <span className="text-[#3A5DD9]">{`${role.role_name} `}</span>
+                          {t("suretodelete")}
+                          <span className="text-[#3A5DD9] italic underline">{` ${role.role_name} `}</span>
                           ?
                         </p>
                       </DialogHeader>
                       <div className="flex items-center justify-evenly">
                         <DialogClose className="bg-red-700 hover:bg-red-800 px-7 py-2 rounded-sm text-white lowercase">
-                          Cancel
+                          {t("cancel")}
                         </DialogClose>
                         <Button
                           className="bg-green-700 hover:bg-green-800 px-7 text-white lowercase"
@@ -119,7 +121,7 @@ const RoleList = () => {
                             dispatch<any>(handleDeleteRole({ id: role.ID }))
                           }
                         >
-                          Confirm
+                          {t("confirm")}
                           {isRoleDeleteLoading && (
                             <FaSpinner className="animate-spin ml-2 text-white text-xs" />
                           )}

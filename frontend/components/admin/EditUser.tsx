@@ -13,8 +13,10 @@ import UpdateBasicInfo from "./edituser/UpdateBasicInfo";
 import UpdateAdditionalInfo from "./edituser/UpdateAdditionalInfo";
 import UpdateUserSuccess from "./edituser/UpdateUserSuccess";
 import { UserRecieved } from "@/store/slices/adminSlice/user";
+import { useTranslations } from "next-intl";
 
 const EditUser = ({ user }: { user: UserRecieved }) => {
+  const t = useTranslations("adminusers");
   const { currentPageUserCreate } = useSelector(
     (state: RootState) => state.user
   );
@@ -23,15 +25,15 @@ const EditUser = ({ user }: { user: UserRecieved }) => {
       <DialogHeader>
         <DialogTitle>
           {currentPageUserCreate == 1
-            ? "Update user"
+            ? t("createuser")
             : currentPageUserCreate == 2
-            ? "Update permission"
-            : "Get user password"}
+            ? t("assignpermission")
+            : t("getpassword")}
         </DialogTitle>
         <DialogDescription>
           {currentPageUserCreate === 3
-            ? "Please take care of the password"
-            : " Be carefull when you fill the information"}
+            ? t("takecareofpassword")
+            : t("becarefull")}
         </DialogDescription>
       </DialogHeader>
       {currentPageUserCreate === 1 ? (

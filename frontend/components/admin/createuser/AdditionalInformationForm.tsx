@@ -25,8 +25,10 @@ import {
   handleCreateUserPermission,
 } from "@/store/slices/adminSlice/userpermission";
 import { increareCurrentPage } from "@/store/slices/adminSlice/user";
+import { useTranslations } from "next-intl";
 
 const AdditionalInformationForm = () => {
+  const t = useTranslations("adminusers");
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
   const { rolePermissions, isRolePermissionLoading, isRolePermissionError } =
@@ -36,7 +38,6 @@ const AdditionalInformationForm = () => {
     isUserPermissionCreateLoading,
     isUserPermissionError,
   } = useSelector((state: RootState) => state.userPermission);
-  const [userTryToAssign, setUserTryToAssign] = useState<boolean>(false);
 
   const allowedUserPermissions = rolePermissions.map((permission) => ({
     id: permission.permission_id,
@@ -64,16 +65,7 @@ const AdditionalInformationForm = () => {
   });
 
   const onSubmit = async (data: { selectedPermissions?: number[] }) => {
-    console.log("DATA TO CREATE USER PERMISSION", data);
-    if (data.selectedPermissions?.length === 0) {
-      console.log("REACH HERE WHILE NOT ASSIGNING PERMISSION");
-      if (!userTryToAssign) {
-        setUserTryToAssign(true);
-        return;
-      }
-    }
     if (user?.ID !== undefined) {
-      console.log("REACH HERE WHILE ASSIGNING PERMISSION");
       dispatch<any>(
         handleCreateUserPermission({
           user_id: user.ID,
@@ -81,7 +73,7 @@ const AdditionalInformationForm = () => {
         })
       );
     } else {
-      toast.error("User ID is Selected");
+      toast.error("User id is not Selected");
     }
   };
 
@@ -89,8 +81,8 @@ const AdditionalInformationForm = () => {
     <div className="flex flex-col gap-y-4">
       <p>
         {allowedUserPermissions.length === 0
-          ? "No permission found for this role"
-          : "Assign permission to the user"}
+          ? t("nopermissionforrole")
+          : t("assignpermissiontouser")}
       </p>
       {isRolePermissionError && (
         <p className="text-red-500">{isRolePermissionError}</p>
@@ -124,7 +116,6 @@ const AdditionalInformationForm = () => {
                                   (id) => id !== permission.id
                                 )
                           );
-                          setUserTryToAssign(false);
                         }}
                         disabled={isUserPermissionCreateLoading}
                       />
@@ -143,15 +134,7 @@ const AdditionalInformationForm = () => {
                 className="bg-green-500 hover:bg-green-600 w-full px-4 py-7 rounded-md text-white text-sm"
                 onClick={() => dispatch<any>(increareCurrentPage())}
               >
-                Get password
-              </Button>
-            ) : userPermissions || userTryToAssign ? (
-              <Button
-                type="button"
-                className="bg-green-500 hover:bg-green-600 w-full px-4 py-7 rounded-md text-white text-sm"
-                onClick={() => dispatch<any>(increareCurrentPage())}
-              >
-                Get Password
+                {t("getpassword")}
               </Button>
             ) : (
               <Button
@@ -159,7 +142,7 @@ const AdditionalInformationForm = () => {
                 className="bg-[#3A5DD9] hover:bg-[#2a4bc6] w-full px-4 py-7 rounded-md text-white text-sm"
                 disabled={isUserPermissionCreateLoading}
               >
-                Assign
+                {t("assign")}
                 {isUserPermissionCreateLoading && (
                   <FaSpinner className="animate-spin ml-2 text-white" />
                 )}

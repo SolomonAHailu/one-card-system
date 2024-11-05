@@ -38,6 +38,7 @@ import {
   DialogHeader,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
+import { useTranslations } from "next-intl";
 
 const UserList = ({
   role_id,
@@ -52,6 +53,7 @@ const UserList = ({
   limit: number;
   name?: string;
 }) => {
+  const t = useTranslations("adminusers");
   const dispatch = useDispatch();
   const router = useRouter();
   const locale = usePathname().split("/")[1];
@@ -130,7 +132,7 @@ const UserList = ({
       </div>
     );
   } else if (users.length === 0) {
-    return <div className="text-[#3A5DD9]">There is no user for this role</div>;
+    return <div className="text-[#3A5DD9]">{t("nouser")}</div>;
   } else {
     return (
       <div className="relative rounded-xl p-0 h-[calc(100vh-165px)] flex flex-col gap-y-2">
@@ -138,13 +140,13 @@ const UserList = ({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>First Name</TableHead>
-                <TableHead>Father Name</TableHead>
-                <TableHead>Grand Father Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead className="text-center">Detail</TableHead>
-                <TableHead className="text-center">Edit</TableHead>
-                <TableHead className="text-center">Delete</TableHead>
+                <TableHead>{t("firstname")}</TableHead>
+                <TableHead>{t("fathername")}</TableHead>
+                <TableHead>{t("grandfathername")}</TableHead>
+                <TableHead>{t("email")}</TableHead>
+                <TableHead className="text-center">{t("details")}</TableHead>
+                <TableHead className="text-center">{t("edit")}</TableHead>
+                <TableHead className="text-center">{t("delete")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -194,14 +196,14 @@ const UserList = ({
                       <DialogContent className="max-w-sm text-center flex flex-col gap-y-8">
                         <DialogHeader className="mt-4 mx-2">
                           <p className="text-center">
-                            Are you sure you want to delete this user{" "}
-                            <span className="text-[#3A5DD9]">{`${user.first_name}-${user.father_name} `}</span>
+                            {t("suretodelete")}
+                            <span className="text-[#3A5DD9] italic underline">{` ${user.first_name}-${user.father_name} `}</span>
                             ?
                           </p>
                         </DialogHeader>
                         <div className="flex items-center justify-evenly">
                           <DialogClose className="bg-red-700 hover:bg-red-800 px-7 py-2 rounded-sm text-white lowercase">
-                            Cancel
+                            {t("cancel")}
                           </DialogClose>
                           <Button
                             className="bg-green-700 hover:bg-green-800 px-7 text-white lowercase"
@@ -209,7 +211,7 @@ const UserList = ({
                               dispatch<any>(handleDeleteUser({ id: user.ID }))
                             }
                           >
-                            Confirm
+                            {t("confirm")}
                             {isUserCreateLoading && (
                               <FaSpinner className="animate-spin ml-2 text-white text-xs" />
                             )}
