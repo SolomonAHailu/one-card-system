@@ -27,7 +27,7 @@ import { toast } from "sonner";
 import { useEffect } from "react";
 
 const AddRole = () => {
-  const t = useTranslations("admin");
+  const t = useTranslations("roles");
   const dispatch = useDispatch();
   const { isRoleCreateLoading, isRoleError, isRoleCreateSuccess } = useSelector(
     (state: RootState) => state.role
@@ -71,12 +71,12 @@ const AddRole = () => {
                 htmlFor="firstname"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                Role Name
+                {t("rolename")}
               </Label>
               <Input
-                id="firstname"
+                id="rolename"
                 type="text"
-                placeholder="Enter Role Name"
+                placeholder={t("enterrolename")}
                 {...register("role_name")}
                 className={cn(
                   { "focus-visible:ring-red-600": errors.role_name },
@@ -89,15 +89,15 @@ const AddRole = () => {
             </div>
             <div className="flex flex-col gap-y-1 items-start">
               <Label
-                htmlFor="fathername"
+                htmlFor="roledescription"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("fathername")}
+                {t("roledescription")}
               </Label>
               <Input
-                id="fathername"
+                id="roledescription"
                 type="text"
-                placeholder={t("enterfathername")}
+                placeholder={t("enterroledescription")}
                 {...register("description")}
                 className={cn(
                   { "focus-visible:ring-red-600": errors.description },
@@ -115,7 +115,7 @@ const AddRole = () => {
               disabled={isRoleCreateLoading}
               className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
             >
-              <span>Create Role</span>
+              <span>{t("createrole")}</span>
               {isRoleCreateLoading && (
                 <FaSpinner className="animate-spin ml-2 text-white" />
               )}

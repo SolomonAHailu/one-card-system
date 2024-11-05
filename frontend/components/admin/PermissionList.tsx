@@ -29,8 +29,10 @@ import {
 } from "@/store/slices/adminSlice/permission";
 import { EditIcon } from "lucide-react";
 import { MdDelete } from "react-icons/md";
+import { useTranslations } from "next-intl";
 
 const PermissionList = () => {
+  const t = useTranslations("permission");
   const dispatch = useDispatch();
   const router = useRouter();
   const locale = usePathname().split("/")[1];
@@ -46,15 +48,15 @@ const PermissionList = () => {
           ))}
         </div>
       ) : permissions.length === 0 ? (
-        <p>No permission found</p>
+        <p>{t("nopermission")}</p>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-center">Edit</TableHead>
-              <TableHead className="text-center">Delete</TableHead>
+              <TableHead>{t("permissionname")}</TableHead>
+              <TableHead>{t("permissiondescription")}</TableHead>
+              <TableHead className="text-center">{t("edit")}</TableHead>
+              <TableHead className="text-center">{t("delete")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -95,14 +97,14 @@ const PermissionList = () => {
                     <DialogContent className="max-w-sm text-center flex flex-col gap-y-8">
                       <DialogHeader className="mt-4 mx-2">
                         <p className="text-center">
-                          Are you sure you want to delete this permission
-                          <span className="text-[#3A5DD9]">{`${permission.permissions_name} `}</span>
+                          {t("areyousuretodeletepermission")}
+                          <span className="text-[#3A5DD9] italic underline">{`${permission.permissions_name} `}</span>
                           ?
                         </p>
                       </DialogHeader>
                       <div className="flex items-center justify-evenly">
                         <DialogClose className="bg-red-700 hover:bg-red-800 px-7 py-2 rounded-sm text-white lowercase">
-                          Cancel
+                          {t("cancel")}
                         </DialogClose>
                         <Button
                           className="bg-green-700 hover:bg-green-800 px-7 text-white lowercase"
@@ -112,7 +114,7 @@ const PermissionList = () => {
                             )
                           }
                         >
-                          Confirm
+                          {t("confirm")}
                           {isPermissionDeleteLoading && (
                             <FaSpinner className="animate-spin ml-2 text-white text-xs" />
                           )}

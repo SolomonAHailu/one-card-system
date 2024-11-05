@@ -13,8 +13,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 const UpdateUserSuccess = () => {
+  const t = useTranslations("adminusers");
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -35,38 +37,23 @@ const UpdateUserSuccess = () => {
     <div className="flex flex-col gap-y-16">
       <div className="flex flex-col gap-y-3">
         <h2 className="text-xl font-semibold text-center text-green-600">
-          Account Created Successfully!
+          {t("useraccountcreated")}
         </h2>
         <div className="flex flex-col items-center gap-y-2">
           <p className="text-center">
-            Temporary password for user{" "}
-            <span className="text-muted-foreground text-lg font-semibold">{`${user?.first_name.toUpperCase()} - ${user?.father_name.toUpperCase()}`}</span>
+            {t("temporarypassword")}
+            <span className="text-[#3A5DD9] text-lg italic">{` ${user?.first_name.toUpperCase()} - ${user?.father_name.toUpperCase()}`}</span>
           </p>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger
-                asChild
-                className="text-lg font-medium text-green-600 py-3 px-3"
-                onClick={handlePasswordClick}
-              >
-                <Button variant="ghost" className="hover:text-green-700">
-                  {user?.password}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-sm text-[#2a4bc6]">Click to copy</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <p className="text-center mt-2">
-            Please change this password after logging in for security.
-          </p>
+          <span className="text-lg font-medium text-green-600 py-3 px-3 rounded-md">
+            {user?.password}
+          </span>
+          <p className="text-center mt-2">{t("pleasechangepassword")}</p>
         </div>
         <DialogClose
           onClick={handleConfirmClick}
-          className="bg-green-600 hover:bg-green-700 py-4 px-4 rounded mt-2"
+          className="bg-green-600 hover:bg-green-700  py-4 px-4 rounded mt-2"
         >
-          I have saved my password
+          {t("passwordsaved")}
         </DialogClose>
       </div>
       <UpdateUserFooter />

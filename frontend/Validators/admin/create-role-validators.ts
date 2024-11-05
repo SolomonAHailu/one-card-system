@@ -6,9 +6,9 @@ export const createRoleSchema = (t: (key: string) => string) =>
     role_name: yup
       .string()
       .required(t("rolenamerequired"))
-      .min(3, t("rolenameminlength")),
+      .min(3, t("minrolelength")),
     description: yup
       .string()
-      .required(t("discriptionrequired"))
+      .required(t("roledescriptionrequired"))
       .min(20, t("meaningfulldescription")),
   });

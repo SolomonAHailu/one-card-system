@@ -15,8 +15,10 @@ import { z } from "zod";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserRecieved } from "@/store/slices/adminSlice/user";
 import { handleFetchUserPermission } from "@/store/slices/adminSlice/userpermission";
+import { useTranslations } from "next-intl";
 
 const AdditionalInformationForm = ({ user }: { user: UserRecieved }) => {
+  const t = useTranslations("adminusers");
   const dispatch = useDispatch();
   const { rolePermissions, isRolePermissionLoading, isRolePermissionError } =
     useSelector((state: RootState) => state.rolePermission);
@@ -51,11 +53,7 @@ const AdditionalInformationForm = ({ user }: { user: UserRecieved }) => {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <p>
-        {allowedUserPermissions.length === 0
-          ? "No permission found for this role"
-          : "Assigned permissions for the user"}
-      </p>
+      <p>{allowedUserPermissions.length === 0 && t("nopermissionforuser")}</p>
       {isRolePermissionError && (
         <p className="text-red-500">{isRolePermissionError}</p>
       )}
@@ -79,7 +77,7 @@ const AdditionalInformationForm = ({ user }: { user: UserRecieved }) => {
                       <Checkbox
                         checked={(field.value ?? []).includes(permission.id)}
                         onCheckedChange={() => {}}
-                        disabled // Disable checkbox to make it read-only
+                        disabled
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
@@ -90,7 +88,6 @@ const AdditionalInformationForm = ({ user }: { user: UserRecieved }) => {
                 )}
               />
             ))}
-            {/* Removing the submit button to make the form view-only */}
           </form>
         </Form>
       )}

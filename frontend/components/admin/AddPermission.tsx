@@ -29,7 +29,7 @@ import { useEffect } from "react";
 import { createPermissionSchema } from "@/validators/admin/create-permission-validator";
 
 const AddPermissions = () => {
-  const t = useTranslations("admin");
+  const t = useTranslations("permission");
   const dispatch = useDispatch();
   const {
     isPermissionCreateSuccess,
@@ -65,7 +65,7 @@ const AddPermissions = () => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>ADD PERMISSION</DialogTitle>
+          <DialogTitle>{t("addpermission")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="text-center flex flex-col gap-y-4">
@@ -77,12 +77,12 @@ const AddPermissions = () => {
                 htmlFor="firstname"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                Permission Name
+                {t("permissionname")}
               </Label>
               <Input
-                id="firstname"
+                id="permissionname"
                 type="text"
-                placeholder="Enter Role Name"
+                placeholder={t("enterpermissionname")}
                 {...register("permissions_name")}
                 className={cn(
                   { "focus-visible:ring-red-600": errors.permissions_name },
@@ -97,15 +97,15 @@ const AddPermissions = () => {
             </div>
             <div className="flex flex-col gap-y-1 items-start">
               <Label
-                htmlFor="fathername"
+                htmlFor="permissiondescription"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("fathername")}
+                {t("permissiondescription")}
               </Label>
               <Input
-                id="fathername"
+                id="permissiondescription"
                 type="text"
-                placeholder={t("enterfathername")}
+                placeholder={t("enterpermissiondescription")}
                 {...register("description")}
                 className={cn(
                   { "focus-visible:ring-red-600": errors.description },
@@ -123,7 +123,7 @@ const AddPermissions = () => {
               disabled={isPermissionCreateLoading}
               className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
             >
-              <span>Create Permission</span>
+              <span>{t("createpermission")}</span>
               {isPermissionCreateLoading && (
                 <FaSpinner className="animate-spin ml-2 text-white" />
               )}
