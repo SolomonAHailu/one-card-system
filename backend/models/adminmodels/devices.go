@@ -1,6 +1,8 @@
 package adminmodels
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -10,10 +12,13 @@ type Devices struct {
 	Name         string `gorm:"type:varchar(255);not null;" json:"name"`
 	IPAddress    string `gorm:"type:varchar(255);not null;" json:"ip_address"`
 	Port         int    `gorm:"not null;" json:"port"`
-	Location     string `gorm:"type:varchar(255);not null;" json:"Location"`
-	// LocationID   *int   `gorm:"default:null;" json:"location_id"`                    // Nullable foreign key ID
-	// LocationType string `gorm:"type:varchar(50);default:null;" json:"location_type"` // Type of the location (e.g., "Cafeteria", "Library")
+	Location     string `gorm:"type:varchar(255);not null;" json:"location"`
+}
 
-	// // Polymorphic relationship
-	// Location interface{} `gorm:"-" json:"location"` // Interface for the actual location model
+// Validate checks that the Port is within the valid range
+func (d *Devices) Validate() error {
+	if d.Port < 0 || d.Port > 65535 {
+		return errors.New("port must be between 0 and 65535")
+	}
+	return nil
 }
