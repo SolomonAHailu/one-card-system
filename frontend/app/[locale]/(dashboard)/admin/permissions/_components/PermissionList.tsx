@@ -1,5 +1,11 @@
-import { RootState } from "@/store";
-import { useDispatch, useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -9,27 +15,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "../ui/skeleton";
-import { TbListDetails } from "react-icons/tb";
-import { usePathname, useRouter } from "next/navigation";
-import { Dialog, DialogClose, DialogContent, DialogHeader } from "../ui/dialog";
-import { DialogTrigger } from "@radix-ui/react-dialog";
-import EditRole from "./EditRole";
-import { Button } from "../ui/button";
-import {
-  handleDeleteRole,
-  resetRoleDeleteSuccess,
-  resetRoleUpdateSuccess,
-} from "@/store/slices/adminSlice/role";
-import { FaSpinner } from "react-icons/fa";
-import EditPermission from "./EditPermission";
+import { RootState } from "@/store";
 import {
   handleDeletePermission,
   resetPermissionUpdateSuccess,
 } from "@/store/slices/adminSlice/permission";
+import { DialogTrigger } from "@radix-ui/react-dialog";
 import { EditIcon } from "lucide-react";
-import { MdDelete } from "react-icons/md";
 import { useTranslations } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
+import { FaSpinner } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import EditPermission from "./EditPermission";
 
 const PermissionList = () => {
   const t = useTranslations("permission");

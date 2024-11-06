@@ -1,6 +1,6 @@
 "use client";
-import AddRole from "@/components/admin/AddRole";
-import RoleList from "@/components/admin/RoleList";
+import AddRole from "./_components/AddRole";
+import RoleList from "@/app/[locale]/(dashboard)/admin/roles/_components/RoleList";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RootState } from "@/store";
 import { handleFetchRole } from "@/store/slices/adminSlice/role";

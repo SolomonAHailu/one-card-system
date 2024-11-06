@@ -9,13 +9,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "../../../../../../components/ui/skeleton";
 import { TbListDetails } from "react-icons/tb";
 import { usePathname, useRouter } from "next/navigation";
-import { Dialog, DialogClose, DialogContent, DialogHeader } from "../ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+} from "../../../../../../components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import EditRole from "./EditRole";
-import { Button } from "../ui/button";
+import { Button } from "../../../../../../components/ui/button";
 import {
   handleDeleteRole,
   resetRoleDeleteSuccess,

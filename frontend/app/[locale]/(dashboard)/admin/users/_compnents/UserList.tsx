@@ -1,7 +1,9 @@
 import { RootState } from "@/store";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Skeleton } from "../ui/skeleton";
+
+
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   handleDeleteUser,
   handleFetchUser,
@@ -36,8 +38,8 @@ import {
   DialogClose,
   DialogContent,
   DialogHeader,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 
 const UserList = ({

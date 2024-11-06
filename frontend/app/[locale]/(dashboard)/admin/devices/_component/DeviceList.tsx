@@ -1,7 +1,7 @@
 import { RootState } from "@/store";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { handleFetchDevice } from "@/store/slices/adminSlice/device";
 import {
   Pagination,
@@ -44,10 +44,10 @@ const DeviceList = ({
   } = useSelector((state: RootState) => state.device);
 
   console.log("DEVICE NAME TO BE FETCHED", name);
-  console.log(devices)
+  console.log(devices);
 
   useEffect(() => {
-    dispatch<any>(handleFetchDevice({page, limit, name: name ?? "" }));
+    dispatch<any>(handleFetchDevice({ page, limit, name: name ?? "" }));
   }, [dispatch, page, limit, name]);
 
   const renderPageNumbers = () => {
@@ -109,7 +109,9 @@ const DeviceList = ({
       </div>
     );
   } else if (devices.length === 0) {
-    return <div className="text-[#3A5DD9]">There is no Device for this role</div>;
+    return (
+      <div className="text-[#3A5DD9]">There is no Device for this role</div>
+    );
   } else {
     return (
       <div className="relative rounded-xl p-0 h-[calc(100vh-165px)] flex flex-col gap-y-2">

@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 import { RootState } from "@/store";
 import UpdateBasicInfo from "./edituser/UpdateBasicInfo";
 import UpdateAdditionalInfo from "./edituser/UpdateAdditionalInfo";

@@ -1,4 +1,3 @@
-"use client";
 import {
   Dialog,
   DialogContent,
@@ -8,34 +7,31 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { FaSpinner } from "react-icons/fa";
-import { MdAddModerator } from "react-icons/md";
-import { Label } from "../ui/label";
+import { MdDomainAdd } from "react-icons/md";
+import { Label } from "@/components/ui/label";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
-  CreatePermissionDataSend,
+  handleCreateRole,
   resetRoleCreateSuccess,
-  handleCreatePermission,
-} from "@/store/slices/adminSlice/permission";
+  RoleSend,
+} from "@/store/slices/adminSlice/role";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { createRoleSchema } from "@/validators/admin/create-role-validators";
+import { createRoleSchema } from "@/Validators/admin/create-role-validators";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useEffect } from "react";
-import { createPermissionSchema } from "@/validators/admin/create-permission-validator";
 
-const AddPermissions = () => {
-  const t = useTranslations("permission");
+const AddRole = () => {
+  const t = useTranslations("roles");
   const dispatch = useDispatch();
-  const {
-    isPermissionCreateSuccess,
-    isPermissionError,
-    isPermissionCreateLoading,
-  } = useSelector((state: RootState) => state.permission);
+  const { isRoleCreateLoading, isRoleError, isRoleCreateSuccess } = useSelector(
+    (state: RootState) => state.role
+  );
 
   const {
     register,
@@ -44,68 +40,64 @@ const AddPermissions = () => {
     clearErrors,
     reset,
     formState: { errors },
-  } = useForm<CreatePermissionDataSend>({
-    resolver: yupResolver(createPermissionSchema(t)),
+  } = useForm<RoleSend>({
+    resolver: yupResolver(createRoleSchema(t)),
   });
 
   useEffect(() => {
-    if (isPermissionCreateSuccess) {
+    if (isRoleCreateSuccess) {
       dispatch(resetRoleCreateSuccess());
       reset();
     }
-  }, [isPermissionCreateSuccess, reset, dispatch]);
+  }, [isRoleCreateSuccess, reset, dispatch]);
 
-  const onSubmit = (data: CreatePermissionDataSend) => {
-    dispatch<any>(handleCreatePermission(data));
+  const onSubmit = (data: RoleSend) => {
+    dispatch<any>(handleCreateRole(data));
   };
   return (
     <Dialog>
       <DialogTrigger className="h-10 w-10 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer">
-        <MdAddModerator className="text-xl text-white" />
+        <MdDomainAdd className="text-xl text-white" />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("addpermission")}</DialogTitle>
+          <DialogTitle>ADD ROLE</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="text-center flex flex-col gap-y-4">
-            {isPermissionError && (
-              <p className="text-red-500">{isPermissionError}</p>
-            )}
+            {isRoleError && <p className="text-red-500">{isRoleError}</p>}
             <div className="flex flex-col gap-y-1 items-start">
               <Label
                 htmlFor="firstname"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("permissionname")}
+                {t("rolename")}
               </Label>
               <Input
-                id="permissionname"
+                id="rolename"
                 type="text"
-                placeholder={t("enterpermissionname")}
-                {...register("permissions_name")}
+                placeholder={t("enterrolename")}
+                {...register("role_name")}
                 className={cn(
-                  { "focus-visible:ring-red-600": errors.permissions_name },
+                  { "focus-visible:ring-red-600": errors.role_name },
                   "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
                 )}
               />
-              {errors.permissions_name && (
-                <p className="text-red-500 mt-1">
-                  {errors.permissions_name.message}
-                </p>
+              {errors.role_name && (
+                <p className="text-red-500 mt-1">{errors.role_name.message}</p>
               )}
             </div>
             <div className="flex flex-col gap-y-1 items-start">
               <Label
-                htmlFor="permissiondescription"
+                htmlFor="roledescription"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("permissiondescription")}
+                {t("roledescription")}
               </Label>
               <Input
-                id="permissiondescription"
+                id="roledescription"
                 type="text"
-                placeholder={t("enterpermissiondescription")}
+                placeholder={t("enterroledescription")}
                 {...register("description")}
                 className={cn(
                   { "focus-visible:ring-red-600": errors.description },
@@ -120,11 +112,11 @@ const AddPermissions = () => {
             </div>
             <Button
               type="submit"
-              disabled={isPermissionCreateLoading}
+              disabled={isRoleCreateLoading}
               className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
             >
-              <span>{t("createpermission")}</span>
-              {isPermissionCreateLoading && (
+              <span>{t("createrole")}</span>
+              {isRoleCreateLoading && (
                 <FaSpinner className="animate-spin ml-2 text-white" />
               )}
             </Button>
@@ -135,4 +127,4 @@ const AddPermissions = () => {
   );
 };
 
-export default AddPermissions;
+export default AddRole;

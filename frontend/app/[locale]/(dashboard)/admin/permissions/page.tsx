@@ -1,6 +1,6 @@
 "use client";
-import AddPermission from "@/components/admin/AddPermission";
-import PermissionList from "@/components/admin/PermissionList";
+import AddPermission from "./_components/AddPermission";
+import PermissionList from "./_components/PermissionList";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RootState } from "@/store";
 import { handleFetchPermissions } from "@/store/slices/adminSlice/permission";

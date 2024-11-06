@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosRequestConfig } from "axios";
+import { toast } from "sonner";
 
 interface DataSendToFetchDevices {
   page: number;
@@ -10,7 +11,7 @@ export interface DataSendToCreateDevice {
   name: string;
   serial_number: string;
   ip_address: string;
-  port: string;
+  port: number;
   Location: string;
 }
 
@@ -35,7 +36,7 @@ export interface DeviceRecieved {
 export interface DeviceState {
   devices: DeviceRecieved[];
   device: DeviceRecieved | null;
-//   currentPageUserCreate: number;
+  //   currentPageUserCreate: number;
   isDeviceLoading: boolean;
   isDeviceCreateLoading: boolean;
   isDeviceError: string | null;
@@ -48,7 +49,7 @@ export interface DeviceState {
 const initialState: DeviceState = {
   devices: [],
   device: null,
-//   currentPageDeviceCreate: 1,
+  //   currentPageDeviceCreate: 1,
   isDeviceLoading: false,
   isDeviceError: null,
   isDeviceCreateLoading: false,
@@ -63,11 +64,11 @@ const deviceSlice = createSlice({
   initialState,
   reducers: {
     increareCurrentPage: (state) => {
-    //   state.currentPageDeviceCreate += 1;
+      //   state.currentPageDeviceCreate += 1;
     },
     removeCurrentDevice: (state) => {
       state.device = null;
-    //   state.currentPageDeviceCreate = 1;
+      //   state.currentPageDeviceCreate = 1;
     },
   },
   extraReducers: (builder) => {
@@ -104,7 +105,8 @@ const deviceSlice = createSlice({
       })
       .addCase(handleCreateDevice.rejected, (state, action) => {
         state.isDeviceCreateLoading = false;
-        state.isDeviceCreateError = action.error.message || "Create device failed";
+        state.isDeviceCreateError =
+          action.error.message || "Create device failed";
       });
   },
 });
@@ -158,12 +160,16 @@ export const handleCreateDevice = createAsyncThunk<
     const response = await axios(config);
     if (response.data) {
       console.log("RESPONSE FOUND TO CREATE dEVICES", response);
+      toast.success("Device created successfully");
       return response.data;
     } else {
+      toast.error("Create devices failed");
       throw new Error("Create devices failed");
     }
   } catch (error: any) {
-    throw new Error(error.response?.data?.error || "Create users failed");
+    toast.error(error.response?.data?.error || "Create Devices failed");
+
+    throw new Error(error.response?.data?.error || "Create Devices failed");
   }
 });
 

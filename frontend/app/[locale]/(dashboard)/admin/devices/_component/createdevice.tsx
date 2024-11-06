@@ -1,14 +1,13 @@
 import { Label } from "@/components/ui/label";
+// import CreateUserFooter from "./CreateUserFooter";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   DataSendToCreateUser,
   handleCreateUser,
-  handleUpdateUser,
-  UserRecieved,
 } from "@/store/slices/adminSlice/user";
 import { useForm } from "react-hook-form";
-import { createUserSchema } from "@/validators/admin/create-user-validator";
+import { createDeviceSchema } from "@/Validators/admin/create-device-validator";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -28,146 +27,153 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-import UpdateUserFooter from "./UpdateUserFooter";
+import {
+  DataSendToCreateDevice,
+  handleCreateDevice,
+} from "@/store/slices/adminSlice/device";
 
-const UpdateBasicInfo = ({ user }: { user: UserRecieved }) => {
-  const t = useTranslations("adminusers");
+const CreateDevice = () => {
+  const t = useTranslations("adminDevice");
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [roleSelect, setRoleSelect] = useState("");
   const { roles } = useSelector((state: RootState) => state.role);
-  const { isUserCreateLoading, isUserCreateError } = useSelector(
-    (state: RootState) => state.user
+  const { isDeviceCreateLoading, isDeviceCreateError } = useSelector(
+    (state: RootState) => state.device
   );
   const {
     register,
     handleSubmit,
     setValue,
     clearErrors,
+    resetField,
+    reset,
     formState: { errors },
-  } = useForm<DataSendToCreateUser>({
-    resolver: yupResolver(createUserSchema(t)),
-    defaultValues: {
-      first_name: user.first_name,
-      father_name: user.father_name,
-      grand_father_name: user.grand_father_name,
-      email: user.email,
-      role_id: user.role_id,
-    },
+  } = useForm<DataSendToCreateDevice>({
+    resolver: yupResolver(createDeviceSchema(t)),
   });
 
-  useEffect(() => {
-    const currentRole = roles.find(
-      (role) => role.ID === user.role_id
-    )?.role_name;
-    if (currentRole) {
-      setRoleSelect(currentRole);
-      setValue("role_id", user.role_id);
-    }
-  }, [roles, user.role_id, setValue]);
-
-  const onSubmit = (data: DataSendToCreateUser) => {
+  const onSubmit = (data: DataSendToCreateDevice) => {
     console.log("Form Data:", data);
-    const updatedData = { ...data, id: user.ID };
-    dispatch<any>(handleUpdateUser(updatedData));
+    dispatch<any>(handleCreateDevice(data));
+    reset();
   };
 
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="text-center flex flex-col gap-y-4">
-        {isUserCreateError && (
-          <p className="text-red-500">{isUserCreateError}</p>
+        {isDeviceCreateError && (
+          <p className="text-red-500">{isDeviceCreateError}</p>
         )}
         <div className="flex flex-col gap-y-1 items-start">
           <Label
-            htmlFor="firstname"
+            htmlFor="name"
             className="block text-sm font-medium text-muted-foreground"
           >
-            {t("firstname")}
+            {t("name")}
           </Label>
           <Input
-            id="firstname"
+            id="name"
             type="text"
-            placeholder={t("enterfirstname")}
-            {...register("first_name")}
+            placeholder={t("enterdevicename")}
+            {...register("name")}
             className={cn(
-              { "focus-visible:ring-red-600": errors.first_name },
+              { "focus-visible:ring-red-600": errors.name },
               "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
             )}
           />
-          {errors.first_name && (
-            <p className="text-red-500 mt-1">{errors.first_name.message}</p>
+          {errors.name && (
+            <p className="text-red-500 mt-1">{errors.name.message}</p>
           )}
         </div>
         <div className="flex flex-col gap-y-1 items-start">
           <Label
-            htmlFor="fathername"
+            htmlFor="serial_number"
             className="block text-sm font-medium text-muted-foreground"
           >
-            {t("fathername")}
+            {t("serial_number")}
           </Label>
           <Input
-            id="fathername"
+            id="serial_number"
             type="text"
-            placeholder={t("enterfathername")}
-            {...register("father_name")}
+            placeholder={t("enterdeviceserialnumber")}
+            {...register("serial_number")}
             className={cn(
-              { "focus-visible:ring-red-600": errors.father_name },
+              { "focus-visible:ring-red-600": errors.serial_number },
               "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
             )}
           />
-          {errors.father_name && (
-            <p className="text-red-500 mt-1">{errors.father_name.message}</p>
+          {errors.serial_number && (
+            <p className="text-red-500 mt-1">{errors.serial_number.message}</p>
           )}
         </div>
         <div className="flex flex-col gap-y-1 items-start">
           <Label
-            htmlFor="grandfathername"
+            htmlFor="ip_address"
             className="block text-sm font-medium text-muted-foreground"
           >
-            {t("grandfathername")}
+            {t("ip_address")}
           </Label>
           <Input
-            id="grandfathername"
+            id="ip_address"
             type="text"
-            placeholder={t("entergrandfathername")}
-            {...register("grand_father_name")}
+            placeholder={t("enterdeviceipaddress")}
+            {...register("ip_address")}
             className={cn(
-              { "focus-visible:ring-red-600": errors.grand_father_name },
+              { "focus-visible:ring-red-600": errors.ip_address },
               "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
             )}
           />
-          {errors.grand_father_name && (
-            <p className="text-red-500 mt-1">
-              {errors.grand_father_name.message}
-            </p>
+          {errors.ip_address && (
+            <p className="text-red-500 mt-1">{errors.ip_address.message}</p>
           )}
         </div>
         <div className="flex flex-col gap-y-1 items-start">
           <Label
-            htmlFor="email"
+            htmlFor="port"
             className="block text-sm font-medium text-muted-foreground"
           >
-            {t("email")}
+            {t("port")}
           </Label>
           <Input
-            id="email"
+            id="port"
             type="text"
-            placeholder={t("enteremail")}
-            {...register("email")}
+            placeholder={t("enterdeviceport")}
+            {...register("port")}
             className={cn(
-              { "focus-visible:ring-red-600": errors.email },
+              { "focus-visible:ring-red-600": errors.port },
               "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
             )}
           />
-          {errors.email && (
-            <p className="text-red-500 mt-1">{errors.email.message}</p>
+          {errors.port && (
+            <p className="text-red-500 mt-1">{errors.port.message}</p>
           )}
         </div>
         <div className="flex flex-col gap-y-1 items-start">
+          <Label
+            htmlFor="location"
+            className="block text-sm font-medium text-muted-foreground"
+          >
+            {t("Location")}
+          </Label>
+          <Input
+            id="location"
+            type="text"
+            placeholder={t("enterdevicelocation")}
+            {...register("Location")}
+            className={cn(
+              { "focus-visible:ring-red-600": errors.Location },
+              "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
+            )}
+          />
+          {errors.Location && (
+            <p className="text-red-500 mt-1">{errors.Location.message}</p>
+          )}
+        </div>
+        {/* <div className="flex flex-col gap-y-1 items-start">
           <Label
             htmlFor="role"
             className="block text-sm font-medium text-muted-foreground"
@@ -182,7 +188,13 @@ const UpdateBasicInfo = ({ user }: { user: UserRecieved }) => {
                 aria-expanded={open}
                 className="w-full justify-between h-12"
               >
-                {roleSelect ? t(roleSelect.toLowerCase()) : t("selectrole")}
+                {roleSelect
+                  ? t(
+                      roles
+                        .find((role) => role.role_name === roleSelect)
+                        ?.role_name.toLowerCase() ?? t("selectrole")
+                    )
+                  : t("selectrole")}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -195,11 +207,11 @@ const UpdateBasicInfo = ({ user }: { user: UserRecieved }) => {
                     {roles.map((role) => (
                       <CommandItem
                         key={role.ID}
-                        onSelect={(currentRoleSelect) => {
+                        onSelect={(currentroleSelect) => {
                           setRoleSelect(
-                            currentRoleSelect === roleSelect
+                            currentroleSelect === roleSelect
                               ? ""
-                              : currentRoleSelect
+                              : currentroleSelect
                           );
                           clearErrors("role_id");
                           setValue("role_id", role.ID);
@@ -225,21 +237,21 @@ const UpdateBasicInfo = ({ user }: { user: UserRecieved }) => {
           {errors.role_id && (
             <p className="text-red-500 mt-1">{errors.role_id.message}</p>
           )}
-        </div>
+        </div> */}
         <Button
           type="submit"
-          disabled={isUserCreateLoading}
+          disabled={isDeviceCreateLoading}
           className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
         >
-          <span>{t("createuser")}</span>
-          {isUserCreateLoading && (
+          <span>{t("createdevice")}</span>
+          {isDeviceCreateLoading && (
             <FaSpinner className="animate-spin ml-2 text-white" />
           )}
         </Button>
       </div>
-      <UpdateUserFooter />
+      {/* <CreateUserFooter /> */}
     </form>
   );
 };
 
-export default UpdateBasicInfo;
+export default CreateDevice;
