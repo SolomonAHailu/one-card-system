@@ -50,7 +50,8 @@ func GetAllDevices(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching devices", err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": devices})
+	deviceCount := len(devices)
+	c.JSON(http.StatusOK, gin.H{"count": deviceCount, "data": devices})
 }
 
 // get device by id

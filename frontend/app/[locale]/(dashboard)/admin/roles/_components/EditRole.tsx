@@ -6,11 +6,11 @@ import {
 } from "@/components/ui/dialog";
 import { RoleRecieved } from "@/store/slices/adminSlice/user";
 import { FaSpinner } from "react-icons/fa";
-import { Button } from "../../../../../../components/ui/button";
-import { Input } from "../../../../../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { Label } from "../../../../../../components/ui/label";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
@@ -21,9 +21,9 @@ import {
 } from "@/store/slices/adminSlice/role";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { createRoleSchema } from "@/Validators/admin/create-role-validators";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { createRoleSchema } from "../../../../../../Validators/admin/create-role-validators";
+import { useState } from "react";
+
 
 const EditRole = ({ role }: { role: RoleRecieved }) => {
   const t = useTranslations("admin");

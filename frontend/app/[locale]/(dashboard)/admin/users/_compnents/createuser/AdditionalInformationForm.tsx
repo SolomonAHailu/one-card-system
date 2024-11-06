@@ -32,7 +32,7 @@ const AdditionalInformationForm = () => {
   const { rolePermissions, isRolePermissionLoading, isRolePermissionError } =
     useSelector((state: RootState) => state.rolePermission);
   const {
-    userPermission,
+    userPermissions,
     isUserPermissionCreateLoading,
     isUserPermissionError,
   } = useSelector((state: RootState) => state.userPermission);
@@ -145,7 +145,7 @@ const AdditionalInformationForm = () => {
               >
                 Get password
               </Button>
-            ) : userPermission || userTryToAssign ? (
+            ) : userPermissions || userTryToAssign ? (
               <Button
                 type="button"
                 className="bg-green-500 hover:bg-green-600 w-full px-4 py-7 rounded-md text-white text-sm"

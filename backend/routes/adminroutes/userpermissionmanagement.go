@@ -18,5 +18,9 @@ func RegisterUserPermissionManagementRoutes(r *gin.Engine) {
 		v1.GET("/userpermission/:id", func(c *gin.Context) {
 			admincontrollers.GetUserPermission(c, initializers.DB)
 		})
+		//update userpermission for sepecific user
+		v1.PATCH("/updateuserpermission", func(c *gin.Context) {
+			admincontrollers.HandleUserPermissionUpdate(c, initializers.DB)
+		})
 	}
 }

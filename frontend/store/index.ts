@@ -11,6 +11,7 @@ import {
 } from "redux-persist";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import modalSlice from "./slices/common/modalSlice";
+import sidebarSlice from "./slices/common/sidebarSlice";
 import authReducer from "./slices/common/authSlice";
 import roleReducer from "./slices/adminSlice/role";
 import userReducer from "./slices/adminSlice/user";
@@ -45,6 +46,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   modal: modalSlice,
+  sidebar: sidebarSlice,
   auth: authReducer,
   role: roleReducer,
   user: userReducer,

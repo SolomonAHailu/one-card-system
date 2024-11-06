@@ -51,7 +51,7 @@ const UsersPage = () => {
         {isRoleLoading ? (
           <div className="flex items-center w-full gap-x-14">
             {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="w-[350px] h-[64px] rounded-xl" />
+              <Skeleton key={index} className="w-[350px] h-[44px] rounded-xl" />
             ))}
           </div>
         ) : (

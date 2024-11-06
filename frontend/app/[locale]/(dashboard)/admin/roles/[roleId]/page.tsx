@@ -23,6 +23,8 @@ import {
   handleUpdateRolePermissionByRoleId,
 } from "@/store/slices/adminSlice/rolepermission";
 import { FaSpinner } from "react-icons/fa";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
   const dispatch = useDispatch();
@@ -36,6 +38,9 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
     isRolePermissionUpdateLoading,
   } = useSelector((state: RootState) => state.rolePermission);
   const currentRole = roles.find((role) => role.ID === parseInt(params.roleId));
+
+  // State for search term
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Define schema for form validation
   const FormSchema = z.object({
@@ -73,25 +78,51 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
     );
   };
 
+  // Filter permissions based on search term
+  const filteredPermissions = permissions.filter((permission) =>
+    permission.permissions_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="rounded-xl h-[calc(100vh-96px)] flex flex-col gap-y-2">
+    <div className="h-[calc(100vh-96px)] flex flex-col gap-y-2">
       <div className="bg-secondary/60 p-6 rounded-tr-2xl rounded-br-2xl">
-        <div className="grid grid-cols-8 mb-4 items-baseline">
-          <h1 className="text-[#2a4bc6] text-lg col-span-1">Role name</h1>
-          <p className="text-muted-foreground text-sm col-span-7">
+        <div className="grid grid-cols-8 gap-x-4 mb-4 items-baseline">
+          <h1 className="text-[#2a4bc6] text-lg col-span-2">ROLE NAME</h1>
+          <p className="text-muted-foreground text-lg col-span-6">
             {currentRole?.role_name}
           </p>
         </div>
-        <div className="grid grid-cols-8 items-baseline">
-          <h1 className="text-[#2a4bc6] text-lg col-span-1">
-            Role description
+        <div className="grid grid-cols-8 gap-x-4  items-baseline">
+          <h1 className="text-[#2a4bc6] text-lg col-span-2">
+            ROLE DESCRIPTION
           </h1>
-          <p className="text-muted-foreground text-sm col-span-7">
+          <p className="text-muted-foreground text-lg col-span-6">
             {currentRole?.description}
           </p>
         </div>
       </div>
-      <div className="col-span-2 bg-secondary/60 p-6 rounded-tr-2xl rounded-br-2xl flex-1 overflow-y-auto">
+      <div className="bg-secondary/60 p-6 flex-1 flex flex-col gap-y-4 relative rounded-tr-xl rounded-br-xl">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl text-[#2a4bc6] flex-1 flex-grow uppercase">
+            ASSIGN PERMISSION TO{" "}
+            <span className="italic underline ml-2">
+              {currentRole?.role_name}
+            </span>
+          </h1>
+          <div className="flex items-center justify-center gap-2 relative">
+            <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2">
+              <Search size={18} />
+            </div>
+            <Input
+              id="search by name"
+              type="text"
+              placeholder="Search by name"
+              className="border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0 min-w-64"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
         {isPermissionLoading || isRolePermissionLoading ? (
           <div className="grid grid-cols-2 gap-4">
             <Skeleton className="w-60 h-[50px] col-span-2" />
@@ -102,45 +133,54 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
           </div>
         ) : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="h-full relative"
-            >
-              <h1 className="text-xl text-[#2a4bc6]">Role Permissions</h1>
-              <div className="grid grid-cols-7 gap-4 mt-4">
-                {permissions.map((permission) => (
-                  <FormField
-                    key={permission.ID}
-                    control={form.control}
-                    name="selectedPermissions"
-                    render={({ field }) => (
-                      <FormItem className="col-span-1 flex items-center gap-x-3">
-                        <FormControl>
-                          <Checkbox
-                            checked={
-                              field?.value?.includes(permission.ID) ?? false
-                            }
-                            onCheckedChange={(checked) => {
-                              field.onChange(
-                                checked
-                                  ? [...(field.value ?? []), permission.ID]
-                                  : field.value?.filter(
-                                      (id) => id !== permission.ID
-                                    )
-                              );
-                            }}
-                            className="h-5 w-5 text-[#2a4bc6]"
-                          />
-                        </FormControl>
-                        <FormLabel>{permission.permissions_name}</FormLabel>
-                      </FormItem>
-                    )}
-                  />
-                ))}
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div
+                className={`grid grid-cols-6 gap-y-4 gap-x-4 items-start justify-start mt-4 w-full ${
+                  filteredPermissions.length > 30
+                    ? "overflow-y-auto max-h-[calc(100vh-350px)]"
+                    : ""
+                }`}
+              >
+                {filteredPermissions.length > 0 ? (
+                  filteredPermissions.map((permission) => (
+                    <FormField
+                      key={permission.ID}
+                      control={form.control}
+                      name="selectedPermissions"
+                      render={({ field }) => (
+                        <FormItem className="w-full flex items-center gap-x-3">
+                          <FormControl>
+                            <Checkbox
+                              checked={
+                                field?.value?.includes(permission.ID) ?? false
+                              }
+                              onCheckedChange={(checked) => {
+                                field.onChange(
+                                  checked
+                                    ? [...(field.value ?? []), permission.ID]
+                                    : field.value?.filter(
+                                        (id) => id !== permission.ID
+                                      )
+                                );
+                              }}
+                              className="h-5 w-5 text-[#2a4bc6]"
+                            />
+                          </FormControl>
+                          <FormLabel>{permission.permissions_name}</FormLabel>
+                        </FormItem>
+                      )}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-6 text-[#2a4bc6]">
+                    No permissions available.
+                  </div>
+                )}
               </div>
+
               <Button
                 type="submit"
-                className="py-6 bg-[#3A5DD9] hover:bg-[#2a4bc6] absolute bottom-0 right-0 text-white"
+                className="py-6 bg-[#3A5DD9] hover:bg-[#2a4bc6] absolute bottom-4 right-4 text-white"
               >
                 Save Changes
                 {isRolePermissionUpdateLoading && (

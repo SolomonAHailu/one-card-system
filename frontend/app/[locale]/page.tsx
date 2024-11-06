@@ -22,7 +22,6 @@ export default function Home() {
       router.push(`/en/${role_name}`);
     }
   }, [isAuthenticated, router, role_name]);
-  // Avoid rendering if not authenticated
 
   return <LoadingOverlay />;
 }
