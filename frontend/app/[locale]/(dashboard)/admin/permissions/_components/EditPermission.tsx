@@ -25,7 +25,7 @@ import { FaSpinner } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 
 const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {
-  const t = useTranslations("admin");
+  const t = useTranslations("permission");
   const dispatch = useDispatch();
   const {
     isPermissionCreateSuccess,
@@ -63,7 +63,7 @@ const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {
     <div>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("editPermissionTitle")}</DialogTitle>
+          <DialogTitle>{t("editpermission")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="text-center flex flex-col gap-y-4">
@@ -75,12 +75,12 @@ const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {
                 htmlFor="permissions_name"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("permissionName")}
+                {t("permissionname")}
               </Label>
               <Input
                 id="permissions_name"
                 type="text"
-                placeholder={t("enterPermissionName")}
+                placeholder={t("enterpermissionname")}
                 {...register("permissions_name")}
                 onChange={handleInputChange}
                 className={cn(
@@ -99,12 +99,12 @@ const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {
                 htmlFor="description"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("description")}
+                {t("permissiondescription")}
               </Label>
               <Input
                 id="description"
                 type="text"
-                placeholder={t("enterDescription")}
+                placeholder={t("enterpermissiondescription")}
                 {...register("description")}
                 onChange={handleInputChange}
                 className={cn(
@@ -132,7 +132,7 @@ const EditPermission = ({ permission }: { permission: PermissionRecieved }) => {
                 disabled={isPermissionCreateLoading}
                 className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
               >
-                <span>{t("updatePermission")}</span>
+                <span>{t("editpermission")}</span>
                 {isPermissionCreateLoading && (
                   <FaSpinner className="animate-spin ml-2 text-white" />
                 )}

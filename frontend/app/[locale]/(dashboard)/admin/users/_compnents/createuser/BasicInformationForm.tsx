@@ -176,7 +176,7 @@ const BasicInformationForm = () => {
               <Command>
                 <CommandInput placeholder={t("searchrole")} />
                 <CommandList>
-                  <CommandEmpty>No Role Found.</CommandEmpty>
+                  <CommandEmpty>{t("norole")}</CommandEmpty>
                   <CommandGroup>
                     {roles.map((role) => (
                       <CommandItem

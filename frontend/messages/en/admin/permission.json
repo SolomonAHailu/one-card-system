@@ -1,0 +1,22 @@
+{
+  "permission": {
+    "permissionname": "Permission Name",
+    "permissiondescription": "Permission Description",
+    "edit": "Edit",
+    "delete": "Delete",
+    "nopermission": "No permission found",
+    "areyousuretodeletepermission": "Are you sure you want to delete this permission",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "addpermission": "Add Permission",
+    "enterpermissionname": "Enter permission name",
+    "enterpermissiondescription": "Enter permission description",
+    "permissionnamerequired": "Permission name is required",
+    "permissionnameminlength": "Permission name must be at least 3 characters",
+    "permissiondescriptionrequired": "Permission description required",
+    "permissionmeaningfuldescription": "Meaningful description is required",
+    "createpermission": "Create Permission",
+    "editpermission": "Edit Permission",
+    "close": "Close"
+  }
+}

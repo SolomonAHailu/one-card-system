@@ -14,8 +14,10 @@ import { useSelector } from "react-redux";
 import BasicInformationForm from "./createuser/BasicInformationForm";
 import AdditionalInformationForm from "./createuser/AdditionalInformationForm";
 import CreateUserSuccess from "./createuser/CreateUserSuccess";
+import { useTranslations } from "next-intl";
 
 const AddUser = () => {
+  const t = useTranslations("adminusers");
   const { currentPageUserCreate } = useSelector(
     (state: RootState) => state.user
   );
@@ -28,15 +30,15 @@ const AddUser = () => {
         <DialogHeader>
           <DialogTitle>
             {currentPageUserCreate == 1
-              ? " Create user"
+              ? t("createuser")
               : currentPageUserCreate == 2
-              ? "Assign permission"
-              : "Get user password"}
+              ? t("assignpermission")
+              : t("getpassword")}
           </DialogTitle>
           <DialogDescription>
             {currentPageUserCreate === 3
-              ? "Please take care of the password"
-              : " Be carefull when you fill the information"}
+              ? t("takecareofpassword")
+              : t("becarefull")}
           </DialogDescription>
         </DialogHeader>
         {currentPageUserCreate === 1 ? (

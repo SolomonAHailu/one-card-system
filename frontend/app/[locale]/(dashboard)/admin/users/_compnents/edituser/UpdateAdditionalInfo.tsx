@@ -27,8 +27,10 @@ import {
 } from "@/store/slices/adminSlice/userpermission";
 import { increareCurrentPage } from "@/store/slices/adminSlice/user";
 import UpdateUserFooter from "./UpdateUserFooter";
+import { useTranslations } from "next-intl";
 
 const AdditionalInformationForm = () => {
+  const t = useTranslations("adminusers");
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
   const { rolePermissions, isRolePermissionLoading, isRolePermissionError } =
@@ -69,7 +71,6 @@ const AdditionalInformationForm = () => {
   const { reset } = form;
 
   useEffect(() => {
-    // Reset form values when userPermissions change
     reset({
       selectedPermissions: userPermissions.map((perm) => perm.permission_id),
     });
@@ -98,8 +99,8 @@ const AdditionalInformationForm = () => {
     <div className="flex flex-col gap-y-4">
       <p>
         {allowedUserPermissions.length === 0
-          ? "No permission found for this role"
-          : "Assign permission to the user"}
+          ? t("nopermissionforrole")
+          : t("assignpermissiontouser")}
       </p>
       {isRolePermissionError && (
         <p className="text-red-500">{isRolePermissionError}</p>
@@ -144,20 +145,26 @@ const AdditionalInformationForm = () => {
                 )}
               />
             ))}
-            <Button
-              type="submit"
-              className="bg-[#3A5DD9] hover:bg-[#2a4bc6] w-full px-4 py-7 rounded-md text-white text-sm"
-              disabled={isUserPermissionCreateLoading}
-            >
-              {isUserPermissionCreateLoading ? (
-                <>
-                  Update
+            {allowedUserPermissions.length === 0 ? (
+              <Button
+                type="button"
+                className="bg-green-500 hover:bg-green-600 w-full px-4 py-7 rounded-md text-white text-sm"
+                onClick={() => dispatch<any>(increareCurrentPage())}
+              >
+                {t("getpassword")}
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                className="bg-[#3A5DD9] hover:bg-[#2a4bc6] w-full px-4 py-7 rounded-md text-white text-sm"
+                disabled={isUserPermissionCreateLoading}
+              >
+                {t("assign")}
+                {isUserPermissionCreateLoading && (
                   <FaSpinner className="animate-spin ml-2 text-white" />
-                </>
-              ) : (
-                "Assign"
-              )}
-            </Button>
+                )}
+              </Button>
+            )}
           </form>
         </Form>
       )}

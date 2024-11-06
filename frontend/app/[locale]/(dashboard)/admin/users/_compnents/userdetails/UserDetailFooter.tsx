@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 const UserDetailFooter = ({
   page,
@@ -7,6 +8,7 @@ const UserDetailFooter = ({
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }) => {
+  const t = useTranslations("adminusers");
   return (
     <div className="w-full flex justify-center items-center flex-col gap-y-8">
       <div className="flex items-center justify-around w-3/5 gap-y-1">
@@ -15,14 +17,14 @@ const UserDetailFooter = ({
             className="bg-[#3A5DD9] hover:bg-[#2a4bc6] text-white w-full"
             onClick={() => setPage(2)}
           >
-            Next
+            {t("next")}
           </Button>
         ) : (
           <Button
             className="bg-[#3A5DD9] hover:bg-[#2a4bc6] text-white w-full"
             onClick={() => setPage(1)}
           >
-            Prev
+            {t("prev")}
           </Button>
         )}
       </div>

@@ -1,0 +1,8 @@
+{
+  "permission": {
+    "permissionname": "Permission Name",
+    "permissiondescription": "Permission Description",
+    "edit": "Edit",
+    "delete": "Delete"
+  }
+}

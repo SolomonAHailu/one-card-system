@@ -25,8 +25,10 @@ import {
 import { FaSpinner } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
+  const t = useTranslations("roles");
   const dispatch = useDispatch();
   const { roles } = useSelector((state: RootState) => state.role);
   const { permissions, isPermissionLoading } = useSelector(
@@ -38,11 +40,7 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
     isRolePermissionUpdateLoading,
   } = useSelector((state: RootState) => state.rolePermission);
   const currentRole = roles.find((role) => role.ID === parseInt(params.roleId));
-
-  // State for search term
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Define schema for form validation
   const FormSchema = z.object({
     selectedPermissions: z.array(z.number()).optional(),
   });
@@ -54,7 +52,6 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
     },
   });
 
-  // Set up useEffect hooks for fetching data
   useEffect(() => {
     dispatch<any>(handleFetchPermissions());
     dispatch<any>(
@@ -78,7 +75,6 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
     );
   };
 
-  // Filter permissions based on search term
   const filteredPermissions = permissions.filter((permission) =>
     permission.permissions_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -87,14 +83,16 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
     <div className="h-[calc(100vh-96px)] flex flex-col gap-y-2">
       <div className="bg-secondary/60 p-6 rounded-tr-2xl rounded-br-2xl">
         <div className="grid grid-cols-8 gap-x-4 mb-4 items-baseline">
-          <h1 className="text-[#2a4bc6] text-lg col-span-2">ROLE NAME</h1>
+          <h1 className="text-[#2a4bc6] text-lg col-span-2 uppercase">
+            {t("rolename")}
+          </h1>
           <p className="text-muted-foreground text-lg col-span-6">
             {currentRole?.role_name}
           </p>
         </div>
         <div className="grid grid-cols-8 gap-x-4  items-baseline">
-          <h1 className="text-[#2a4bc6] text-lg col-span-2">
-            ROLE DESCRIPTION
+          <h1 className="text-[#2a4bc6] text-lg col-span-2 uppercase">
+            {t("roledescription")}
           </h1>
           <p className="text-muted-foreground text-lg col-span-6">
             {currentRole?.description}
@@ -104,7 +102,7 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
       <div className="bg-secondary/60 p-6 flex-1 flex flex-col gap-y-4 relative rounded-tr-xl rounded-br-xl">
         <div className="flex items-center justify-between">
           <h1 className="text-xl text-[#2a4bc6] flex-1 flex-grow uppercase">
-            ASSIGN PERMISSION TO{" "}
+            {t("assignpermissiontorole")}
             <span className="italic underline ml-2">
               {currentRole?.role_name}
             </span>
@@ -116,7 +114,7 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
             <Input
               id="search by name"
               type="text"
-              placeholder="Search by name"
+              placeholder={t("searchbyname")}
               className="border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0 min-w-64"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -173,7 +171,7 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
                   ))
                 ) : (
                   <div className="col-span-6 text-[#2a4bc6]">
-                    No permissions available.
+                    {t("nopermissionforrole")}
                   </div>
                 )}
               </div>
@@ -182,7 +180,7 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
                 type="submit"
                 className="py-6 bg-[#3A5DD9] hover:bg-[#2a4bc6] absolute bottom-4 right-4 text-white"
               >
-                Save Changes
+                {t("savechanges")}
                 {isRolePermissionUpdateLoading && (
                   <FaSpinner className="animate-spin ml-2" />
                 )}

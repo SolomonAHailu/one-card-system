@@ -26,7 +26,7 @@ import { useState } from "react";
 
 
 const EditRole = ({ role }: { role: RoleRecieved }) => {
-  const t = useTranslations("admin");
+  const t = useTranslations("roles");
   const dispatch = useDispatch();
   const { isRoleError, isRoleCreateLoading, isRoleUpdateSuccess } = useSelector(
     (state: RootState) => state.role
@@ -50,7 +50,7 @@ const EditRole = ({ role }: { role: RoleRecieved }) => {
   const onSubmit = (data: RoleSend) => {
     data = { ...data, id: role.ID };
     dispatch<any>(handleUpdateRole(data));
-    setHasChanges(false); // Reset changes state after submission
+    setHasChanges(false);
   };
 
   const handleInputChange = () => {
@@ -62,7 +62,7 @@ const EditRole = ({ role }: { role: RoleRecieved }) => {
     <div>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("editRoleTitle")}</DialogTitle>
+          <DialogTitle>{t("editrole")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="text-center flex flex-col gap-y-4">
@@ -72,12 +72,12 @@ const EditRole = ({ role }: { role: RoleRecieved }) => {
                 htmlFor="role_name"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("roleName")}
+                {t("rolename")}
               </Label>
               <Input
                 id="role_name"
                 type="text"
-                placeholder={t("enterRoleName")}
+                placeholder={t("enterrolename")}
                 {...register("role_name")}
                 onChange={handleInputChange}
                 className={cn(
@@ -91,15 +91,15 @@ const EditRole = ({ role }: { role: RoleRecieved }) => {
             </div>
             <div className="flex flex-col gap-y-1 items-start">
               <Label
-                htmlFor="description"
+                htmlFor="roledescription"
                 className="block text-sm font-medium text-muted-foreground"
               >
-                {t("description")}
+                {t("roledescription")}
               </Label>
               <Input
                 id="description"
                 type="text"
-                placeholder={t("enterDescription")}
+                placeholder={t("enterroledescription")}
                 {...register("description")}
                 onChange={handleInputChange}
                 className={cn(
@@ -127,7 +127,7 @@ const EditRole = ({ role }: { role: RoleRecieved }) => {
                 disabled={isRoleCreateLoading}
                 className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
               >
-                <span>{t("updateRole")}</span>
+                <span>{t("editrole")}</span>
                 {isRoleCreateLoading && (
                   <FaSpinner className="animate-spin ml-2 text-white" />
                 )}
