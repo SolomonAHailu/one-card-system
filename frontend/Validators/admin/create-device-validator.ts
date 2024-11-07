@@ -7,5 +7,5 @@ export const createDeviceSchema = (t: (key: string) => string) =>
     serial_number: yup.string().required(t("serialnumberrequired")),
     ip_address: yup.string().required(t("ipaddressrequired")),
     port: yup.number().required(t("portrequired")),
-    Location: yup.string().required(t("locationrequired")),
+    location: yup.string().required(t("locationrequired")),
   });

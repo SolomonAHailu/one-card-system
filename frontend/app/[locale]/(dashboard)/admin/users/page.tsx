@@ -62,9 +62,8 @@ const UsersPage = () => {
                 onClick={refetchUsers}
               >
                 <ImLoop2
-                  className={`text-sm transition-transform duration-500 text-white ${
-                    refetchUser ? "animate-spin" : ""
-                  }`}
+                  className={`text-sm transition-transform duration-500 text-white ${refetchUser ? "animate-spin" : ""
+                    }`}
                 />
               </div>
               <RoleDropDown setUsersRoleId={setUsersRoleId} />

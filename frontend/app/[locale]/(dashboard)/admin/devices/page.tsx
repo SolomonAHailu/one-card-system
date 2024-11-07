@@ -33,16 +33,16 @@ const DevicesPage = () => {
   return (
     <div className="flex flex-col gap-y-3">
       <div>
+
         <div className="flex items-center gap-x-20">
           <div className="flex items-center gap-x-6">
             <div
-              className="h-14 w-14 px-5 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer"
+              className="h-10 w-10 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer"
               onClick={refetchDevices}
             >
               <ImLoop2
-                className={`text-4xl transition-transform duration-500 text-white ${
-                  refetchDevice ? "animate-spin" : ""
-                }`}
+                className={`text-sm transition-transform duration-500 text-white ${refetchDevice ? "animate-spin" : ""
+                  }`}
               />
             </div>
 
@@ -51,13 +51,14 @@ const DevicesPage = () => {
           <div className="">
             <SearchByName setName={setName} name={name} />
           </div>
-          <div className="w-full flex justify-end">
+          <div className="w-full h-10 w-10 flex justify-end">
             <AddDevice />
           </div>
         </div>
       </div>
       <DeviceList limit={limit} name={name} page={page} setPage={setPage} />
     </div>
+
   );
 };
 

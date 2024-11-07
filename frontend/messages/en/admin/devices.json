@@ -1,22 +1,26 @@
 {
-    "adminDevice":{
-        "name":"Name",
-        "serial_number":"serial Number",
-        "ip_address":"IP Address",
-        "port":"Port",
-        "Location":"Location",
-        "namerequired":"Name required",
-        "serialnumberrequired":"Serial Number required",
-        "ipaddressrequired":"IP Address required",
-        "portrequired":"Port required",
-        "locationrequired":"Location required",  
-        "createdevice":"Create Device",
-        "enterdevicename":"Enter Device Name",
-        "enterdeviceserialnumber":"Enter Device Serial Number",
-        "enterdeviceipaddress":"Enter Device IP Address",
-        "enterdeviceport":"Enter Device Port",
-        "enterdevicelocation":"Enter Device Location"
-
-    
+    "adminDevice": {
+        "name": "Name",
+        "serial_number": "serial Number",
+        "ip_address": "IP Address",
+        "port": "Port",
+        "location": "Location",
+        "namerequired": "Name required",
+        "serialnumberrequired": "Serial Number required",
+        "ipaddressrequired": "IP Address required",
+        "portrequired": "Port required",
+        "locationrequired": "Location required",
+        "createdevice": "Create Device",
+        "updatedevice": "Update Device",
+        "enterdevicename": "Enter Device Name",
+        "enterdeviceserialnumber": "Enter Device Serial Number",
+        "enterdeviceipaddress": "Enter Device IP Adddress",
+        "enterdeviceport": "Enter Device Port",
+        "enterdevicelocation": "Enter Device Location",
+        "edit": "Edit",
+        "delete": "Delete",
+        "suretodelete": "Are you sure you want to delete this device?",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
     }
 }
