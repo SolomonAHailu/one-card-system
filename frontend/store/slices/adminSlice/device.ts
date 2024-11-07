@@ -8,11 +8,12 @@ interface DataSendToFetchDevices {
   name?: string;
 }
 export interface DataSendToCreateDevice {
+  id?: number;
   name: string;
   serial_number: string;
   ip_address: string;
   port: number;
-  Location: string;
+  location: string;
 }
 
 export interface DataRecievedWhileFetchDevice {
@@ -26,17 +27,20 @@ export interface DataRecievedWhileCreateDevice {
 }
 export interface DeviceRecieved {
   ID: number;
+  CreatedAt: Date;
+  UpdatedAt: Date;
+  DeletedAt: Date | null;
   name: string;
   serial_number: string;
   ip_address: string;
-  port: string;
-  Location: string;
+  port: number;
+  location: string;
 }
 
 export interface DeviceState {
   devices: DeviceRecieved[];
   device: DeviceRecieved | null;
-  //   currentPageUserCreate: number;
+  currentPageUserCreate: number;
   isDeviceLoading: boolean;
   isDeviceCreateLoading: boolean;
   isDeviceError: string | null;
@@ -49,7 +53,7 @@ export interface DeviceState {
 const initialState: DeviceState = {
   devices: [],
   device: null,
-  //   currentPageDeviceCreate: 1,
+  currentPageUserCreate: 1,
   isDeviceLoading: false,
   isDeviceError: null,
   isDeviceCreateLoading: false,
@@ -64,11 +68,11 @@ const deviceSlice = createSlice({
   initialState,
   reducers: {
     increareCurrentPage: (state) => {
-      //   state.currentPageDeviceCreate += 1;
+        state.currentPageUserCreate += 1;
     },
     removeCurrentDevice: (state) => {
       state.device = null;
-      //   state.currentPageDeviceCreate = 1;
+        state.currentPageUserCreate = 1;
     },
   },
   extraReducers: (builder) => {
@@ -101,12 +105,47 @@ const deviceSlice = createSlice({
         state.device = action.payload.data;
         state.isDeviceCreateLoading = false;
         state.isDeviceCreateError = null;
-        // state.currentPageDeviceCreate += 1;
+        state.currentPageUserCreate += 1;
       })
       .addCase(handleCreateDevice.rejected, (state, action) => {
         state.isDeviceCreateLoading = false;
         state.isDeviceCreateError =
           action.error.message || "Create device failed";
+      })
+      .addCase(handleUpdateDevice.pending, (state) => {
+        state.isDeviceCreateLoading = true;
+        state.isDeviceCreateError = null;
+      })
+      .addCase(handleUpdateDevice.fulfilled, (state, action) => {
+        state.devices = state.devices.map((device) => {
+          if (device.ID === action.payload.data.ID) {
+            return action.payload.data;
+          }
+          return device;
+        });
+        state.device = action.payload.data;
+        state.isDeviceCreateLoading = false;
+        state.isDeviceCreateError = null;
+        state.currentPageUserCreate += 1;
+      })
+      .addCase(handleUpdateDevice.rejected, (state, action) => {
+        state.isDeviceCreateLoading = false;
+        state.isDeviceCreateError = action.error.message || "Update Device failed";
+      })
+      .addCase(handleDeleteDevice.pending, (state, action) => {
+        state.isDeviceCreateLoading = true;
+        state.isDeviceError = null;
+      })
+      .addCase(handleDeleteDevice.fulfilled, (state, action) => {
+        state.devices = state.devices.filter(
+          (device) => device.ID !== action.payload.data.ID
+        );
+        state.isDeviceCreateLoading = false;
+        state.isDeviceError = null;
+      })
+      .addCase(handleDeleteDevice.rejected, (state, action) => {
+        state.isDeviceCreateLoading = false;
+        state.isDeviceError = null;
       });
   },
 });
@@ -170,6 +209,69 @@ export const handleCreateDevice = createAsyncThunk<
     toast.error(error.response?.data?.error || "Create Devices failed");
 
     throw new Error(error.response?.data?.error || "Create Devices failed");
+  }
+});
+export const handleUpdateDevice = createAsyncThunk<
+  DataRecievedWhileCreateDevice,
+  DataSendToCreateDevice
+>("device/updateDevice", async (data) => {
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/device/${data.id}`;
+
+  const config: AxiosRequestConfig = {
+    url,
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: data,
+    withCredentials: true,
+  };
+
+  try {
+    const response = await axios(config);
+    if (response.data) {
+      toast.success("device updated successfully");
+      console.log("RESPONSE FOUND TO CREATE device", response);
+      return response.data;
+    } else {
+      toast.error("Update device failed");
+      throw new Error("Update device failed");
+    }
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Update device failed");
+    throw new Error(error.response?.data?.error || "Update device failed");
+  }
+});
+
+export const handleDeleteDevice = createAsyncThunk<
+  DataRecievedWhileCreateDevice,
+  { id: number }
+>("device/deleteDevice", async (data) => {
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/device/${data.id}`;
+
+  const config: AxiosRequestConfig = {
+    url,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: data,
+    withCredentials: true,
+  };
+
+  try {
+    const response = await axios(config);
+    if (response.data) {
+      toast.success("device deleted successfully");
+      console.log("RESPONSE FOUND TO DELETE device", response);
+      return response.data;
+    } else {
+      toast.error("Delete device failed");
+      throw new Error("Delete device failed");
+    }
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Delete device failed");
+    throw new Error(error.response?.data?.error || "Delete device failed");
   }
 });
 
