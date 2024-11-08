@@ -6,6 +6,10 @@ import (
 
 	"github.com/SolomonAHailu/one-card-system/initializers"
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
+	"github.com/SolomonAHailu/one-card-system/models/cafeteriamodels"
+	"github.com/SolomonAHailu/one-card-system/models/dormitorymodels"
+	"github.com/SolomonAHailu/one-card-system/models/librarymodels"
+	"github.com/SolomonAHailu/one-card-system/models/registrarmodels"
 )
 
 func init() {
@@ -17,5 +21,5 @@ func main() {
 	if initializers.DB == nil {
 		log.Fatal("Database connection is not initialized")
 	}
-	initializers.DB.Debug().AutoMigrate(adminmodels.Roles{}, adminmodels.Permissions{}, adminmodels.RolePermissions{}, adminmodels.Users{}, adminmodels.UserPermissions{}, adminmodels.Devices{})
+	initializers.DB.Debug().AutoMigrate(adminmodels.Roles{}, adminmodels.Permissions{}, adminmodels.RolePermissions{}, adminmodels.Users{}, adminmodels.UserPermissions{}, adminmodels.Devices{}, cafeteriamodels.Cafeterias{}, dormitorymodels.Dormitories{}, librarymodels.Libraries{}, registrarmodels.Student{})
 }

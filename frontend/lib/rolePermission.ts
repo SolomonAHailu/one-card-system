@@ -5,4 +5,5 @@ export const rolePermission = [
   { role: "admin", permission: "Roles", icon: Shield },
   { role: "admin", permission: "Permissions", icon: Key },
   { role: "admin", permission: "Devices", icon: Monitor },
+  { role: "registrar", permission: "Students", icon: Users },
 ];

@@ -2,9 +2,9 @@ package routes
 
 import (
 	"github.com/SolomonAHailu/one-card-system/routes/adminroutes"
+	"github.com/SolomonAHailu/one-card-system/routes/registrarroutes"
 	"github.com/SolomonAHailu/one-card-system/routes/userroutes"
 	"github.com/gin-gonic/gin"
-	"github.com/solomonAHailu/one-card-system/routes/registraroutes"
 )
 
 func RegisterRoutes(r *gin.Engine) {
@@ -15,5 +15,5 @@ func RegisterRoutes(r *gin.Engine) {
 	adminroutes.RegisterUserPermissionManagementRoutes(r)
 	adminroutes.RegisterDeviceManagementRoutes(r)
 	userroutes.RegisterUserRoutes(r)
-	registraroutes.RegisterStudentManagementRoutes(r)
+	registrarroutes.RegisterStudentManagementRoutes(r)
 }

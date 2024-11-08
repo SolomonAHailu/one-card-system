@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   handleDeleteDevice,
   handleFetchDevice,
+  resetDeviceUpdateSuccess,
 } from "@/store/slices/adminSlice/device";
 import {
   Pagination,
@@ -25,7 +26,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import EditDevice from "./editDevice";
+import EditDevice from "./EditDevice";
 // import DeviceDetails from "./DeviceDetails";
 import { DeleteIcon, EditIcon } from "lucide-react";
 import { MdDelete, MdDetails } from "react-icons/md";
@@ -40,17 +41,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 
-const DeviceList = ({
-  limit,
-  name,
-  page,
-  setPage,
-}: {
-  page: number;
-  setPage: (prev: number) => void;
-  limit: number;
-  name?: string;
-}) => {
+const DeviceList = () => {
   const t = useTranslations("adminDevice");
   const dispatch = useDispatch();
   const router = useRouter();
@@ -59,196 +50,104 @@ const DeviceList = ({
     devices,
     isDeviceError,
     isDeviceLoading,
-    currentPage,
-    totalPages,
-    totalDevices,
+    isDeviceDeleteLoading,
     isDeviceCreateLoading,
   } = useSelector((state: RootState) => state.device);
 
-  console.log("DEVICE NAME TO BE FETCHED", name);
-
   useEffect(() => {
-    dispatch<any>(handleFetchDevice({ page, limit, name: name ?? "" }));
-  }, [dispatch, page, limit, name]);
-
-  const renderPageNumbers = () => {
-    let pagesToDisplay = [];
-    if (currentPage > 2) {
-      pagesToDisplay.push(
-        <PaginationItem key="start-ellipsis">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-
-    for (
-      let i = Math.max(1, currentPage - 1);
-      i <= Math.min(totalPages, currentPage + 1);
-      i++
-    ) {
-      pagesToDisplay.push(
-        <PaginationItem key={i}>
-          <PaginationLink
-            href="#"
-            className={
-              currentPage === i
-                ? "rounded-sm border-2 border-primary m-2 text-xs h-10 w-10 flex items-center justify-center"
-                : "bg-transparent rounded-sm hover:bg-background/90 hover:rounded-sm hover:h-8 hover:w-8"
-            }
-            onClick={() => setPage(i)}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-
-    if (currentPage < totalPages - 1) {
-      pagesToDisplay.push(
-        <PaginationItem key="end-ellipsis">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-
-    return pagesToDisplay;
-  };
-
-  if (isDeviceLoading) {
-    return (
-      <div className="h-[calc(100vh-165px)] flex flex-col items-center justify-between w-full">
+    dispatch<any>(handleFetchDevice());
+  }, [dispatch]);
+  return (
+    <div className="relative rounded-xl p-0 h-[calc(100vh-150px)] flex flex-col gap-y-2">
+      {isDeviceLoading ? (
         <div className="flex flex-col items-center w-full gap-y-8">
           {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
           ))}
         </div>
-        <div className="flex gap-x-2">
-          <Skeleton className="w-[70px] h-[34px] rounded-sm" />
-          <Skeleton className="w-[150px] h-[34px] rounded-sm" />
-          <Skeleton className="w-[70px] h-[34px] rounded-sm" />
-        </div>
-      </div>
-    );
-  } else if (devices.length === 0) {
-    return <div className="text-[#3A5DD9]">{t("nodevice")}</div>;
-  } else {
-    return (
-      <div className="relative rounded-xl p-0 h-[calc(100vh-165px)] flex flex-col gap-y-2">
-        <div className="h-5/6 flex-1 rounded-xl rounded-bl-none rounded-br-none overflow-y-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('name')}</TableHead>
-                <TableHead>{t('serial_number')}</TableHead>
-                <TableHead>{t('ip_address')}</TableHead>
-                <TableHead>{t('port')}</TableHead>
-                <TableHead>{t('location')}</TableHead>
-
-                <TableHead className="text-center">{t("edit")}</TableHead>
-                <TableHead className="text-center">{t("delete")}</TableHead>
+      ) : devices.length === 0 ? (
+        <p>{t("nodevice")}</p>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t("name")}</TableHead>
+              <TableHead>{t("serial_number")}</TableHead>
+              <TableHead>{t("ip_address")}</TableHead>
+              <TableHead>{t("port")}</TableHead>
+              <TableHead>{t("location")}</TableHead>
+              <TableHead className="text-center">{t("edit")}</TableHead>
+              <TableHead className="text-center">{t("delete")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {devices.map((device, index) => (
+              <TableRow
+                key={index}
+                className={cn(
+                  index % 2 === 0 ? "" : "bg-secondary",
+                  "hover:bg-primary-foreground"
+                )}
+              >
+                <TableCell>{device.name}</TableCell>
+                <TableCell>{device.serial_number}</TableCell>
+                <TableCell>{device.ip_address}</TableCell>
+                <TableCell>{device.port}</TableCell>
+                <TableCell>{device.location}</TableCell>
+                <TableCell>
+                  <Dialog>
+                    <DialogTrigger
+                      asChild
+                      className="w-full cursor-pointer text-center"
+                      onClick={() => dispatch(resetDeviceUpdateSuccess())}
+                    >
+                      <EditIcon size={20} className="text-yellow-600" />
+                    </DialogTrigger>
+                    <EditDevice device={device} />
+                  </Dialog>
+                </TableCell>
+                <TableCell>
+                  <Dialog>
+                    <DialogTrigger
+                      asChild
+                      className="w-full cursor-pointer text-center"
+                    >
+                      <MdDelete size={20} className="text-red-600" />
+                    </DialogTrigger>
+                    <DialogContent className="max-w-sm text-center flex flex-col gap-y-8">
+                      <DialogHeader className="mt-4 mx-2">
+                        <p className="text-center">
+                          {t("suretodelete")}
+                          <span className="text-[#3A5DD9] italic underline">{`${device.name} `}</span>
+                          ?
+                        </p>
+                      </DialogHeader>
+                      <div className="flex items-center justify-evenly">
+                        <DialogClose className="bg-red-700 hover:bg-red-800 px-7 py-2 rounded-sm text-white lowercase">
+                          {t("cancel")}
+                        </DialogClose>
+                        <Button
+                          className="bg-green-700 hover:bg-green-800 px-7 text-white lowercase"
+                          onClick={() =>
+                            dispatch<any>(handleDeleteDevice({ id: device.ID }))
+                          }
+                        >
+                          {t("confirm")}
+                          {isDeviceDeleteLoading && (
+                            <FaSpinner className="animate-spin ml-2 text-white text-xs" />
+                          )}
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {devices.map((device, index) => (
-                <TableRow
-                  key={device.ID}
-                  className={cn(
-                    index % 2 === 0 ? "" : "bg-secondary",
-                    "hover:bg-primary-foreground",
-                    "h-8"
-                  )}
-                >
-                  <TableCell>{device.name}</TableCell>
-                  <TableCell>{device.serial_number}</TableCell>
-                  <TableCell>{device.ip_address}</TableCell>
-                  <TableCell>{device.port}</TableCell>
-                  <TableCell>{device.location}</TableCell>
-
-                  <TableCell>
-                    <Dialog>
-                      <DialogTrigger
-                        asChild
-                        className="w-full cursor-pointer text-center"
-                      >
-                        <EditIcon size={20} className="text-yellow-600" />
-                      </DialogTrigger>
-                      <EditDevice device={device} />
-                    </Dialog>
-                  </TableCell>
-                  <TableCell>
-                    <Dialog>
-                      <DialogTrigger
-                        asChild
-                        className="w-full cursor-pointer text-center"
-                      >
-                        <MdDelete size={20} className="text-red-600" />
-                      </DialogTrigger>
-                      <DialogContent className="max-w-sm text-center flex flex-col gap-y-8">
-                        <DialogHeader className="mt-4 mx-2">
-                          <p className="text-center">
-                            {t("suretodelete")}
-                            <span className="text-[#3A5DD9] italic underline">{` ${device.name} `}</span>
-                            ?
-                          </p>
-                        </DialogHeader>
-                        <div className="flex items-center justify-evenly">
-                          <DialogClose className="bg-red-700 hover:bg-red-800 px-7 py-2 rounded-sm text-white lowercase">
-                            {t("cancel")}
-                          </DialogClose>
-                          <Button
-                            className="bg-green-700 hover:bg-green-800 px-7 text-white lowercase"
-                            onClick={() =>
-                              dispatch<any>(handleDeleteDevice({ id: device.ID }))
-                            }
-                          >
-                            {t("confirm")}
-                            {isDeviceCreateLoading && (
-                              <FaSpinner className="animate-spin ml-2 text-white text-xs" />
-                            )}
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-        <Pagination className="rounded-none">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                className={cn(
-                  `${currentPage === 1
-                    ? "bg-primary-foreground opacity-25 cursor-default"
-                    : ""
-                  } bg-primary-foreground hover:bg-primary-foreground text-xs`
-                )}
-                onClick={() => setPage(Math.max(currentPage - 1, 1))}
-              />
-            </PaginationItem>
-
-            {renderPageNumbers()}
-
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                className={cn(
-                  `${currentPage === totalPages
-                    ? "bg-primary-foreground opacity-25 cursor-default"
-                    : ""
-                  } bg-primary-foreground hover:bg-primary-foreground text-xs`
-                )}
-                onClick={() => setPage(Math.min(currentPage + 1, totalPages))}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-    );
-  }
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </div>
+  );
 };
 
 export default DeviceList;

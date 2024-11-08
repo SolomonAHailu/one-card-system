@@ -55,6 +55,8 @@
     "prev": "Prev",
     "nopermissionforuser": "No permission for user",
     "edituser": "Edit user",
-    "editpermission": "Edit permission"
+    "editpermission": "Edit permission",
+    "copypassword": "Copy Password",
+    "passwordcopied": "Password copied to clipboard"
   }
 }

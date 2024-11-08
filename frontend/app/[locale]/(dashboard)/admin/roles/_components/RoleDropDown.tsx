@@ -57,7 +57,7 @@ const RoleDropDown = ({
         <Command>
           <CommandInput placeholder={t("searchrole")} />
           <CommandList>
-            <CommandEmpty>No Role Found.</CommandEmpty>
+            <CommandEmpty>{t("norolefound")}</CommandEmpty>
             <CommandGroup>
               {roles.map((role) => (
                 <CommandItem
@@ -75,7 +75,7 @@ const RoleDropDown = ({
                       value === role.role_name ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {t(role.role_name.toLowerCase())}
+                  {role.role_name}
                 </CommandItem>
               ))}
             </CommandGroup>

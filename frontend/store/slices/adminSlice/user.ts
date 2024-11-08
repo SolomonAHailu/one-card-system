@@ -180,7 +180,6 @@ export const handleFetchUser = createAsyncThunk<
   try {
     const response = await axios(config);
     if (response.data) {
-      console.log("RESPONSE FOUND FOR USER", response);
       return response.data;
     } else {
       toast.error("Fetch users failed");
@@ -212,7 +211,6 @@ export const handleCreateUser = createAsyncThunk<
     const response = await axios(config);
     if (response.data) {
       toast.success("User created successfully");
-      console.log("RESPONSE FOUND TO CREATE USER", response);
       return response.data;
     } else {
       toast.error("Create users failed");
@@ -244,7 +242,6 @@ export const handleUpdateUser = createAsyncThunk<
     const response = await axios(config);
     if (response.data) {
       toast.success("User updated successfully");
-      console.log("RESPONSE FOUND TO CREATE USER", response);
       return response.data;
     } else {
       toast.error("Update user failed");
@@ -276,7 +273,6 @@ export const handleDeleteUser = createAsyncThunk<
     const response = await axios(config);
     if (response.data) {
       toast.success("User deleted successfully");
-      console.log("RESPONSE FOUND TO DELETE USER", response);
       return response.data;
     } else {
       toast.error("Delete user failed");

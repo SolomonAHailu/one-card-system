@@ -2,7 +2,6 @@ import { RootState } from "@/store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   handleDeleteUser,
@@ -68,8 +67,6 @@ const UserList = ({
     totalUsers,
     isUserCreateLoading,
   } = useSelector((state: RootState) => state.user);
-
-  console.log("USER NAME TO BE FETCHED", name);
 
   useEffect(() => {
     dispatch<any>(handleFetchUser({ role_id, page, limit, name: name ?? "" }));
@@ -234,10 +231,8 @@ const UserList = ({
                 href="#"
                 className={cn(
                   `${
-                    currentPage === 1
-                      ? "bg-primary-foreground opacity-25 cursor-default"
-                      : ""
-                  } bg-primary-foreground hover:bg-primary-foreground text-xs`
+                    currentPage === 1 ? "opacity-35 cursor-default" : ""
+                  } bg-secondary-foreground/15 hover:bg-secondary-foreground/25 text-xs`
                 )}
                 onClick={() => setPage(Math.max(currentPage - 1, 1))}
               />
@@ -251,9 +246,9 @@ const UserList = ({
                 className={cn(
                   `${
                     currentPage === totalPages
-                      ? "bg-primary-foreground opacity-25 cursor-default"
+                      ? "opacity-35 cursor-default"
                       : ""
-                  } bg-primary-foreground hover:bg-primary-foreground text-xs`
+                  } bg-secondary-foreground/15 hover:bg-secondary-foreground/25 text-xs`
                 )}
                 onClick={() => setPage(Math.min(currentPage + 1, totalPages))}
               />

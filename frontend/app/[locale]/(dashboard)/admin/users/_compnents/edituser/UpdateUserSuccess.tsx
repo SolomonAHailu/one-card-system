@@ -19,7 +19,6 @@ const UpdateUserSuccess = () => {
   const t = useTranslations("adminusers");
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
-  const [showTooltip, setShowTooltip] = useState(false);
 
   const handleConfirmClick = () => {
     dispatch<any>(removeCurrentUser());
@@ -29,8 +28,7 @@ const UpdateUserSuccess = () => {
 
   const handlePasswordClick = () => {
     navigator.clipboard.writeText(`${user?.password}`);
-    toast.success("Password copied to clipboard");
-    setShowTooltip(false);
+    toast.success(t("passwordcopied"));
   };
 
   return (
@@ -44,9 +42,18 @@ const UpdateUserSuccess = () => {
             {t("temporarypassword")}
             <span className="text-[#3A5DD9] text-lg italic">{` ${user?.first_name.toUpperCase()} - ${user?.father_name.toUpperCase()}`}</span>
           </p>
-          <span className="text-lg font-medium text-green-600 py-3 px-3 rounded-md">
-            {user?.password}
-          </span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger onClick={handlePasswordClick}>
+                <span className="text-lg font-medium text-green-600 py-3 px-3 rounded-md">
+                  {user?.password}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t("copypassword")}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <p className="text-center mt-2">{t("pleasechangepassword")}</p>
         </div>
         <DialogClose
