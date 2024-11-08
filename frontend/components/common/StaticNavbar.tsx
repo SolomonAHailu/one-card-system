@@ -9,9 +9,8 @@ import { useState } from "react";
 import NavbarSheet from "./NavbarSheet";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { SidebarTrigger } from "../ui/sidebar";
 
-const Navbar = () => {
+const StaticNavbar = () => {
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.auth
   );
@@ -19,10 +18,15 @@ const Navbar = () => {
   return (
     <div className="relative h-16 z-50 inset-0 bg-secondary rounded-xl">
       <MaxWidthWrapper className="h-full">
-        {isAuthenticated && (
-          <SidebarTrigger className="absolute top-4 left-4" />
-        )}
-        <div className="flex items-center justify-end h-full w-full">
+        <div className="flex items-center justify-between h-full w-full">
+          <div className="relative flex items-center justify-center">
+            <Image
+              src="/assets/images/logo.png"
+              alt="logo"
+              width={60}
+              height={60}
+            />
+          </div>
           <div className="hidden md:flex items-center gap-x-8">
             {isAuthenticated && (
               <p className="text-sm">
@@ -43,4 +47,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default StaticNavbar;

@@ -150,7 +150,6 @@ export const handleFetchRole = createAsyncThunk<DataRecievedWhileFecthRoles>(
     try {
       const response = await axios(config);
       if (response.data) {
-        console.log("RESPONSE FOUND", response);
         return response.data;
       } else {
         toast.error("Get role Failed");
@@ -182,7 +181,6 @@ export const handleCreateRole = createAsyncThunk<RoleRecieved, RoleSend>(
       const response = await axios(config);
       if (response.data) {
         toast.success("Role created successfully");
-        console.log("RESPONSE FOUND", response);
         return response.data.data;
       } else {
         toast.error("Create role Failed");
@@ -213,7 +211,6 @@ export const handleUpdateRole = createAsyncThunk<RoleRecieved, RoleSend>(
     try {
       const response = await axios(config);
       if (response.data) {
-        console.log("RESPONSE FOUND", response);
         toast.success("Role updated successfully");
         return response.data.data;
       } else {
@@ -243,7 +240,6 @@ export const handleDeleteRole = createAsyncThunk<RoleRecieved, { id: number }>(
     try {
       const response = await axios(config);
       if (response.data) {
-        console.log("RESPONSE FOUND", response);
         toast.success("Role deleted successfully");
         return response.data.data;
       } else {

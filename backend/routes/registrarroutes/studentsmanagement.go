@@ -1,7 +1,7 @@
 package registrarroutes
 
 import (
-	"github.com/SolomonAHailu/one-card-system/backend/controllers/registrarcontrollers"
+	"github.com/SolomonAHailu/one-card-system/controllers/registrarcontrollers"
 	"github.com/SolomonAHailu/one-card-system/initializers"
 	"github.com/SolomonAHailu/one-card-system/middlewares"
 	"github.com/gin-gonic/gin"

@@ -73,11 +73,9 @@ const userPermissionSlice = createSlice({
         state.isUserPermissionError = null;
       })
       .addCase(handleFetchUserPermission.fulfilled, (state, action) => {
-        console.log("USER PERMISSIONS", action.payload.data);
         state.userPermissions = action.payload.data;
         state.isUserPermissionLoading = false;
         state.isUserPermissionError = null;
-        console.log("USER PERMISSIONS FOUDN ORIGINAL", state.userPermissions);
       })
       .addCase(handleFetchUserPermission.rejected, (state, action) => {
         state.isUserPermissionLoading = false;
@@ -121,8 +119,7 @@ export const handleCreateUserPermission = createAsyncThunk<
 
     try {
       const response = await axios(config);
-      if (response.data) {
-        console.log("RESPONSE FOUND TO CREATE USER", response);
+      if (response.data) {;
         dispatch<any>(increareCurrentPage());
         toast.success("User permission created successfully");
         return response.data;
@@ -158,7 +155,6 @@ export const handleFetchUserPermission = createAsyncThunk<
   try {
     const response = await axios(config);
     if (response.data) {
-      console.log("RESPONSE FOUND TO FETCH USER PERMISSION", response);
       return response.data;
     } else {
       toast.error("Fetch user permission failed");
@@ -194,7 +190,6 @@ export const handleUpdateUserPermission = createAsyncThunk<
     try {
       const response = await axios(config);
       if (response.data) {
-        console.log("RESPONSE FOUND TO CREATE USER", response);
         dispatch<any>(increareCurrentPage());
         toast.success("User permission updated successfully");
         return response.data;

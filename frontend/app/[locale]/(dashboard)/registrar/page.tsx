@@ -1,5 +1,5 @@
 const RegistrarDashboard = () => {
-  return <div>RegistrarDashboard</div>;
+  return <div className="h-full">RegistrarDashboard</div>;
 };
 
 export default RegistrarDashboard;

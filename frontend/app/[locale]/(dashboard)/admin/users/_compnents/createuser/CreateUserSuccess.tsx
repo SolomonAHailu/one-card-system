@@ -7,6 +7,12 @@ import { removeCurrentUser } from "@/store/slices/adminSlice/user";
 import { DialogClose } from "@/components/ui/dialog";
 import { resetUserPermissionState } from "@/store/slices/adminSlice/userpermission";
 import { useTranslations } from "next-intl";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const CreateUserSuccess = () => {
   const t = useTranslations("adminusers");
@@ -16,6 +22,11 @@ const CreateUserSuccess = () => {
     dispatch<any>(removeCurrentUser());
     dispatch<any>(resetUserPermissionState());
     toast.success(t("thankyouproceed"));
+  };
+
+  const handlePasswordClick = () => {
+    navigator.clipboard.writeText(`${user?.password}`);
+    toast.success(t("passwordcopied"));
   };
 
   return (
@@ -29,9 +40,18 @@ const CreateUserSuccess = () => {
             {t("temporarypassword")}
             <span className="text-muted-foreground text-lg font-semibold">{`${user?.first_name.toUpperCase()} - ${user?.father_name.toUpperCase()}`}</span>
           </p>
-          <span className="text-lg font-medium text-green-600 py-3 px-3 rounded-md">
-            {user?.password}
-          </span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger onClick={handlePasswordClick}>
+                <span className="text-lg font-medium text-green-600 py-3 px-3 rounded-md">
+                  {user?.password}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t("copypassword")}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <p className="text-center mt-2">{t("pleasechangepassword")}</p>
         </div>
         <DialogClose

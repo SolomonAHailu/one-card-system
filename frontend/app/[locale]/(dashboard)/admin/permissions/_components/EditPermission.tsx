@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { createPermissionSchema } from "@/Validators/admin/create-permission-validator";
+import { createPermissionSchema } from "@/validators/admin/create-permission-validator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";

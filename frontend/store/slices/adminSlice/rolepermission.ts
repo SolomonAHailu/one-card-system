@@ -119,10 +119,6 @@ export const handleUpdateRolePermissionByRoleId = createAsyncThunk<
 >(
   "rolepermission/updaterolepermission",
   async ({ role_id, permission_ids }) => {
-    console.log("DATA SEND TO UPDATE ROLE PERMISSION", {
-      role_id,
-      permission_ids,
-    });
     const payload = { role_id, permission_ids };
     const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/rolepermission/${role_id}`;
     const config: AxiosRequestConfig = {

@@ -20,9 +20,8 @@ import {
   RoleSend,
 } from "@/store/slices/adminSlice/role";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-import { createRoleSchema } from "../../../../../../Validators/admin/create-role-validators";
 import { useState } from "react";
+import { createRoleSchema } from "@/validators/admin/create-role-validators";
 
 
 const EditRole = ({ role }: { role: RoleRecieved }) => {

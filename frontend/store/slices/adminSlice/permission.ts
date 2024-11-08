@@ -57,9 +57,6 @@ const permissionSlice = createSlice({
     resetPermissionUpdateSuccess: (state) => {
       state.isPermissionUpdateSuccess = false;
     },
-    resetPermissionDeleteSuccess: (state) => {
-      state.isPermissionDeleteSuceess = false;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -149,7 +146,6 @@ export const handleFetchPermissions = createAsyncThunk<PermissionsRecievedData>(
     try {
       const response = await axios(config);
       if (response.data) {
-        console.log("RESPONSE FOUND", response);
         return response.data;
       } else {
         throw new Error("Get permission Failed");
@@ -180,7 +176,7 @@ export const handleCreatePermission = createAsyncThunk<
   try {
     const response = await axios(config);
     if (response.data) {
-      console.log("RESPONSE FOUND", response);
+      toast.success("Permission created successfully");
       return response.data.data;
     } else {
       throw new Error("Create permission Failed");
@@ -210,7 +206,6 @@ export const handleUpdatePermission = createAsyncThunk<
   try {
     const response = await axios(config);
     if (response.data) {
-      console.log("RESPONSE FOUND", response);
       toast.success("Permission updated successfully");
       return response.data.data;
     } else {
@@ -240,7 +235,6 @@ export const handleDeletePermission = createAsyncThunk<
   try {
     const response = await axios(config);
     if (response.data) {
-      console.log("RESPONSE FOUND", response);
       toast.success("Permission deleted successfully");
       return response.data.data;
     } else {
@@ -253,9 +247,6 @@ export const handleDeletePermission = createAsyncThunk<
   }
 });
 
-export const {
-  resetRoleCreateSuccess,
-  resetPermissionDeleteSuccess,
-  resetPermissionUpdateSuccess,
-} = permissionSlice.actions;
+export const { resetRoleCreateSuccess, resetPermissionUpdateSuccess } =
+  permissionSlice.actions;
 export default permissionSlice.reducer;
