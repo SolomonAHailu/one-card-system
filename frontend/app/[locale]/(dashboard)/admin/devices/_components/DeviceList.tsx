@@ -8,15 +8,6 @@ import {
   resetDeviceUpdateSuccess,
 } from "@/store/slices/adminSlice/device";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
   Table,
   TableBody,
   TableCell,
@@ -26,11 +17,9 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import EditDevice from "./EditDevice";
-// import DeviceDetails from "./DeviceDetails";
-import { DeleteIcon, EditIcon } from "lucide-react";
-import { MdDelete, MdDetails } from "react-icons/md";
-import { FaListAlt, FaSpinner } from "react-icons/fa";
+import { EditIcon } from "lucide-react";
+import { MdDelete } from "react-icons/md";
+import { FaSpinner } from "react-icons/fa";
 import {
   Dialog,
   DialogTrigger,
@@ -40,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import EditDevice from "./EditDevice";
 
 const DeviceList = () => {
   const t = useTranslations("adminDevice");

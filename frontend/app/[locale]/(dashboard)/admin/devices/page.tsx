@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { ImLoop2 } from "react-icons/im";
 import { useDispatch } from "react-redux";
-import DeviceList from "./_component/DeviceList";
+import DeviceList from "./_components/DeviceList";
 import { handleFetchDevice } from "@/store/slices/adminSlice/device";
-import CreateDevice from "./_component/Createdevice";
+import CreateDevice from "./_components/CreateDevice";
 
 const DevicesPage = () => {
   const dispatch = useDispatch();
