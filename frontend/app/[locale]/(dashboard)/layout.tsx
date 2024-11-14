@@ -13,7 +13,7 @@ export default function DashboardLayout({
         <AppSidebar />
         <main className="w-full h-screen overflow-hidden px-2 py-2 flex flex-col gap-y-2">
           <Navbar />
-          <div className="flex-1">{children}</div>
+          <div className="flex-1 ">{children}</div>
         </main>
       </SidebarProvider>
     </div>

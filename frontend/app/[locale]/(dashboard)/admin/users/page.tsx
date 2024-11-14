@@ -58,7 +58,7 @@ const UsersPage = () => {
           <div className="flex items-center gap-x-20">
             <div className="flex items-center gap-x-6">
               <div
-                className="h-10 w-10 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer"
+                className="h-8 w-8 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer"
                 onClick={refetchUsers}
               >
                 <ImLoop2

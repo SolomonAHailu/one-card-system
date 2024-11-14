@@ -33,7 +33,7 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <div className="relative min-h-screen">{children}</div>
-              <Toaster position="top-right" duration={4000} />
+              <Toaster position="top-right" duration={3000} />
             </ThemeProvider>
           </StoreProvider>
         </NextIntlClientProvider>
