@@ -4,7 +4,7 @@ import { ImLoop2 } from "react-icons/im";
 import { useDispatch } from "react-redux";
 import DeviceList from "./_component/DeviceList";
 import { handleFetchDevice } from "@/store/slices/adminSlice/device";
-import CreateDevice from "./_component/Createdevice";
+import CreateDevice from "./_component/createdevice";
 
 const DevicesPage = () => {
   const dispatch = useDispatch();

@@ -26,8 +26,6 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import EditDevice from "./EditDevice";
-// import DeviceDetails from "./DeviceDetails";
 import { DeleteIcon, EditIcon } from "lucide-react";
 import { MdDelete, MdDetails } from "react-icons/md";
 import { FaListAlt, FaSpinner } from "react-icons/fa";
@@ -40,6 +38,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import EditDevice from "./editDevice";
 
 const DeviceList = () => {
   const t = useTranslations("adminDevice");
