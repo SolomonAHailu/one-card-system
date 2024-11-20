@@ -10,11 +10,12 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarGroupContent,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Separator } from "../ui/separator";
 
 export function AppSidebar() {
   const router = useRouter();
@@ -32,64 +33,69 @@ export function AppSidebar() {
   );
 
   return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup className="flex flex-col gap-y-4">
-          <div className="flex items-center gap-x-4">
-            <div className="relative flex items-center justify-center h-[80px] w-[80px] rounded-full overflow-hidden">
-              <Image
-                src="/assets/images/logo.png"
-                alt="logo"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <p className="text-center text-2xl uppercase font-medium">
-              <span className="text-blue-500">Semera</span>{" "}
-              <span className="block text-green-400">University</span>
-            </p>
+    <Sidebar
+      // className="rounded-xl border-none bg-secondary "
+      // className="border-none"
+      variant="floating"
+    >
+      <SidebarHeader>
+        <div className="flex items-center gap-x-2">
+          <div className="relative flex items-center justify-center h-[80px] w-[80px] rounded-full overflow-hidden">
+            <Image
+              width={65}
+              height={65}
+              src="/assets/images/logo.png"
+              alt="logo"
+              // fill
+              className="object-contain"
+            />
           </div>
-          <hr />
-          <SidebarGroupContent>
-            <SidebarMenu className="flex flex-col gap-y-2">
-              {currentSidebarItems.map((role, index) => {
-                const Icon = role.icon;
-
-                return (
-                  <SidebarMenuItem
-                    key={index}
-                    className={`cursor-pointer flex items-center py-1 gap-x-4 ${
-                      role.permission.toLowerCase().trim() === currentPath
-                        ? "border-l-4 border-[#3A5DD9]  pr-4"
-                        : "hover:bg-secondary-foreground/5 hover:rounded-xs"
-                    }`}
-                    onClick={() =>
-                      router.push(
-                        `/${locale}/${user?.role.role_name
-                          .toLowerCase()
-                          .trim()}/${role.permission.toLowerCase().trim()}`
-                      )
+          <p className="text-center text-sm uppercase font-medium">
+            <span className="text-blue-500">Semera</span>{" "}
+            <span className="block text-green-400">University</span>
+          </p>
+        </div>
+        <Separator className="my-4" />
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroupContent className="pt-4 px-2">
+          <SidebarMenu className="flex flex-col gap-y-2 ">
+            {currentSidebarItems.map((role, index) => {
+              const Icon = role.icon;
+              return (
+                <SidebarMenuItem
+                  key={index}
+                  className={`cursor-pointer flex items-center py-1 gap-x-4 rounded-r-2xl ${
+                    role.permission.toLowerCase().trim() === currentPath
+                      ? "border-l-4 border-[#3A5DD9]  pr-4"
+                      : "hover:bg-secondary-foreground/5 hover:rounded-xs"
+                  }`}
+                  onClick={() =>
+                    router.push(
+                      `/${locale}/${user?.role.role_name
+                        .toLowerCase()
+                        .trim()}/${role.permission.toLowerCase().trim()}`
+                    )
+                  }
+                >
+                  <Icon className="ml-2" size={20} />
+                  <h1
+                    className={
+                      isOpen
+                        ? "block font-poppins font-light text-lg leading-8"
+                        : "hidden"
                     }
                   >
-                    <Icon className="ml-2" />
-                    <h1
-                      className={
-                        isOpen
-                          ? "block font-poppins font-light text-lg leading-8"
-                          : "hidden"
-                      }
-                    >
-                      {t(`${role.permission.toLowerCase().trim()}`)}
-                    </h1>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+                    {t(`${role.permission.toLowerCase().trim()}`)}
+                  </h1>
+                </SidebarMenuItem>
+              );
+            })}
+          </SidebarMenu>
+        </SidebarGroupContent>
       </SidebarContent>
       <SidebarFooter>
-        <Copyright />
+        <Copyright name="Semera University" />
       </SidebarFooter>
     </Sidebar>
   );

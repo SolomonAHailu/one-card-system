@@ -8,15 +8,6 @@ import {
   resetDeviceUpdateSuccess,
 } from "@/store/slices/adminSlice/device";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
   Table,
   TableBody,
   TableCell,
@@ -26,9 +17,9 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { DeleteIcon, EditIcon } from "lucide-react";
-import { MdDelete, MdDetails } from "react-icons/md";
-import { FaListAlt, FaSpinner } from "react-icons/fa";
+import { EditIcon } from "lucide-react";
+import { MdDelete } from "react-icons/md";
+import { FaSpinner } from "react-icons/fa";
 import {
   Dialog,
   DialogTrigger,
@@ -38,7 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import EditDevice from "./editDevice";
+import EditDevice from "./EditDevice";
 
 const DeviceList = () => {
   const t = useTranslations("adminDevice");
@@ -60,7 +51,7 @@ const DeviceList = () => {
     <div className="relative rounded-xl p-0 h-[calc(100vh-150px)] flex flex-col gap-y-2">
       {isDeviceLoading ? (
         <div className="flex flex-col items-center w-full gap-y-8">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 7 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
           ))}
         </div>

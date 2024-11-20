@@ -1,5 +1,6 @@
 "use client";
 import { IoMdLogOut } from "react-icons/io";
+import { LogOut } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -25,8 +26,10 @@ const LogoutButton = () => {
   return (
     <Dialog>
       <DialogTrigger>
-        <div className="bg-transparent hover:bg-background/90">
-          <IoMdLogOut className="text-red-500" />
+        {/* <div className="bg-transparent hover:bg-background/90"> */}
+        <div className="bg-transparent">
+          {/* <IoMdLogOut className="text-red-500" /> */}
+          <LogOut className="text-red-500" size={17} />
         </div>
       </DialogTrigger>
       <DialogContent className="max-w-xs text-center flex flex-col gap-y-8">

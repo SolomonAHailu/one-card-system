@@ -25,6 +25,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { MdOutlinePersonAddAlt1 } from "react-icons/md";
+import { TbDeviceDesktopPlus } from "react-icons/tb";
+import { UserRoundPlus } from "lucide-react";
 
 const CreateDevice = () => {
   const t = useTranslations("adminDevice");
@@ -53,8 +55,9 @@ const CreateDevice = () => {
 
   return (
     <Dialog>
-      <DialogTrigger className="h-10 w-10 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm">
-        <MdOutlinePersonAddAlt1 className="text-xl text-white" />
+      <DialogTrigger className="h-8 w-8 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm">
+        {/* <MdOutlinePersonAddAlt1 className="text-xl text-white" /> */}
+        <TbDeviceDesktopPlus className="text-xl text-white" />
       </DialogTrigger>
       <DialogContent className="max-h-[700px] overflow-y-auto">
         <DialogHeader>

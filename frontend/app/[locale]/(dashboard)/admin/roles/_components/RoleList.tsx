@@ -47,7 +47,7 @@ const RoleList = () => {
     <div className="relative rounded-xl p-0 h-[calc(100vh-150px)] flex flex-col gap-y-2">
       {isRoleLoading ? (
         <div className="flex flex-col items-center w-full gap-y-8">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 7 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
           ))}
         </div>

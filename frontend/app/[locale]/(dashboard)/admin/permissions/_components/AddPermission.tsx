@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { FaSpinner } from "react-icons/fa";
 import { MdAddModerator } from "react-icons/md";
+import { MdDomainAdd } from "react-icons/md";
 import { Label } from "@/components/ui/label";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -59,8 +60,8 @@ const AddPermissions = () => {
   };
   return (
     <Dialog>
-      <DialogTrigger className="h-10 w-10 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer">
-        <MdAddModerator className="text-xl text-white" />
+      <DialogTrigger className="h-8 w-8 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer">
+        <MdDomainAdd className="text-xl text-white" />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -119,7 +119,7 @@ const UserList = ({
     return (
       <div className="h-[calc(100vh-165px)] flex flex-col items-center justify-between w-full">
         <div className="flex flex-col items-center w-full gap-y-8">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 7 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
           ))}
         </div>
@@ -130,7 +130,7 @@ const UserList = ({
         </div>
       </div>
     );
-  } else if (users.length === 0) {
+  } else if (users?.length === 0) {
     return <div className="text-[#3A5DD9]">{t("nouser")}</div>;
   } else {
     return (
@@ -149,7 +149,7 @@ const UserList = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user, index) => (
+              {users?.map((user, index) => (
                 <TableRow
                   key={user.ID}
                   className={cn(

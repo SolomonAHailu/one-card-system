@@ -36,7 +36,8 @@ const SearchByName = ({
     <div className="flex items-center gap-x-2">
       <Input
         className={cn(
-          "min-w-96 focus-visible:ring-1 text-sm mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
+          // "min-w-96 focus-visible:ring-1 text-sm mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
+          "min-w-96 focus-visible:ring-1 text-sm mt-1 block w-ful rounded-md shadow-sm focus:ring-0 focus:border-0"
         )}
         placeholder={t("searchbyname")}
         value={searchName}

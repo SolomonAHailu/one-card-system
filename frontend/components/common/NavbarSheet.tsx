@@ -30,7 +30,7 @@ const NavbarSheet = () => {
             {isAuthenticated && (
               <p className="text-sm">
                 <span className="font-semibold mr-2 text-lg">Welcome</span>
-                {` ${user?.first_name}-${user?.father_name}`}
+                {` ${user?.first_name} ${user?.father_name}`}
               </p>
             )}
           </SheetTitle>

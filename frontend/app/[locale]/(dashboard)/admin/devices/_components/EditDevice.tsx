@@ -1,7 +1,5 @@
-import { MdOutlinePersonAddAlt1 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  Dialog,
   DialogClose,
   DialogContent,
   DialogDescription,
@@ -24,26 +22,19 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { cn } from "@/lib/utils";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RootState } from "@/store";
 
 const EditDevice = ({ device }: { device: DeviceRecieved }) => {
   const t = useTranslations("adminDevice");
   const dispatch = useDispatch();
   const [hasChanges, setHasChanges] = useState(false);
-  const {
-    isDeviceCreateLoading,
-    isDeviceCreateError,
-    isDeviceUpdateSuccess,
-    isDeviceUpdateLoading,
-  } = useSelector((state: RootState) => state.device);
+  const { isDeviceCreateError, isDeviceUpdateSuccess, isDeviceUpdateLoading } =
+    useSelector((state: RootState) => state.device);
 
   const {
     register,
     handleSubmit,
-    setValue,
-    clearErrors,
-    reset,
     formState: { errors },
   } = useForm<DataSendToCreateDevice>({
     resolver: yupResolver(createDeviceSchema(t)),
@@ -71,9 +62,7 @@ const EditDevice = ({ device }: { device: DeviceRecieved }) => {
     <DialogContent className="max-h-[700px] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>{t("updatedevice")}</DialogTitle>
-        <DialogDescription>
-          {t("becarefull")}
-        </DialogDescription>
+        <DialogDescription>{t("becarefull")}</DialogDescription>
       </DialogHeader>
       <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="text-center flex flex-col gap-y-4">

@@ -26,7 +26,7 @@ const AllrolesPage = () => {
     <div className="flex flex-col gap-y-3">
       <div className="flex items-center justify-end gap-x-4">
         <div
-          className="h-10 w-10 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer"
+          className="h-8 w-8 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer"
           onClick={refetchRoles}
         >
           <ImLoop2

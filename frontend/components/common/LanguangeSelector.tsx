@@ -23,30 +23,30 @@ const LanguangeSelector = () => {
     };
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="px-2 py-1 flex gap-2 justify-center items-center">
+      <DropdownMenuTrigger className="px-2 py-1 flex gap-1 justify-center items-center">
         {selectedLanguage === "EN" ? (
-          <FaGlobe className="text-blue-400 text-xl" />
+          <FaGlobe className="text-blue-400 text-xs" />
         ) : (
-          <ReactCountryFlag countryCode="ET" svg className="text-xl" />
+          <ReactCountryFlag countryCode="ET" svg className="text-xs" />
         )}
-        <p>{selectedLanguage === "AM" ? "አማ" : "EN"}</p>
-        <IoIosArrowDown />
+        <p className="text-xs">{selectedLanguage === "AM" ? "አማ" : "EN"}</p>
+        <IoIosArrowDown className="text-xs" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-10">
         <DropdownMenuItem
           onClick={handleSelectedLanguage("EN")}
           className="flex items-center gap-2"
         >
-          <FaGlobe className="text-blue-400 text-xl" />
-          <p>EN</p>
+          <FaGlobe className="text-blue-400 text-xs" />
+          <p className="text-xs">EN</p>
         </DropdownMenuItem>
         <hr className="border-[#5A7184] border-opacity-20" />
         <DropdownMenuItem
           onClick={handleSelectedLanguage("AM")}
           className="flex items-center gap-2"
         >
-          <ReactCountryFlag countryCode="ET" svg className="text-xl" />
-          <p>አማ</p>
+          <ReactCountryFlag countryCode="ET" svg className="text-xs" />
+          <p className="text-xs">አማ</p>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
