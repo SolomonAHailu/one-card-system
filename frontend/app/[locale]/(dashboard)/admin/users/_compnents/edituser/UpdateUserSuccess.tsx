@@ -35,12 +35,12 @@ const UpdateUserSuccess = () => {
     <div className="flex flex-col gap-y-16">
       <div className="flex flex-col gap-y-3">
         <h2 className="text-xl font-semibold text-center text-green-600">
-          {t("useraccountcreated")}
+          {t("useraccountupdated")}
         </h2>
         <div className="flex flex-col items-center gap-y-2">
           <p className="text-center">
             {t("temporarypassword")}
-            <span className="text-[#3A5DD9] text-lg italic">{` ${user?.first_name.toUpperCase()} - ${user?.father_name.toUpperCase()}`}</span>
+            <span className="text-[#3A5DD9] text-lg italic block">{` ${user?.first_name.toUpperCase()} - ${user?.father_name.toUpperCase()}`}</span>
           </p>
           <TooltipProvider>
             <Tooltip>

@@ -2,7 +2,9 @@ package registrarcontrollers
 
 import (
 	"log"
+	"math"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/SolomonAHailu/one-card-system/models/registrarmodels"
@@ -48,8 +50,7 @@ func SyncDataFromSMS(c *gin.Context, db *gorm.DB) {
 
 // shouldUpdateStudent compares two Student records and returns true if there are any differences.
 func shouldUpdateStudent(existing, new registrarmodels.Student) bool {
-	return existing.CardNumber != new.CardNumber ||
-		existing.FirstName != new.FirstName ||
+	return existing.FirstName != new.FirstName ||
 		existing.FatherName != new.FatherName ||
 		existing.GrandFatherName != new.GrandFatherName ||
 		existing.Email != new.Email ||
@@ -66,14 +67,60 @@ func shouldUpdateStudent(existing, new registrarmodels.Student) bool {
 
 // GetStudents retrieves a list of students from the database and sends it as a JSON response.
 func GetStudents(c *gin.Context, db *gorm.DB) {
-
 	var students []registrarmodels.Student
-	if err := db.Find(&students).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch students"})
+	var total int64
+
+	// Query parameters
+	page := c.DefaultQuery("page", "1")
+	limit := c.DefaultQuery("limit", "10")
+	name := c.Query("name") // Optional 'name' query parameter
+
+	// Parse and validate pagination parameters
+	pageInt, err := strconv.Atoi(page)
+	if err != nil || pageInt < 1 {
+		pageInt = 1
+	}
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil || limitInt < 1 {
+		limitInt = 10
+	}
+
+	// Start building the query
+	query := db.Model(&registrarmodels.Student{})
+
+	// Apply name filter if provided
+	if name != "" {
+		query = query.Where("LOWER(first_name) LIKE LOWER(?) OR LOWER(father_name) LIKE LOWER(?) OR LOWER(grand_father_name) LIKE LOWER(?)", "%"+name+"%", "%"+name+"%", "%"+name+"%")
+	}
+
+	// Get total count for pagination
+	if err := query.Count(&total).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching students count"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": students})
 
+	// Fetch paginated data with Preloads
+	if err := query.Preload("LibraryAssigned").
+		Preload("CafeteriaAssigned").
+		Preload("DormitoryAssigned").
+		Preload("RegisteredBy").
+		Limit(limitInt).
+		Offset((pageInt - 1) * limitInt).
+		Find(&students).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching students"})
+		return
+	}
+
+	// Calculate total pages
+	totalPages := int64(math.Ceil(float64(total) / float64(limitInt)))
+
+	// Respond with paginated data
+	c.JSON(http.StatusOK, gin.H{
+		"data":          students,
+		"currentPage":   pageInt,
+		"totalPages":    totalPages,
+		"totalStudents": total,
+	})
 }
 
 // parseDate parses a date string and returns a time.Time object.
@@ -88,11 +135,10 @@ func fetchStudentDataFromSMS() ([]registrarmodels.Student, error) {
 	return []registrarmodels.Student{
 		{
 			StudentID:       "ST12345",
-			CardNumber:      "1234567890",
 			FirstName:       "Yosef",
 			FatherName:      "Alemu",
 			GrandFatherName: "Doe Sr. Sr.",
-			Email:           "john@example.com",
+			Email:           "john1@example.com",
 			Phone:           "123456789",
 			Sex:             registrarmodels.SexMale,
 			DateOfBirth:     parseDate("2000-05-15"),
@@ -102,28 +148,43 @@ func fetchStudentDataFromSMS() ([]registrarmodels.Student, error) {
 			Semester:        1,
 			Religion:        "Christianity",
 			Photo:           "john_photo.png",
-			RegisteredBy:    "Admin",
 			RegisteredDate:  parseDate("2023-08-10"),
 			Status:          registrarmodels.StatusActive,
 		},
 		{
-			StudentID:       "ST67890",
-			CardNumber:      "0987654321",
-			FirstName:       "Jane",
-			FatherName:      "Smith",
-			GrandFatherName: "Smith Sr.",
-			Email:           "jane@example.com",
-			Phone:           "987654321",
-			Sex:             registrarmodels.SexFemale,
-			DateOfBirth:     parseDate("2001-07-20"),
-			Program:         "Electrical Engineering",
-			Section:         "B",
-			Year:            2,
-			Semester:        2,
-			Religion:        "Islam",
-			Photo:           "jane_photo.png",
-			RegisteredBy:    "Admin",
-			RegisteredDate:  parseDate("2023-08-11"),
+			StudentID:       "ST12346",
+			FirstName:       "Yosef",
+			FatherName:      "Alemu",
+			GrandFatherName: "Doe Sr. Sr.",
+			Email:           "john2@example.com",
+			Phone:           "123456789",
+			Sex:             registrarmodels.SexMale,
+			DateOfBirth:     parseDate("2000-05-15"),
+			Program:         "Computer Science",
+			Section:         "A",
+			Year:            3,
+			Semester:        1,
+			Religion:        "Christianity",
+			Photo:           "john_photo.png",
+			RegisteredDate:  parseDate("2023-08-10"),
+			Status:          registrarmodels.StatusActive,
+		},
+		{
+			StudentID:       "ST12340",
+			FirstName:       "Yosef",
+			FatherName:      "Alemu",
+			GrandFatherName: "Doe Sr. Sr.",
+			Email:           "john3@example.com",
+			Phone:           "123456789",
+			Sex:             registrarmodels.SexMale,
+			DateOfBirth:     parseDate("2000-05-15"),
+			Program:         "Computer Science",
+			Section:         "A",
+			Year:            3,
+			Semester:        1,
+			Religion:        "Christianity",
+			Photo:           "john_photo.png",
+			RegisteredDate:  parseDate("2023-08-10"),
 			Status:          registrarmodels.StatusActive,
 		},
 	}, nil

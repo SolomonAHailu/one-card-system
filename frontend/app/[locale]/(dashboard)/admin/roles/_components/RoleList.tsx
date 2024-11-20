@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "../../../../../../components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TbListDetails } from "react-icons/tb";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -17,23 +17,26 @@ import {
   DialogClose,
   DialogContent,
   DialogHeader,
-} from "../../../../../../components/ui/dialog";
+} from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import EditRole from "./EditRole";
-import { Button } from "../../../../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   handleDeleteRole,
   resetRoleDeleteSuccess,
   resetRoleUpdateSuccess,
+  RoleRecieved,
 } from "@/store/slices/adminSlice/role";
 import { FaListAlt, FaSpinner } from "react-icons/fa";
 import { EditIcon } from "lucide-react";
 import { MdDelete } from "react-icons/md";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
-const RoleList = () => {
+const RoleList = ({ searchTerm }: { searchTerm: string }) => {
   const t = useTranslations("roles");
   const dispatch = useDispatch();
+  const router = useRouter();
   const locale = usePathname().split("/")[1];
   const {
     roles,
@@ -42,9 +45,22 @@ const RoleList = () => {
     isRoleDeleteLoading,
     isRoleDeleteSuccess,
   } = useSelector((state: RootState) => state.role);
-  const router = useRouter();
+  const [rolesToDisplay, setRolesToDisplay] = useState<RoleRecieved[]>(roles);
+
+  useEffect(() => {
+    if (searchTerm) {
+      setRolesToDisplay(
+        roles.filter((role) =>
+          role.role_name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    } else {
+      setRolesToDisplay(roles);
+    }
+  }, [dispatch, searchTerm, roles]);
+
   return (
-    <div className="relative rounded-xl p-0 h-[calc(100vh-150px)] flex flex-col gap-y-2">
+    <div className="relative rounded-xl p-0 h-[calc(100vh-120px)] flex flex-col gap-y-2">
       {isRoleLoading ? (
         <div className="flex flex-col items-center w-full gap-y-8">
           {Array.from({ length: 7 }).map((_, index) => (
@@ -65,7 +81,7 @@ const RoleList = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {roles.map((role, index) => (
+            {rolesToDisplay.map((role, index) => (
               <TableRow
                 key={role.ID}
                 className={cn(
@@ -112,8 +128,7 @@ const RoleList = () => {
                       <DialogHeader className="mt-4 mx-2">
                         <p className="text-center">
                           {t("suretodelete")}
-                          <span className="text-[#3A5DD9] italic underline">{` ${role.role_name} `}</span>
-                          ?
+                          <span className="text-[#3A5DD9] italic underline block">{` ${role.role_name} `}</span>
                         </p>
                       </DialogHeader>
                       <div className="flex items-center justify-evenly">

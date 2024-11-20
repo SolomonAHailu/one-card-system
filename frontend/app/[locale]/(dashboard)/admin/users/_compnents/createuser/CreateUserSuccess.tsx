@@ -38,7 +38,7 @@ const CreateUserSuccess = () => {
         <div className="flex flex-col items-center gap-y-2">
           <p className="text-center">
             {t("temporarypassword")}
-            <span className="text-muted-foreground text-lg font-semibold">{`${user?.first_name.toUpperCase()} - ${user?.father_name.toUpperCase()}`}</span>
+            <span className="text-muted-foreground text-lg font-semibold block">{`${user?.first_name.toUpperCase()} - ${user?.father_name.toUpperCase()}`}</span>
           </p>
           <TooltipProvider>
             <Tooltip>

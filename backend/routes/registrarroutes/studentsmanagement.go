@@ -8,7 +8,7 @@ import (
 )
 
 func RegisterStudentManagementRoutes(r *gin.Engine) {
-	v1 := r.Group("/api/v1/registrar").Use(middlewares.AuthMiddleware(), middlewares.RoleRequired(1))
+	v1 := r.Group("/api/v1/registrar").Use(middlewares.AuthMiddleware(), middlewares.RoleRequired(2))
 	{
 		//create user route
 		// v1.POST("/createstudent", func(c *gin.Context) {

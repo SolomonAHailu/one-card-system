@@ -57,6 +57,7 @@
     "edituser": "Edit user",
     "editpermission": "Edit permission",
     "copypassword": "Copy Password",
+    "useraccountupdated": "Account Updated Successfully!",
     "passwordcopied": "Password copied to clipboard"
   }
 }

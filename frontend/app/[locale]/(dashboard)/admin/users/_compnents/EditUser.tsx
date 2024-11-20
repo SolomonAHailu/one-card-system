@@ -25,7 +25,7 @@ const EditUser = ({ user }: { user: UserRecieved }) => {
       <DialogHeader>
         <DialogTitle>
           {currentPageUserCreate == 1
-            ? t("createuser")
+            ? t("edituser")
             : currentPageUserCreate == 2
             ? t("assignpermission")
             : t("getpassword")}

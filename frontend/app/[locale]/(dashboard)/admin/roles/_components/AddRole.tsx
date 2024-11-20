@@ -58,8 +58,7 @@ const AddRole = () => {
   return (
     <Dialog>
       <DialogTrigger className="h-8 w-8 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer">
-        {/* <MdDomainAdd className="text-xl text-white" /> */}
-        <MdAddModerator className="text-xl text-white" />
+        <MdDomainAdd className="text-xl text-white" />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

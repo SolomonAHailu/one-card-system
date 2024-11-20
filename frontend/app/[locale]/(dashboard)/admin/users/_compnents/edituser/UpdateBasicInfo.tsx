@@ -230,7 +230,7 @@ const UpdateBasicInfo = ({ user }: { user: UserRecieved }) => {
           disabled={isUserCreateLoading}
           className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
         >
-          <span>{t("createuser")}</span>
+          <span>{t("edituser")}</span>
           {isUserCreateLoading && (
             <FaSpinner className="animate-spin ml-2 text-white" />
           )}

@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { RootState } from "@/store";
 import {
   handleDeletePermission,
+  PermissionRecieved,
   resetPermissionUpdateSuccess,
 } from "@/store/slices/adminSlice/permission";
 import { DialogTrigger } from "@radix-ui/react-dialog";
@@ -28,17 +29,31 @@ import { FaSpinner } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import EditPermission from "./EditPermission";
+import { useEffect, useState } from "react";
 
-const PermissionList = () => {
+const PermissionList = ({ searchTerm }: { searchTerm: string }) => {
   const t = useTranslations("permission");
   const dispatch = useDispatch();
-  const router = useRouter();
-  const locale = usePathname().split("/")[1];
   const { permissions, isPermissionLoading, isPermissionDeleteLoading } =
     useSelector((state: RootState) => state.permission);
+  const [permissionToDisplay, setPermissionToDisplay] =
+    useState<PermissionRecieved[]>(permissions);
+  useEffect(() => {
+    if (searchTerm) {
+      setPermissionToDisplay(
+        permissions.filter((permission) =>
+          permission.permissions_name
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        )
+      );
+    } else {
+      setPermissionToDisplay(permissions);
+    }
+  }, [searchTerm, permissions, dispatch]);
 
   return (
-    <div className="relative rounded-xl p-0 h-[calc(100vh-150px)] flex flex-col gap-y-2">
+    <div className="relative rounded-xl p-0 h-[calc(100vh-120px)] flex flex-col gap-y-2">
       {isPermissionLoading ? (
         <div className="flex flex-col items-center w-full gap-y-8">
           {Array.from({ length: 7 }).map((_, index) => (
@@ -58,7 +73,7 @@ const PermissionList = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {permissions.map((permission, index) => (
+            {permissionToDisplay.map((permission, index) => (
               <TableRow
                 key={permission.ID}
                 className={cn(
@@ -96,8 +111,7 @@ const PermissionList = () => {
                       <DialogHeader className="mt-4 mx-2">
                         <p className="text-center">
                           {t("areyousuretodeletepermission")}
-                          <span className="text-[#3A5DD9] italic underline">{`${permission.permissions_name} `}</span>
-                          ?
+                          <span className="text-[#3A5DD9] italic underline block">{`${permission.permissions_name} `}</span>
                         </p>
                       </DialogHeader>
                       <div className="flex items-center justify-evenly">

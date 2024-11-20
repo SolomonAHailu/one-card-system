@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
 	"github.com/SolomonAHailu/one-card-system/models/cafeteriamodels"
 	"github.com/SolomonAHailu/one-card-system/models/dormitorymodels"
 	"github.com/SolomonAHailu/one-card-system/models/librarymodels"
@@ -26,7 +27,7 @@ const (
 type Student struct {
 	gorm.Model
 	StudentID         string                      `gorm:"type:varchar(255);not null;index" json:"student_id"`
-	CardNumber        string                      `gorm:"type:varchar(255);not null;uniqueIndex" json:"card_number"`
+	CardNumber        string                      `gorm:"type:varchar(255);default:NULL;uniqueIndex" json:"card_number"`
 	FirstName         string                      `gorm:"type:varchar(255);not null" json:"first_name"`
 	FatherName        string                      `gorm:"type:varchar(255);not null" json:"father_name"`
 	GrandFatherName   string                      `gorm:"type:varchar(255);not null" json:"grand_father_name"`
@@ -46,7 +47,8 @@ type Student struct {
 	CafeteriaAssigned cafeteriamodels.Cafeterias  `gorm:"foreignKey:CafeteriaID;references:ID" json:"cafeteria_assigned"`
 	DormitoryID       *int                        `gorm:"type:int;null" json:"dormitory_id"`
 	DormitoryAssigned dormitorymodels.Dormitories `gorm:"foreignKey:DormitoryID;references:ID" json:"dormitory_assigned"`
-	RegisteredBy      string                      `gorm:"type:varchar(255);not null" json:"registered_by"`
+	RegisteredByID    *int                        `gorm:"type:int;null" json:"registered_by_id"`
+	RegisteredBy      adminmodels.Users           `gorm:"foreignKey:RegisteredByID;references:ID" json:"registered_by"`
 	RegisteredDate    time.Time                   `gorm:"type:date;not null" json:"registered_date"`
 	Status            StatusType                  `gorm:"type:varchar(50);not null" json:"status"`
 }

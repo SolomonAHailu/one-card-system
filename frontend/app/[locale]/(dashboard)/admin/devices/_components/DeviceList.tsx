@@ -48,7 +48,7 @@ const DeviceList = () => {
     dispatch<any>(handleFetchDevice());
   }, [dispatch]);
   return (
-    <div className="relative rounded-xl p-0 h-[calc(100vh-150px)] flex flex-col gap-y-2">
+    <div className="relative rounded-xl p-0 h-[calc(100vh-120px)] flex flex-col gap-y-2">
       {isDeviceLoading ? (
         <div className="flex flex-col items-center w-full gap-y-8">
           {Array.from({ length: 7 }).map((_, index) => (
@@ -108,8 +108,7 @@ const DeviceList = () => {
                       <DialogHeader className="mt-4 mx-2">
                         <p className="text-center">
                           {t("suretodelete")}
-                          <span className="text-[#3A5DD9] italic underline">{`${device.name} `}</span>
-                          ?
+                          <span className="text-[#3A5DD9] italic underline block">{`${device.name}`}</span>
                         </p>
                       </DialogHeader>
                       <div className="flex items-center justify-evenly">

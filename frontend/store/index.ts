@@ -19,6 +19,8 @@ import permissionReducer from "./slices/adminSlice/permission";
 import rolePermissionReducer from "./slices/adminSlice/rolepermission";
 import userPermissionReducer from "./slices/adminSlice/userpermission";
 import deviceReducer from "./slices/adminSlice/device";
+import studentReducer from "./slices/registrarSlice/students";
+
 const createNoopStorage = () => {
   return {
     getItem() {
@@ -54,6 +56,7 @@ const rootReducer = combineReducers({
   rolePermission: rolePermissionReducer,
   userPermission: userPermissionReducer,
   device: deviceReducer,
+  student: studentReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

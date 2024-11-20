@@ -17,6 +17,7 @@
     "permissionmeaningfuldescription": "Meaningful description is required",
     "createpermission": "Create Permission",
     "editpermission": "Edit Permission",
-    "close": "Close"
+    "close": "Close",
+    "searchbyname": "Search by name"
   }
 }
