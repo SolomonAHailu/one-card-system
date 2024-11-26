@@ -25,7 +25,7 @@ const AllrolesPage = () => {
     dispatch<any>(handleFetchRole());
   };
   return (
-    <div className="flex flex-col gap-y-3">
+    <div className="flex flex-col">
       <div className="flex items-baseline justify-between gap-x-4">
         <div />
         <div className="flex items-center justify-center gap-2 relative">

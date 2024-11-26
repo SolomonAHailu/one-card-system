@@ -62,7 +62,7 @@ const RoleList = ({ searchTerm }: { searchTerm: string }) => {
   return (
     <div className="relative rounded-xl p-0 h-[calc(100vh-120px)] flex flex-col gap-y-2">
       {isRoleLoading ? (
-        <div className="flex flex-col items-center w-full gap-y-8">
+        <div className="flex flex-col items-center w-full gap-y-8 mt-3">
           {Array.from({ length: 7 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
           ))}
@@ -70,7 +70,7 @@ const RoleList = ({ searchTerm }: { searchTerm: string }) => {
       ) : roles.length === 0 ? (
         <p>{"norolefound"}</p>
       ) : (
-        <Table>
+        <Table className="mt-3">
           <TableHeader>
             <TableRow>
               <TableHead>{t("rolename")}</TableHead>

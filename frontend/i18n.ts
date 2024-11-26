@@ -27,6 +27,9 @@ export default getRequestConfig(async ({ locale }: { locale: string }) => {
   const registrarSidebarImport = (
     await import(`./messages/${locale}/registrar/sidebar.json`)
   ).default;
+  const createStudentImport = (
+    await import(`./messages/${locale}/registrar/student.json`)
+  ).default;
   return {
     messages: {
       ...logininImport,
@@ -36,7 +39,8 @@ export default getRequestConfig(async ({ locale }: { locale: string }) => {
       ...adminUserImport,
       ...adminPermissionImport,
       ...adminDeviceImport,
-      ...registrarSidebarImport,  
+      ...registrarSidebarImport,
+      ...createStudentImport,
     },
   };
 });

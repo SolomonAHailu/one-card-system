@@ -1,15 +1,18 @@
 package registrarcontrollers
 
 import (
+	"fmt"
 	"log"
 	"math"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
 	"github.com/SolomonAHailu/one-card-system/models/registrarmodels"
 	"github.com/SolomonAHailu/one-card-system/utils"
 	"github.com/gin-gonic/gin"
+	digest "github.com/xinsnake/go-http-digest-auth-client"
 	"gorm.io/gorm"
 )
 
@@ -21,6 +24,13 @@ func SyncDataFromSMS(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
+	// Fetch all devices
+	var devices []adminmodels.Devices
+	if err := db.Find(&devices).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching devices", err)
+		return
+	}
+
 	for _, student := range students {
 		var existingStudent registrarmodels.Student
 		if result := db.Where("student_id = ?", student.StudentID).First(&existingStudent); result.Error != nil {
@@ -28,21 +38,29 @@ func SyncDataFromSMS(c *gin.Context, db *gorm.DB) {
 				utils.ResponseWithError(c, http.StatusInternalServerError, "Failed to check existing student record")
 				continue
 			}
-			// If student is not found, create a new record
+
+			// Create new student record
 			if err := db.Create(&student).Error; err != nil {
 				utils.ResponseWithError(c, http.StatusInternalServerError, "Error inserting new student")
 				log.Println("Error inserting new student:", err)
 				return
 			}
 		} else {
-			// Update only if there are changes in the incoming data
+			// Update existing record if needed
 			if shouldUpdateStudent(existingStudent, student) {
 				if err := db.Model(&existingStudent).Updates(student).Error; err != nil {
 					utils.ResponseWithError(c, http.StatusInternalServerError, "Error updating existing student")
 					log.Println("Error updating existing student:", err)
 					return
-
 				}
+			}
+		}
+
+		// Send the student data to all devices
+		for _, device := range devices {
+			err := sendStudentToDevice(device, student)
+			if err != nil {
+				log.Printf("Error sending student to device %s: %v\n", device.Name, err)
 			}
 		}
 	}
@@ -147,7 +165,6 @@ func fetchStudentDataFromSMS() ([]registrarmodels.Student, error) {
 			Year:            3,
 			Semester:        1,
 			Religion:        "Muslim",
-			Photo:           "john_photo.png",
 			RegisteredDate:  parseDate("2023-08-10"),
 			Status:          registrarmodels.StatusInactive,
 		},
@@ -165,7 +182,6 @@ func fetchStudentDataFromSMS() ([]registrarmodels.Student, error) {
 			Year:            3,
 			Semester:        1,
 			Religion:        "Muslim",
-			Photo:           "john_photo.png",
 			RegisteredDate:  parseDate("2023-08-10"),
 			Status:          registrarmodels.StatusInactive,
 		},
@@ -183,9 +199,40 @@ func fetchStudentDataFromSMS() ([]registrarmodels.Student, error) {
 			Year:            3,
 			Semester:        1,
 			Religion:        "Christianity",
-			Photo:           "john_photo.png",
 			RegisteredDate:  parseDate("2023-08-10"),
 			Status:          registrarmodels.StatusActive,
 		},
 	}, nil
+}
+
+func sendStudentToDevice(device adminmodels.Devices, student registrarmodels.Student) error {
+	username := "admin"
+	password := "CON123456"
+
+	apiURL := fmt.Sprintf(
+		"http://%s/cgi-bin/recordUpdater.cgi?action=insert&name=AccessControlCard&CardName=%s&CardNo=%s&UserID=%d&CardStatus=0&CardType=0&Password=123456&Doors[0]=1&Doors[1]=3&Doors[2]=5&ValidDateStart=%s&ValidDateEnd=%s",
+		device.IPAddress,
+		student.FirstName+" "+student.FatherName+" "+student.GrandFatherName,
+		student.StudentID,
+		student.ID,
+		time.Now().Format("20060102 150405"),
+		time.Now().AddDate(1, 0, 0).Format("20060102 150405"),
+	)
+
+	// Create a Digest Authentication client
+	client := digest.NewRequest(username, password, "GET", apiURL, "")
+
+	// Perform the request
+	resp, err := client.Execute()
+	if err != nil {
+		return fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Check response status
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("device API returned status: %d", resp.StatusCode)
+	}
+
+	return nil
 }

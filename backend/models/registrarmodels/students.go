@@ -40,7 +40,7 @@ type Student struct {
 	Year              int                         `gorm:"type:int;not null" json:"year"`
 	Semester          int                         `gorm:"type:int;not null" json:"semester"`
 	Religion          string                      `gorm:"type:varchar(255)" json:"religion"`
-	Photo             string                      `gorm:"type:varchar(255)" json:"photo"`
+	Photo             string                      `gorm:"type:text" json:"photo"`
 	LibraryID         *int                        `gorm:"type:int;null" json:"library_id"`
 	LibraryAssigned   librarymodels.Libraries     `gorm:"foreignKey:LibraryID;references:ID" json:"library_assigned"`
 	CafeteriaID       *int                        `gorm:"type:int;null" json:"cafeteria_id"`
