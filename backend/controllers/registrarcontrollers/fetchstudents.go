@@ -1,24 +1,26 @@
 package registrarcontrollers
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
-	"math"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
+	dac "github.com/Snawoot/go-http-digest-auth-client"
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
 	"github.com/SolomonAHailu/one-card-system/models/registrarmodels"
 	"github.com/SolomonAHailu/one-card-system/utils"
 	"github.com/gin-gonic/gin"
-	digest "github.com/xinsnake/go-http-digest-auth-client"
 	"gorm.io/gorm"
 )
 
 // SyncDataFromSMS fetches student data from an external SMS service and synchronizes it with the database.
 func SyncDataFromSMS(c *gin.Context, db *gorm.DB) {
+	username := os.Getenv("DEVICE_USERNAME")
+	password := os.Getenv("DEVICE_PASSWORD")
 	students, err := fetchStudentDataFromSMS()
 	if err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Failed to fetch students from SMS")
@@ -32,36 +34,57 @@ func SyncDataFromSMS(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
+	//Check the status of the device
+	for _, device := range devices {
+		client := &http.Client{
+			Transport: dac.NewDigestTransport(username, password, http.DefaultTransport),
+		}
+		apiURL := fmt.Sprintf("http://%s/cgi-bin/AccessUser.cgi?action=fetch", device.IPAddress)
+		_, err := client.Get(apiURL)
+		if err != nil {
+			utils.ResponseWithError(c, http.StatusInternalServerError, "Failed to check device status", err)
+			log.Printf("Failed to check device status: %v\n", err)
+			return
+		}
+		fmt.Println("Device with ", device.IPAddress, " is online")
+	}
+	fmt.Println("All devices are online")
+
 	for _, student := range students {
 		var existingStudent registrarmodels.Student
-		if result := db.Where("student_id = ?", student.StudentID).First(&existingStudent); result.Error != nil {
-			if result.Error != gorm.ErrRecordNotFound {
+
+		// Check if the student already exists
+		result := db.Where("student_id = ?", student.StudentID).First(&existingStudent)
+
+		if result.Error != nil {
+			if result.Error == gorm.ErrRecordNotFound {
+				// Create a new student record if not found
+				if err := db.Create(&student).Error; err != nil {
+					utils.ResponseWithError(c, http.StatusInternalServerError, "Error inserting new student")
+					log.Println("Error inserting new student:", err)
+					continue
+				}
+
+				// Send the new student data to all devices
+				for _, device := range devices {
+					sendStudentToDevice(device, student)
+				}
+			} else {
 				utils.ResponseWithError(c, http.StatusInternalServerError, "Failed to check existing student record")
+				log.Println("Error checking student record:", result.Error)
 				continue
 			}
-
-			// Create new student record
-			if err := db.Create(&student).Error; err != nil {
-				utils.ResponseWithError(c, http.StatusInternalServerError, "Error inserting new student")
-				log.Println("Error inserting new student:", err)
-				return
-			}
 		} else {
-			// Update existing record if needed
+			// Student exists, check for updates
 			if shouldUpdateStudent(existingStudent, student) {
 				if err := db.Model(&existingStudent).Updates(student).Error; err != nil {
 					utils.ResponseWithError(c, http.StatusInternalServerError, "Error updating existing student")
 					log.Println("Error updating existing student:", err)
-					return
+					continue
 				}
-			}
-		}
-
-		// Send the student data to all devices
-		for _, device := range devices {
-			err := sendStudentToDevice(device, student)
-			if err != nil {
-				log.Printf("Error sending student to device %s: %v\n", device.Name, err)
+				for _, device := range devices {
+					sendStudentToDevice(device, existingStudent)
+				}
 			}
 		}
 	}
@@ -84,94 +107,44 @@ func shouldUpdateStudent(existing, new registrarmodels.Student) bool {
 		existing.Status != new.Status
 }
 
-// GetStudents retrieves a list of students from the database and sends it as a JSON response.
-func GetStudents(c *gin.Context, db *gorm.DB) {
-	var students []registrarmodels.Student
-	var total int64
-
-	// Query parameters
-	page := c.DefaultQuery("page", "1")
-	limit := c.DefaultQuery("limit", "10")
-	name := c.Query("name") // Optional 'name' query parameter
-
-	// Parse and validate pagination parameters
-	pageInt, err := strconv.Atoi(page)
-	if err != nil || pageInt < 1 {
-		pageInt = 1
-	}
-	limitInt, err := strconv.Atoi(limit)
-	if err != nil || limitInt < 1 {
-		limitInt = 10
-	}
-
-	// Start building the query
-	query := db.Model(&registrarmodels.Student{})
-
-	// Apply name filter if provided
-	if name != "" {
-		query = query.Where("LOWER(first_name) LIKE LOWER(?) OR LOWER(father_name) LIKE LOWER(?) OR LOWER(grand_father_name) LIKE LOWER(?)", "%"+name+"%", "%"+name+"%", "%"+name+"%")
-	}
-
-	// Get total count for pagination
-	if err := query.Count(&total).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching students count"})
-		return
-	}
-
-	// Fetch paginated data with Preloads
-	if err := query.Preload("LibraryAssigned").
-		Preload("CafeteriaAssigned").
-		Preload("DormitoryAssigned").
-		Preload("RegisteredBy").
-		Limit(limitInt).
-		Offset((pageInt - 1) * limitInt).
-		Find(&students).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching students"})
-		return
-	}
-
-	// Calculate total pages
-	totalPages := int64(math.Ceil(float64(total) / float64(limitInt)))
-
-	// Respond with paginated data
-	c.JSON(http.StatusOK, gin.H{
-		"data":          students,
-		"currentPage":   pageInt,
-		"totalPages":    totalPages,
-		"totalStudents": total,
-	})
-}
-
-func sendStudentToDevice(device adminmodels.Devices, student registrarmodels.Student) error {
+func sendStudentToDevice(device adminmodels.Devices, student registrarmodels.Student) {
 	username := os.Getenv("DEVICE_USERNAME")
 	password := os.Getenv("DEVICE_PASSWORD")
+	client := &http.Client{
+		Transport: dac.NewDigestTransport(username, password, http.DefaultTransport),
+	}
+	apiURL := fmt.Sprintf("http://%s/cgi-bin/AccessUser.cgi?action=insertMulti", device.IPAddress)
+	log.Println("Sending student data to device:", student.Status, student.FirstName, student.FatherName, student.GrandFatherName)
+	userData := map[string]interface{}{
+		"UserID":   fmt.Sprintf("%d", student.ID),
+		"UserName": fmt.Sprintf("%s %s %s", student.FirstName, student.FatherName, student.GrandFatherName),
+		"UserType": func() int {
+			if student.Status == registrarmodels.StatusActive {
+				return 0
+			}
+			return 1
+		}(),
+		"UseTime":      1,
+		"IsFirstEnter": true,
+		"UserStatus":   0,
+		"Authority":    2,
+	}
+	payload := map[string]interface{}{
+		"UserList": []map[string]interface{}{userData},
+	}
 
-	apiURL := fmt.Sprintf(
-		"http://%s/cgi-bin/recordUpdater.cgi?action=insert&name=AccessControlCard&CardName=%s&CardNo=%s&UserID=%d&CardStatus=0&CardType=0&Password=123456&Doors[0]=1&Doors[1]=3&Doors[2]=5&ValidDateStart=%s&ValidDateEnd=%s",
-		device.IPAddress,
-		student.FirstName+" "+student.FatherName+" "+student.GrandFatherName,
-		student.StudentID,
-		student.ID,
-		time.Now().Format("20060102 150405"),
-		time.Now().AddDate(1, 0, 0).Format("20060102 150405"),
-	)
-
-	// Create a Digest Authentication client
-	client := digest.NewRequest(username, password, "GET", apiURL, "")
-
-	// Perform the request
-	resp, err := client.Execute()
+	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		return fmt.Errorf("failed to send request: %w", err)
+		log.Printf("failed to marshal JSON payload: %v", err)
+		return
+	}
+
+	resp, err := client.Post(apiURL, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Printf("failed to send request: %v", err)
+		return
 	}
 	defer resp.Body.Close()
-
-	// Check response status
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("device API returned status: %d", resp.StatusCode)
-	}
-
-	return nil
 }
 
 // parseDate parses a date string and returns a time.Time object.
@@ -185,11 +158,28 @@ func parseDate(dateStr string) time.Time {
 func fetchStudentDataFromSMS() ([]registrarmodels.Student, error) {
 	return []registrarmodels.Student{
 		{
-			StudentID:       "ST12345",
-			FirstName:       "Yosef",
-			FatherName:      "Alemu",
-			GrandFatherName: "Doe Sr. Sr.",
-			Email:           "john1@example.com",
+			StudentID:       "ST1",
+			FirstName:       "Yosi",
+			FatherName:      "Alex",
+			GrandFatherName: "Menge",
+			Email:           "yosef007@example.com",
+			Phone:           "0982010318",
+			Sex:             registrarmodels.SexMale,
+			DateOfBirth:     parseDate("2000-05-15"),
+			Program:         "Electrical Engineering",
+			Section:         "C",
+			Year:            5,
+			Semester:        2,
+			Religion:        "Muslim",
+			RegisteredDate:  parseDate("2019-08-10"),
+			Status:          registrarmodels.StatusActive,
+		},
+		{
+			StudentID:       "ST2",
+			FirstName:       "Sol",
+			FatherName:      "Asregdom",
+			GrandFatherName: "Hailu",
+			Email:           "solomon@example.com",
 			Phone:           "123456789",
 			Sex:             registrarmodels.SexMale,
 			DateOfBirth:     parseDate("2000-05-15"),
@@ -199,14 +189,14 @@ func fetchStudentDataFromSMS() ([]registrarmodels.Student, error) {
 			Semester:        1,
 			Religion:        "Muslim",
 			RegisteredDate:  parseDate("2023-08-10"),
-			Status:          registrarmodels.StatusInactive,
+			Status:          registrarmodels.StatusActive,
 		},
 		{
-			StudentID:       "ST12346",
-			FirstName:       "Yosef",
-			FatherName:      "Alemu",
-			GrandFatherName: "Doe Sr. Sr.",
-			Email:           "john2@example.com",
+			StudentID:       "ST3",
+			FirstName:       "Muluken",
+			FatherName:      "Hailu",
+			GrandFatherName: "Abate",
+			Email:           "muluken@example.com",
 			Phone:           "123456789",
 			Sex:             registrarmodels.SexMale,
 			DateOfBirth:     parseDate("2000-05-15"),
@@ -214,16 +204,33 @@ func fetchStudentDataFromSMS() ([]registrarmodels.Student, error) {
 			Section:         "A",
 			Year:            3,
 			Semester:        1,
-			Religion:        "Muslim",
+			Religion:        "Christianity",
 			RegisteredDate:  parseDate("2023-08-10"),
-			Status:          registrarmodels.StatusInactive,
+			Status:          registrarmodels.StatusActive,
 		},
 		{
-			StudentID:       "ST12340",
-			FirstName:       "Yosef",
-			FatherName:      "Alemu",
-			GrandFatherName: "Doe Sr. Sr.",
-			Email:           "john3@example.com",
+			StudentID:       "ST4",
+			FirstName:       "Misgan",
+			FatherName:      "Moges",
+			GrandFatherName: "Dereje",
+			Email:           "misgan@example.com",
+			Phone:           "123456789",
+			Sex:             registrarmodels.SexMale,
+			DateOfBirth:     parseDate("2000-05-15"),
+			Program:         "Computer Science",
+			Section:         "A",
+			Year:            3,
+			Semester:        1,
+			Religion:        "Christianity",
+			RegisteredDate:  parseDate("2023-08-10"),
+			Status:          registrarmodels.StatusActive,
+		},
+		{
+			StudentID:       "ST5",
+			FirstName:       "Abel",
+			FatherName:      "Ayalew",
+			GrandFatherName: "Kebede",
+			Email:           "abel@example.com",
 			Phone:           "123456789",
 			Sex:             registrarmodels.SexMale,
 			DateOfBirth:     parseDate("2000-05-15"),
