@@ -1,13 +1,72 @@
 package registrarcontrollers
 
 import (
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/SolomonAHailu/one-card-system/models/registrarmodels"
 	"github.com/SolomonAHailu/one-card-system/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+func GetStudents(c *gin.Context, db *gorm.DB) {
+	var students []registrarmodels.Student
+	var total int64
+
+	// Query parameters
+	page := c.DefaultQuery("page", "1")
+	limit := c.DefaultQuery("limit", "10")
+	name := c.Query("name") // Optional 'name' query parameter
+
+	// Parse and validate pagination parameters
+	pageInt, err := strconv.Atoi(page)
+	if err != nil || pageInt < 1 {
+		pageInt = 1
+	}
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil || limitInt < 1 {
+		limitInt = 10
+	}
+
+	// Start building the query
+	query := db.Model(&registrarmodels.Student{})
+
+	// Apply name filter if provided
+	if name != "" {
+		query = query.Where("LOWER(first_name) LIKE LOWER(?) OR LOWER(father_name) LIKE LOWER(?) OR LOWER(grand_father_name) LIKE LOWER(?)", "%"+name+"%", "%"+name+"%", "%"+name+"%")
+	}
+
+	// Get total count for pagination
+	if err := query.Count(&total).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching students count"})
+		return
+	}
+
+	// Fetch paginated data with Preloads
+	if err := query.Preload("LibraryAssigned").
+		Preload("CafeteriaAssigned").
+		Preload("DormitoryAssigned").
+		Preload("RegisteredBy").
+		Limit(limitInt).
+		Offset((pageInt - 1) * limitInt).
+		Find(&students).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching students"})
+		return
+	}
+
+	// Calculate total pages
+	totalPages := int64(math.Ceil(float64(total) / float64(limitInt)))
+
+	// Respond with paginated data
+	c.JSON(http.StatusOK, gin.H{
+		"data":          students,
+		"currentPage":   pageInt,
+		"totalPages":    totalPages,
+		"totalStudents": total,
+	})
+}
 
 // Get student by id
 func GetStudentById(c *gin.Context, db *gorm.DB) {
@@ -24,7 +83,6 @@ func GetStudentById(c *gin.Context, db *gorm.DB) {
 
 func UpdateStudentById(c *gin.Context, db *gorm.DB) {
 	id := c.Param("id")
-
 	// Find the student record by ID
 	var student registrarmodels.Student
 	if err := db.First(&student, "id = ?", id).Error; err != nil {
