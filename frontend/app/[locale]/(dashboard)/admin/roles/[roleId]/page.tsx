@@ -80,7 +80,7 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
   );
 
   return (
-    <div className="h-[calc(100vh-96px)] flex flex-col gap-y-2">
+    <div className="h-[calc(100vh-66px)] flex flex-col gap-y-2">
       <div className="bg-secondary/60 p-6 rounded-tr-2xl rounded-br-2xl">
         <div className="grid grid-cols-8 gap-x-4 mb-4 items-baseline">
           <h1 className="text-[#2a4bc6] text-lg col-span-2 uppercase">

@@ -39,7 +39,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { handleFetchStudents } from "@/store/slices/registrarSlice/students";
-import EditStudent from "./editStudent/EditStudent";
 
 const StudentsList = ({
   limit,
@@ -58,7 +57,7 @@ const StudentsList = ({
   const locale = usePathname().split("/")[1];
   const {
     students,
-    isGetStudentLoaidng,
+    isGetStudentLoading,
     isGetStudentError,
     currentPage,
     totalPages,
@@ -112,7 +111,7 @@ const StudentsList = ({
     return pagesToDisplay;
   };
 
-  if (isGetStudentLoaidng) {
+  if (isGetStudentLoading) {
     return (
       <div className="h-[calc(100vh-165px)] flex flex-col items-center justify-between w-full">
         <div className="flex flex-col items-center w-full gap-y-8">
@@ -140,12 +139,14 @@ const StudentsList = ({
                 <TableHead>{t("firstname")}</TableHead>
                 <TableHead>{t("fathername")}</TableHead>
                 <TableHead>{t("grandfathername")}</TableHead>
-                <TableHead>{t("email")}</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Card Number</TableHead>
                 <TableHead>Sex</TableHead>
                 <TableHead>Program</TableHead>
+                <TableHead>Semister</TableHead>
                 <TableHead>Section</TableHead>
+                <TableHead>Religion</TableHead>
+                <TableHead>Status</TableHead>
                 {/* <TableHead className="text-center">{t("details")}</TableHead> */}
                 <TableHead className="text-center">{t("edit")}</TableHead>
                 <TableHead className="text-center">{t("delete")}</TableHead>
@@ -165,12 +166,14 @@ const StudentsList = ({
                   <TableCell>{student.first_name}</TableCell>
                   <TableCell>{student.father_name}</TableCell>
                   <TableCell>{student.grand_father_name}</TableCell>
-                  <TableCell>{student.email}</TableCell>
                   <TableCell>{student.phone}</TableCell>
                   <TableCell>{student.card_number}</TableCell>
                   <TableCell>{student.sex}</TableCell>
                   <TableCell>{student.program}</TableCell>
+                  <TableCell>{student.semester}</TableCell>
                   <TableCell>{student.section}</TableCell>
+                  <TableCell>{student.religion}</TableCell>
+                  <TableCell>{student.status}</TableCell>
                   {/* <TableCell className="cursor-pointer text-center">
                     <FaListAlt size={20} className="text-green-600" />
                   </TableCell> */}
