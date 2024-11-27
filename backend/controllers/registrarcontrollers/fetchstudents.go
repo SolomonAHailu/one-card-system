@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -141,6 +142,38 @@ func GetStudents(c *gin.Context, db *gorm.DB) {
 	})
 }
 
+func sendStudentToDevice(device adminmodels.Devices, student registrarmodels.Student) error {
+	username := os.Getenv("DEVICE_USERNAME")
+	password := os.Getenv("DEVICE_PASSWORD")
+
+	apiURL := fmt.Sprintf(
+		"http://%s/cgi-bin/recordUpdater.cgi?action=insert&name=AccessControlCard&CardName=%s&CardNo=%s&UserID=%d&CardStatus=0&CardType=0&Password=123456&Doors[0]=1&Doors[1]=3&Doors[2]=5&ValidDateStart=%s&ValidDateEnd=%s",
+		device.IPAddress,
+		student.FirstName+" "+student.FatherName+" "+student.GrandFatherName,
+		student.StudentID,
+		student.ID,
+		time.Now().Format("20060102 150405"),
+		time.Now().AddDate(1, 0, 0).Format("20060102 150405"),
+	)
+
+	// Create a Digest Authentication client
+	client := digest.NewRequest(username, password, "GET", apiURL, "")
+
+	// Perform the request
+	resp, err := client.Execute()
+	if err != nil {
+		return fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Check response status
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("device API returned status: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
 // parseDate parses a date string and returns a time.Time object.
 func parseDate(dateStr string) time.Time {
 	const layout = "2006-01-02"
@@ -203,36 +236,4 @@ func fetchStudentDataFromSMS() ([]registrarmodels.Student, error) {
 			Status:          registrarmodels.StatusActive,
 		},
 	}, nil
-}
-
-func sendStudentToDevice(device adminmodels.Devices, student registrarmodels.Student) error {
-	username := "admin"
-	password := "CON123456"
-
-	apiURL := fmt.Sprintf(
-		"http://%s/cgi-bin/recordUpdater.cgi?action=insert&name=AccessControlCard&CardName=%s&CardNo=%s&UserID=%d&CardStatus=0&CardType=0&Password=123456&Doors[0]=1&Doors[1]=3&Doors[2]=5&ValidDateStart=%s&ValidDateEnd=%s",
-		device.IPAddress,
-		student.FirstName+" "+student.FatherName+" "+student.GrandFatherName,
-		student.StudentID,
-		student.ID,
-		time.Now().Format("20060102 150405"),
-		time.Now().AddDate(1, 0, 0).Format("20060102 150405"),
-	)
-
-	// Create a Digest Authentication client
-	client := digest.NewRequest(username, password, "GET", apiURL, "")
-
-	// Perform the request
-	resp, err := client.Execute()
-	if err != nil {
-		return fmt.Errorf("failed to send request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	// Check response status
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("device API returned status: %d", resp.StatusCode)
-	}
-
-	return nil
 }
