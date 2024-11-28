@@ -26,6 +26,7 @@ func NewGetAllDeviceUsecase(getAllDeviceRespository admincontrollers.GetALLDevic
 	}
 }
 
+
 // CreatedDevice implements admincontrollers.DeviceUsecase.
 func (d *deviceUsecase) CreatedDevice(createDevice *admincontrollers.CreateDeviceRequest) (adminmodels.Devices, error) {
 	return d.deviceRespository.CreatedDevice(createDevice)
