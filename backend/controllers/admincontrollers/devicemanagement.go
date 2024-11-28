@@ -13,12 +13,14 @@ import (
 	"gorm.io/gorm"
 )
 
+
+
 // create device with location type and ID
 func CreateDevice(c *gin.Context, db *gorm.DB) {
 	var device adminmodels.Devices
 	if err := c.ShouldBindJSON(&device); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid input", err)
-		return
+		return 
 	}
 	if device.SerialNumber == "" {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Serial number cannot be empty", nil)
@@ -105,84 +107,155 @@ func DeleteDeviceById(c *gin.Context, db *gorm.DB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Device successfully deleted", "data": device})
 }
 
-// get devices by location_id and location_type with pagination and name filter
-// func GetDevicesByLocationId(c *gin.Context, db *gorm.DB) {
-// 	var devices []adminmodels.Devices
-// 	var total int64
-// 	locationID := c.Param("location_id")
-// 	locationType := c.Query("location_type") // Expecting a query parameter for location type
+/*
+package admincontrollers
 
-// 	page := c.DefaultQuery("page", "1")
-// 	limit := c.DefaultQuery("limit", "10")
-// 	name := c.Query("name") // Optional name filter
+import (
+  "bytes"
+  "encoding/json"
+  "net/http"
+  "net/http/httptest"
+  "testing"
 
-// 	pageInt, err := strconv.Atoi(page)
-// 	if err != nil || pageInt < 1 {
-// 		pageInt = 1
-// 	}
-// 	limitInt, err := strconv.Atoi(limit)
-// 	if err != nil || limitInt < 1 {
-// 		limitInt = 10
-// 	}
+  "github.com/SolomonAHailu/one-card-system/models/adminmodels"
+  "github.com/SolomonAHailu/one-card-system/utils"
+  "github.com/gin-gonic/gin"
+  "github.com/stretchr/testify/assert"
+  "gorm.io/driver/sqlite"
+  "gorm.io/gorm"
+)
 
-// 	// Start query with location_type and location_id filter
-// 	query := db.Model(&adminmodels.Devices{}).Where("location_id = ? AND location_type = ?", locationID, locationType)
+// Helper function to set up a mock database
+func setupMockDB() *gorm.DB {
+  db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+  db.AutoMigrate(&adminmodels.Devices{})
+  return db
+}
 
-// 	// Apply name filter if provided
-// 	if name != "" {
-// 		query = query.Where("LOWER(name) LIKE LOWER(?)", "%"+name+"%")
-// 	}
+// Helper function to create a mock context
+func createTestContext(method, path, body string) (*gin.Context, *httptest.ResponseRecorder) {
+  gin.SetMode(gin.TestMode)
+  w := httptest.NewRecorder()
+  c, _ := gin.CreateTestContext(w)
 
-// 	// Get total count for pagination
-// 	if err := query.Count(&total).Error; err != nil {
-// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching devices count", err)
-// 		return
-// 	}
+  req := httptest.NewRequest(method, path, bytes.NewBufferString(body))
+  req.Header.Set("Content-Type", "application/json")
+  c.Request = req
 
-// 	// Fetch the paginated data with name filtering
-// 	if err := query.
-// 		Limit(limitInt).
-// 		Offset((pageInt - 1) * limitInt).
-// 		Find(&devices).Error; err != nil {
-// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching devices", err)
-// 		return
-// 	}
+  return c, w
+}
 
-// 	totalPages := int64(math.Ceil(float64(total) / float64(limitInt)))
+func TestCreateDevice(t *testing.T) {
+  db := setupMockDB()
 
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"data":         devices,
-// 		"currentPage":  pageInt,
-// 		"totalPages":   totalPages,
-// 		"totalDevices": total,
-// 	})
-// }
+  tests := []struct {
+    name           string
+    inputBody      string
+    expectedStatus int
+    expectedError  string
+  }{
+    {
+      name:           "Valid device creation",
+      inputBody:      {"serial_number": "123ABC", "name": "Device1", "ip_address": "192.168.1.1", "port": 8080, "location": "Building A"},
+      expectedStatus: http.StatusCreated,
+      expectedError:  "",
+    },
+    {
+      name:           "Missing serial number",
+      inputBody:      {"name": "Device2", "ip_address": "192.168.1.2", "port": 8081, "location": "Building B"},
+      expectedStatus: http.StatusBadRequest,
+      expectedError:  "Serial number cannot be empty",
+    },
+    {
+      name:           "Duplicate serial number",
+      inputBody:      {"serial_number": "123ABC", "name": "Device1", "ip_address": "192.168.1.1", "port": 8080, "location": "Building A"},
+      expectedStatus: http.StatusBadRequest,
+      expectedError:  "Serial number already exists",
+    },
+  }
 
-// // validateLocationTypeAndID validates the combination of LocationType and LocationID
-// func validateLocationTypeAndID(db *gorm.DB, locationType string, locationID int) error {
-// 	switch locationType {
-// 	case "Cafeteria":
-// 		var cafeteria cafeteriamodels.Cafeterias
-// 		if err := db.First(&cafeteria, locationID).Error; err != nil {
-// 			return errors.New("invalid cafeteria ID")
-// 		}
-// 	case "Library":
-// 		var library librarymodels.Libraries
-// 		if err := db.First(&library, locationID).Error; err != nil {
-// 			return errors.New("invalid library ID")
-// 		}
-// 	case "MainGate":
-// 		var gate maingatemodels.MainGates
-// 		if err := db.First(&gate, locationID).Error; err != nil {
-// 			return errors.New("invalid gate ID")
-// 		}
-// 	case "Dormitory":
-// 		var dormitory dormitorymodels.Dormitories
-// 		if err := db.First(&dormitory, locationID).Error; err != nil {
-// 			return errors.New("invalid dormitory ID")
-// 		}
-// 	default:
-// 		return errors.New("invalid location type")
-// 	}
-// 	return nil
-// }
+  // Seed the database with a device to test duplicates
+  db.Create(&adminmodels.Devices{
+    SerialNumber: "123ABC",
+    Name:         "Device1",
+    IPAddress:    "192.168.1.1",
+    Port:         8080,
+    Location:     "Building A",
+  })
+
+  for _, tt := range tests {
+    t.Run(tt.name, func(t *testing.T) {
+      c, w := createTestContext(http.MethodPost, "/devices", tt.inputBody)
+
+      CreateDevice(c, db)
+
+      assert.Equal(t, tt.expectedStatus, w.Code)
+
+      if tt.expectedError != "" {
+        var response map[string]string
+        _ = json.Unmarshal(w.Body.Bytes(), &response)
+        assert.Contains(t, response["error"], tt.expectedError)
+      }
+    })
+  }
+}
+
+func TestGetAllDevices(t *testing.T) {
+  db := setupMockDB()
+  // Seed the database
+  db.Create(&adminmodels.Devices{
+    SerialNumber: "123ABC",
+    Name:         "Device1",
+    IPAddress:    "192.168.1.1",
+    Port:         8080,
+    Location:     "Building A",
+  })
+
+  c, w := createTestContext(http.MethodGet, "/devices", "")
+
+  GetAllDevices(c, db)
+
+  assert.Equal(t, http.StatusOK, w.Code)
+
+  var response map[string]interface{}
+  _ = json.Unmarshal(w.Body.Bytes(), &response)
+
+  assert.Equal(t, float64(1), response["count"].(float64))
+}
+
+func TestGetDeviceById(t *testing.T) {
+  db := setupMockDB()
+  // Seed the database
+  device := adminmodels.Devices{
+    SerialNumber: "123ABC",
+    Name:         "Device1",
+    IPAddress:    "192.168.1.1",
+    Port:         8080,
+    Location:     "Building A",
+  }
+  db.Create(&device)
+
+  tests := []struct {
+    name           string
+    id             string
+    expectedStatus int
+    expectedError  string
+  }{
+    {
+      name:           "Valid device ID",
+      id:             "1",
+      expectedStatus: http.StatusOK,
+      expectedError:  "",
+    },
+    {
+      name:           "Invalid device ID",
+      id:             "999",
+      expectedStatus: http.StatusNotFound,
+      expectedError:  "Device not found",
+    },
+  }
+
+*/
+
+
+
