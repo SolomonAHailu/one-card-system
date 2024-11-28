@@ -22,6 +22,7 @@ interface DataSendToFetchStudents {
   page: number;
   limit: number;
   name?: string;
+  status: string;
 }
 
 export interface StudentRecieved {
@@ -56,7 +57,7 @@ export interface StudentRecieved {
 }
 
 export interface DataSendToUpdateStudent {
-  id?: number;
+  ID?: number;
   student_id: string;
   card_number: string;
   first_name: string;
@@ -140,7 +141,8 @@ export interface StudentState {
   isGetStudentError: string | null;
   currentPage: number;
   totalPages: number;
-  isUpdateStudentLoading: boolean;
+  isUpdateStudentPhotoLoading: boolean;
+  isUpdateStudentCardLoading: boolean;
   isUpdateStudentError: null | string;
   totalStudents: number;
 }
@@ -150,7 +152,8 @@ const initialState: StudentState = {
   student: null,
   isGetStudentLoading: false,
   isGetStudentError: null,
-  isUpdateStudentLoading: false,
+  isUpdateStudentPhotoLoading: false,
+  isUpdateStudentCardLoading: false,
   isUpdateStudentError: null,
   currentPage: 0,
   totalPages: 0,
@@ -201,43 +204,40 @@ const studentSlice = createSlice({
         state.isGetStudentError =
           action.error.message || "Fetch students failed";
       });
-    // builder
-    //   .addCase(handleCreateStudent.pending, (state) => {
-    //     state.isUpdateStudentLoading = true;
-    //     state.isUpdateStudentError = null;
-    //   })
-    //   .addCase(
-    //     handleCreateStudent.fulfilled,
-    //     (state, action: PayloadAction<StudentRecieved>) => {
-    //       state.students.push(action.payload);
-
-    //       state.isUpdateStudentLoading = false;
-    //       state.isUpdateStudentError = null;
-    //     }
-    //   )
-    //   .addCase(handleCreateStudent.rejected, (state, action) => {
-    //     state.isUpdateStudentLoading = false;
-    //     state.isUpdateStudentError =
-    //       action.error.message || "Fetch students failed";
-    //   });
     builder
-      .addCase(handleUpdateStudent.pending, (state) => {
-        state.isUpdateStudentLoading = true;
+      .addCase(handleUpdateStudentPhoto.pending, (state) => {
+        state.isUpdateStudentPhotoLoading = true;
         state.isUpdateStudentError = null;
       })
       .addCase(
-        handleUpdateStudent.fulfilled,
+        handleUpdateStudentPhoto.fulfilled,
         (state, action: PayloadAction<StudentRecieved>) => {
-          state.students = state.students.map((student) =>
-            student.ID === action.payload.ID ? action.payload : student
-          );
-
-          state.isUpdateStudentLoading = false;
+          state.student = action.payload;
+          state.isUpdateStudentPhotoLoading = false;
           state.isUpdateStudentError = null;
         }
       )
-      .addCase(handleUpdateStudent.rejected, (state, action) => {
-        state.isUpdateStudentLoading = false;
+      .addCase(handleUpdateStudentPhoto.rejected, (state, action) => {
+        state.isUpdateStudentPhotoLoading = false;
+        state.isUpdateStudentError =
+          action.error.message || "Fetch students failed";
+      });
+
+    builder
+      .addCase(handleUpdateStudentCard.pending, (state) => {
+        state.isUpdateStudentCardLoading = true;
+        state.isUpdateStudentError = null;
+      })
+      .addCase(
+        handleUpdateStudentCard.fulfilled,
+        (state, action: PayloadAction<StudentRecieved>) => {
+          state.student = action.payload;
+          state.isUpdateStudentCardLoading = false;
+          state.isUpdateStudentError = null;
+        }
+      )
+      .addCase(handleUpdateStudentCard.rejected, (state, action) => {
+        state.isUpdateStudentCardLoading = false;
         state.isUpdateStudentError =
           action.error.message || "Fetch students failed";
       });
@@ -256,7 +256,12 @@ export const handleFetchStudents = createAsyncThunk<
     headers: {
       "Content-Type": "application/json",
     },
-    params: { page: data.page, limit: data.limit, name: data.name },
+    params: {
+      page: data.page,
+      limit: data.limit,
+      name: data.name,
+      status: data.status,
+    },
     withCredentials: true,
   };
 
@@ -303,42 +308,13 @@ export const handleGetSingleStudent = createAsyncThunk<
   }
 });
 
-// export const handleCreateStudent = createAsyncThunk<
-//   StudentRecieved,
-//   DataSendToCreateStudent
-// >("student/createStudent", async (data) => {
-//   const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/registrar/create-student`;
-
-//   const config: AxiosRequestConfig = {
-//     url,
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     data: data,
-//     withCredentials: true,
-//   };
-
-//   try {
-//     const response = await axios(config);
-//     if (response.data) {
-//       toast.success("Student created successfully");
-//       return response.data;
-//     } else {
-//       toast.error("Create Students failed");
-//       throw new Error("Create Students failed");
-//     }
-//   } catch (error: any) {
-//     toast.error(error.response?.data?.error || "Create Students failed");
-//     throw new Error(error.response?.data?.error || "Create Students failed");
-//   }
-// });
-
-export const handleUpdateStudent = createAsyncThunk<
+export const handleUpdateStudentPhoto = createAsyncThunk<
   StudentRecieved,
   DataSendToUpdateStudent
->("student/updateStudent", async (data) => {
-  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/registrar/student/${data.id}`;
+>("student/updateStudentPhoto", async (data) => {
+  console.log("DATA SEND TO UPDATE STUDENT PHOTO", data);
+
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/registrar/student/photo/${data.ID}`;
 
   const config: AxiosRequestConfig = {
     url,
@@ -353,6 +329,72 @@ export const handleUpdateStudent = createAsyncThunk<
   try {
     console.log("DATA SEND TO UPDATE STUDENT", data);
 
+    const response = await axios(config);
+    if (response.data) {
+      toast.success("Student updated successfully");
+      return response.data.data;
+    } else {
+      toast.error("Update Student failed");
+      throw new Error("Update Student failed");
+    }
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Update Student failed");
+    throw new Error(error.response?.data?.error || "Update Student failed");
+  }
+});
+
+export const handleUpdateStudentCard = createAsyncThunk<
+  StudentRecieved,
+  DataSendToUpdateStudent
+>("student/updateStudentCard", async (data) => {
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/registrar/student/card/${data.ID}`;
+
+  const config: AxiosRequestConfig = {
+    url,
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: data,
+    withCredentials: true,
+  };
+
+  try {
+    console.log("DATA SEND TO UPDATE STUDENT", data);
+
+    const response = await axios(config);
+    if (response.data) {
+      toast.success("Student updated successfully");
+      return response.data.data;
+    } else {
+      toast.error("Update Student failed");
+      throw new Error("Update Student failed");
+    }
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Update Student failed");
+    throw new Error(error.response?.data?.error || "Update Student failed");
+  }
+});
+
+export const handleUpdateStudentStatus = createAsyncThunk<
+  StudentRecieved,
+  DataSendToUpdateStudent
+>("student/updateStudentStatus", async (data) => {
+  console.log("DATA SEND TO CHANGE THE STATUS", data.ID);
+
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/registrar/student/status/${data.ID}`;
+
+  const config: AxiosRequestConfig = {
+    url,
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: data,
+    withCredentials: true,
+  };
+
+  try {
     const response = await axios(config);
     if (response.data) {
       toast.success("Student updated successfully");

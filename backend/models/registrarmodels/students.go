@@ -27,7 +27,7 @@ const (
 type Student struct {
 	gorm.Model
 	StudentID         string                      `gorm:"type:varchar(255);not null;index" json:"student_id"`
-	CardNumber        string                      `gorm:"type:varchar(255);default:NULL;uniqueIndex" json:"card_number"`
+	CardNumber        *string                     `gorm:"type:varchar(255);default:NULL;uniqueIndex" json:"card_number"`
 	FirstName         string                      `gorm:"type:varchar(255);not null" json:"first_name"`
 	FatherName        string                      `gorm:"type:varchar(255);not null" json:"father_name"`
 	GrandFatherName   string                      `gorm:"type:varchar(255);not null" json:"grand_father_name"`
@@ -40,7 +40,7 @@ type Student struct {
 	Year              int                         `gorm:"type:int;not null" json:"year"`
 	Semester          int                         `gorm:"type:int;not null" json:"semester"`
 	Religion          string                      `gorm:"type:varchar(255)" json:"religion"`
-	Photo             string                      `gorm:"type:text" json:"photo"`
+	Photo             *string                     `gorm:"type:text;default:NULL" json:"photo"`
 	LibraryID         *int                        `gorm:"type:int;null" json:"library_id"`
 	LibraryAssigned   librarymodels.Libraries     `gorm:"foreignKey:LibraryID;references:ID" json:"library_assigned"`
 	CafeteriaID       *int                        `gorm:"type:int;null" json:"cafeteria_id"`
