@@ -11,6 +11,7 @@ import { handleFetchStudents } from "@/store/slices/registrarSlice/students";
 import { MdOutlinePersonAddAlt1 } from "react-icons/md";
 import { usePathname, useRouter } from "next/navigation";
 import { RootState } from "@/store";
+import StatusFilter from "../_components/StatusFilter";
 
 const StudentsPage = () => {
   const t = useTranslations("students");
@@ -18,6 +19,7 @@ const StudentsPage = () => {
   const locale = usePathname().split("/")[1];
   const dispatch = useDispatch();
   const [limit, setLimit] = useState<number>(10);
+  const [status, setStatus] = useState<string>("Active");
   const [name, setName] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [refetchStudent, setRefetchStudent] = useState<boolean>(false);
@@ -35,12 +37,13 @@ const StudentsPage = () => {
         page,
         limit,
         name: name ?? "",
+        status,
       })
     );
   };
 
   return (
-    <div className="flex flex-col gap-y-3">
+    <div className="flex flex-col gap-y-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-6">
           <div
@@ -54,12 +57,19 @@ const StudentsPage = () => {
             />
           </div>
           <SelectLimit limit={limit} setLimit={setLimit} />
+          <StatusFilter status={status} setStatus={setStatus} />
         </div>
         <div className="">
           <SearchByName setName={setName} name={name} />
         </div>
       </div>
-      <StudentsList limit={limit} name={name} page={page} setPage={setPage} />
+      <StudentsList
+        limit={limit}
+        name={name}
+        page={page}
+        setPage={setPage}
+        status={status}
+      />
     </div>
   );
 };
