@@ -2,11 +2,20 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosRequestConfig } from "axios";
 import { toast } from "sonner";
 
-interface DataSendToFetchUsers {
+export interface DataSendToFetchUsers {
   role_id: number;
   page: number;
   limit: number;
   name?: string;
+}
+
+export interface DataSendToSendEmail {
+  email: string;
+  subject: string;
+  password: string;
+  role: string;
+  roledescription: string[];
+  name: string;
 }
 export interface DataSendToCreateUser {
   id?: number;
@@ -57,6 +66,9 @@ export interface UserState {
   isUserCreateLoading: boolean;
   isUserError: string | null;
   isUserCreateError: string | null;
+  sendEmailLoading: boolean;
+  sendEmailError: string | null;
+  sendEmailSuccess: boolean;
   currentPage: number;
   totalPages: number;
   totalUsers: number;
@@ -70,6 +82,9 @@ const initialState: UserState = {
   isUserError: null,
   isUserCreateLoading: false,
   isUserCreateError: null,
+  sendEmailLoading: false,
+  sendEmailError: null,
+  sendEmailSuccess: false,
   currentPage: 0,
   totalPages: 0,
   totalUsers: 0,
@@ -85,6 +100,9 @@ const userSlice = createSlice({
     removeCurrentUser: (state) => {
       state.user = null;
       state.currentPageUserCreate = 1;
+    },
+    removeSendEmailSuccess: (state) => {
+      state.sendEmailSuccess = false;
     },
   },
   extraReducers: (builder) => {
@@ -157,6 +175,21 @@ const userSlice = createSlice({
       .addCase(handleDeleteUser.rejected, (state, action) => {
         state.isUserCreateLoading = false;
         state.isUserError = null;
+      })
+      .addCase(handleSendEmail.pending, (state) => {
+        state.sendEmailLoading = true;
+        state.sendEmailError = null;
+        state.sendEmailSuccess = false;
+      })
+      .addCase(handleSendEmail.fulfilled, (state) => {
+        state.sendEmailLoading = false;
+        state.sendEmailError = null;
+        state.sendEmailSuccess = true;
+      })
+      .addCase(handleSendEmail.rejected, (state) => {
+        state.sendEmailSuccess = false;
+        state.sendEmailLoading = false;
+        state.sendEmailError = "Send email failed";
       });
   },
 });
@@ -284,5 +317,37 @@ export const handleDeleteUser = createAsyncThunk<
   }
 });
 
-export const { increareCurrentPage, removeCurrentUser } = userSlice.actions;
+export const handleSendEmail = createAsyncThunk<string, DataSendToSendEmail>(
+  "user/sendEmail",
+  async (data) => {
+    console.log("DATE SENT FOR THE EMAIL", data);
+    const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/sendemail`;
+
+    const config: AxiosRequestConfig = {
+      url,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+      withCredentials: true,
+    };
+
+    try {
+      const response = await axios(config);
+      if (response.data) {
+        toast.success("Email sent successfully");
+        return response.data.message;
+      } else {
+        toast.error("Send email failed");
+        throw new Error("Send email failed");
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Send email failed");
+      throw new Error(error.response?.data?.error || "Send email failed");
+    }
+  }
+);
+
+export const { increareCurrentPage, removeCurrentUser,removeSendEmailSuccess } = userSlice.actions;
 export default userSlice.reducer;

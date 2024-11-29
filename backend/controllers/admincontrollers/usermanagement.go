@@ -38,26 +38,6 @@ func CreateUser(c *gin.Context, db *gorm.DB) {
 	c.JSON(http.StatusCreated, gin.H{"data": user})
 }
 
-// get all users
-func GetAllUsers(c *gin.Context, db *gorm.DB) {
-	var users []adminmodels.Users
-	if err := db.Preload("Role").Find(&users).Error; err != nil {
-		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching users", err)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"data": users})
-}
-
-// get user by id
-func GetUserById(c *gin.Context, db *gorm.DB) {
-	var user adminmodels.Users
-	if err := db.Preload("Role").First(&user, c.Param("id")).Error; err != nil {
-		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching user", err)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"data": user})
-}
-
 // update user by id
 func UpdateUserById(c *gin.Context, db *gorm.DB) {
 	var user adminmodels.Users
@@ -123,17 +103,42 @@ func UpdateUserById(c *gin.Context, db *gorm.DB) {
 // delete user by id
 func DeleteUserById(c *gin.Context, db *gorm.DB) {
 	var user adminmodels.Users
-	if err := db.Preload("Role").First(&user, c.Param("id")).Error; err != nil {
+
+	// Start a transaction to ensure both deletions succeed or fail together
+	tx := db.Begin()
+	if tx.Error != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error starting transaction", tx.Error)
+		return
+	}
+
+	// Fetch the user with the given ID
+	if err := tx.Preload("Role").First(&user, c.Param("id")).Error; err != nil {
+		tx.Rollback()
 		utils.ResponseWithError(c, http.StatusNotFound, "User not found", err)
 		return
 	}
 
-	if err := db.Delete(&user).Error; err != nil {
+	// Delete related UserPermissions
+	if err := tx.Where("user_id = ?", user.ID).Delete(&adminmodels.UserPermissions{}).Error; err != nil {
+		tx.Rollback()
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error deleting user permissions", err)
+		return
+	}
+
+	// Delete the user
+	if err := tx.Delete(&user).Error; err != nil {
+		tx.Rollback()
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error deleting user", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error committing transaction", err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User and related permissions deleted successfully", "data": user})
 }
 
 // get users by using role_id with limit and page number and name of the user if provided

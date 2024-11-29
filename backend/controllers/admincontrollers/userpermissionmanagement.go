@@ -15,7 +15,6 @@ type UserPermissionRequest struct {
 	PermissionIds []uint `json:"permission_ids" binding:"required"`
 }
 
-// CreateUserPermission creates new permissions for a user based on an array of PermissionIds
 // CreateUserPermission creates new permissions for a user based on an array of PermissionIds,
 // and returns the created permissions with related user and permission data.
 func CreateUserPermission(c *gin.Context, db *gorm.DB) {
@@ -25,9 +24,23 @@ func CreateUserPermission(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	// Retrieve the user based on UserId
+	// Start a transaction
+	tx := db.Begin()
+	if tx.Error != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error starting transaction", tx.Error)
+		return
+	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			utils.ResponseWithError(c, http.StatusInternalServerError, "An unexpected error occurred", nil)
+		}
+	}()
+
 	var user adminmodels.Users
-	if err := db.First(&user, req.UserId).Error; err != nil {
+	if err := tx.First(&user, req.UserId).Error; err != nil {
+		tx.Rollback()
 		if err == gorm.ErrRecordNotFound {
 			utils.ResponseWithError(c, http.StatusNotFound, "User not found", err)
 		} else {
@@ -36,44 +49,45 @@ func CreateUserPermission(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	// Iterate over each PermissionId to handle creation
 	for _, permissionId := range req.PermissionIds {
 		var rolePermission adminmodels.RolePermissions
-		if err := db.Where("role_id = ? AND permission_id = ?", user.RoleId, permissionId).First(&rolePermission).Error; err != nil {
+		if err := tx.Where("role_id = ? AND permission_id = ?", user.RoleId, permissionId).First(&rolePermission).Error; err != nil {
+			tx.Rollback()
 			if err == gorm.ErrRecordNotFound {
 				utils.ResponseWithError(c, http.StatusNotFound, "Permission not found for this user's role", err)
-				return
 			} else {
 				utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
-				return
 			}
+			return
 		}
 
-		// Check for existing user permission
 		var existingPermission adminmodels.UserPermissions
-		if err := db.Where("user_id = ? AND permission_id = ?", req.UserId, permissionId).First(&existingPermission).Error; err == nil {
-			// Permission already exists; skip to the next
+		if err := tx.Where("user_id = ? AND permission_id = ?", req.UserId, permissionId).First(&existingPermission).Error; err == nil {
 			continue
 		} else if err != gorm.ErrRecordNotFound {
+			tx.Rollback()
 			utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 			return
 		}
 
-		// If permission doesn't exist, create the user permission
 		userPermission := adminmodels.UserPermissions{
 			UserId:       int(req.UserId),
 			PermissionId: int(permissionId),
 		}
-		if err := db.Create(&userPermission).Error; err != nil {
+		if err := tx.Create(&userPermission).Error; err != nil {
+			tx.Rollback()
 			utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 			return
 		}
 	}
 
-	// Fetch the updated user permissions with related user and permission data
+	if err := tx.Commit().Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error committing transaction", err)
+		return
+	}
+
 	var updatedPermissions []adminmodels.UserPermissions
-	if err := db.
-		Preload("User").
+	if err := db.Preload("User").
 		Preload("User.Role").
 		Preload("Permission").
 		Where("user_id = ?", req.UserId).
@@ -82,7 +96,6 @@ func CreateUserPermission(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	// Return the created permissions with preloaded data
 	c.JSON(http.StatusCreated, gin.H{
 		"data": updatedPermissions,
 	})
@@ -114,49 +127,72 @@ func HandleUserPermissionUpdate(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	// Retrieve the user's existing permissions
+	// Start a transaction
+	tx := db.Begin()
+	if tx.Error != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error starting transaction", tx.Error)
+		return
+	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			utils.ResponseWithError(c, http.StatusInternalServerError, "An unexpected error occurred", nil)
+		}
+	}()
+
+	// Fetch existing permissions
 	var existingPermissions []adminmodels.UserPermissions
-	if err := db.Where("user_id = ?", req.UserId).Find(&existingPermissions).Error; err != nil {
+	if err := tx.Where("user_id = ?", req.UserId).Find(&existingPermissions).Error; err != nil {
+		tx.Rollback()
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching existing user permissions", err)
 		return
 	}
 
-	// Create a map of requested permissions for easy lookup
+	// Create a map of requested permissions for comparison
 	requestedPermissions := make(map[uint]bool)
 	for _, permissionId := range req.PermissionIds {
 		requestedPermissions[permissionId] = true
 	}
 
-	// Iterate through existing permissions and delete those not in the request
+	// Delete permissions not in the request
 	for _, perm := range existingPermissions {
 		if _, exists := requestedPermissions[uint(perm.PermissionId)]; !exists {
-			// Delete the permission if it does not exist in the new request
-			if err := db.Delete(&perm).Error; err != nil {
+			if err := tx.Delete(&perm).Error; err != nil {
+				tx.Rollback()
 				utils.ResponseWithError(c, http.StatusInternalServerError, "Error deleting user permission", err)
 				return
 			}
 		}
 	}
 
-	// Add new permissions that are in the request but not in the existing permissions
+	// Add new permissions
 	for _, permissionId := range req.PermissionIds {
 		var existingPermission adminmodels.UserPermissions
-		if err := db.Where("user_id = ? AND permission_id = ?", req.UserId, permissionId).First(&existingPermission).Error; err == gorm.ErrRecordNotFound {
-			// Permission does not exist, so create it
-			userPermission := adminmodels.UserPermissions{
+		if err := tx.Where("user_id = ? AND permission_id = ?", req.UserId, permissionId).First(&existingPermission).Error; err == gorm.ErrRecordNotFound {
+			newPermission := adminmodels.UserPermissions{
 				UserId:       int(req.UserId),
 				PermissionId: int(permissionId),
 			}
-			if err := db.Create(&userPermission).Error; err != nil {
+			if err := tx.Create(&newPermission).Error; err != nil {
+				tx.Rollback()
 				utils.ResponseWithError(c, http.StatusInternalServerError, "Error adding new user permission", err)
 				return
 			}
 		} else if err != nil {
+			tx.Rollback()
 			utils.ResponseWithError(c, http.StatusInternalServerError, "Error checking existing permission", err)
 			return
 		}
 	}
-	// Fetch the updated user permissions with related user and permission data
+
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error committing transaction", err)
+		return
+	}
+
+	// Fetch updated permissions
 	var updatedPermissions []adminmodels.UserPermissions
 	if err := db.
 		Preload("User").
