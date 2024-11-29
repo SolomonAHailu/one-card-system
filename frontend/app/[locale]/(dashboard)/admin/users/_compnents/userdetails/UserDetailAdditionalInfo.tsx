@@ -76,8 +76,16 @@ const AdditionalInformationForm = ({ user }: { user: UserRecieved }) => {
                     <FormControl>
                       <Checkbox
                         checked={(field.value ?? []).includes(permission.id)}
-                        onCheckedChange={() => {}}
-                        disabled
+                        onCheckedChange={(checked) => {
+                          field.onChange(
+                            checked
+                              ? [...(field.value ?? []), permission.id]
+                              : (field.value ?? []).filter(
+                                  (id) => id !== permission.id
+                                )
+                          );
+                        }}
+                        disabled={true}
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">

@@ -1,3 +1,11 @@
+// DONOT EDIT ANYTHING IN THIS FILE
+// DONOT EDIT ANYTHING IN THIS FILE
+// DONOT EDIT ANYTHING IN THIS FILE
+// DONOT EDIT ANYTHING IN THIS FILE
+// DONOT EDIT ANYTHING IN THIS FILE
+// DONOT EDIT ANYTHING IN THIS FILE
+// DONOT EDIT ANYTHING IN THIS FILE
+
 package registrarcontrollers
 
 import (
@@ -19,8 +27,8 @@ import (
 
 // SyncDataFromSMS fetches student data from an external SMS service and synchronizes it with the database.
 func SyncDataFromSMS(c *gin.Context, db *gorm.DB) {
-	username := os.Getenv("DEVICE_USERNAME")
-	password := os.Getenv("DEVICE_PASSWORD")
+	// username := os.Getenv("DEVICE_USERNAME")
+	// password := os.Getenv("DEVICE_PASSWORD")
 	students, err := fetchStudentDataFromSMS()
 	if err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Failed to fetch students from SMS")
@@ -28,27 +36,27 @@ func SyncDataFromSMS(c *gin.Context, db *gorm.DB) {
 	}
 
 	// Fetch all devices
-	var devices []adminmodels.Devices
-	if err := db.Find(&devices).Error; err != nil {
-		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching devices", err)
-		return
-	}
+	// var devices []adminmodels.Devices
+	// if err := db.Find(&devices).Error; err != nil {
+	// 	utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching devices", err)
+	// 	return
+	// }
 
 	//Check the status of the device
-	for _, device := range devices {
-		client := &http.Client{
-			Transport: dac.NewDigestTransport(username, password, http.DefaultTransport),
-		}
-		apiURL := fmt.Sprintf("http://%s/cgi-bin/AccessUser.cgi?action=fetch", device.IPAddress)
-		_, err := client.Get(apiURL)
-		if err != nil {
-			utils.ResponseWithError(c, http.StatusInternalServerError, "Failed to check device status", err)
-			log.Printf("Failed to check device status: %v\n", err)
-			return
-		}
-		fmt.Println("Device with ", device.IPAddress, " is online")
-	}
-	fmt.Println("All devices are online")
+	// for _, device := range devices {
+	// 	client := &http.Client{
+	// 		Transport: dac.NewDigestTransport(username, password, http.DefaultTransport),
+	// 	}
+	// 	apiURL := fmt.Sprintf("http://%s/cgi-bin/AccessUser.cgi?action=fetch", device.IPAddress)
+	// 	_, err := client.Get(apiURL)
+	// 	if err != nil {
+	// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Failed to check device status", err)
+	// 		log.Printf("Failed to check device status: %v\n", err)
+	// 		return
+	// 	}
+	// 	fmt.Println("Device with ", device.IPAddress, " is online")
+	// }
+	// fmt.Println("All devices are online")
 
 	for _, student := range students {
 		var existingStudent registrarmodels.Student
@@ -66,9 +74,9 @@ func SyncDataFromSMS(c *gin.Context, db *gorm.DB) {
 				}
 
 				// Send the new student data to all devices
-				for _, device := range devices {
-					sendStudentToDevice(device, student)
-				}
+				// for _, device := range devices {
+				// 	sendStudentToDevice(device, student)
+				// }
 			} else {
 				utils.ResponseWithError(c, http.StatusInternalServerError, "Failed to check existing student record")
 				log.Println("Error checking student record:", result.Error)
@@ -82,9 +90,9 @@ func SyncDataFromSMS(c *gin.Context, db *gorm.DB) {
 					log.Println("Error updating existing student:", err)
 					continue
 				}
-				for _, device := range devices {
-					sendStudentToDevice(device, existingStudent)
-				}
+				// for _, device := range devices {
+				// 	sendStudentToDevice(device, existingStudent)
+				// }
 			}
 		}
 	}
