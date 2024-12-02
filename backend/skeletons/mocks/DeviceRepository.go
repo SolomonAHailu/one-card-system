@@ -42,6 +42,118 @@ func (_m *DeviceRepository) CreatedDevice(createDevice *repo.CreateDeviceReques)
 	return r0, r1
 }
 
+// DeleteDeviceById provides a mock function with given fields: createDevice
+func (_m *DeviceRepository) DeleteDeviceById(createDevice *repo.CreateDeviceReques) (adminmodels.Devices, error) {
+	ret := _m.Called(createDevice)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteDeviceById")
+	}
+
+	var r0 adminmodels.Devices
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*repo.CreateDeviceReques) (adminmodels.Devices, error)); ok {
+		return rf(createDevice)
+	}
+	if rf, ok := ret.Get(0).(func(*repo.CreateDeviceReques) adminmodels.Devices); ok {
+		r0 = rf(createDevice)
+	} else {
+		r0 = ret.Get(0).(adminmodels.Devices)
+	}
+
+	if rf, ok := ret.Get(1).(func(*repo.CreateDeviceReques) error); ok {
+		r1 = rf(createDevice)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetAllDevices provides a mock function with given fields: createDevice
+func (_m *DeviceRepository) GetAllDevices(createDevice *repo.CreateDeviceReques) (adminmodels.Devices, error) {
+	ret := _m.Called(createDevice)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAllDevices")
+	}
+
+	var r0 adminmodels.Devices
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*repo.CreateDeviceReques) (adminmodels.Devices, error)); ok {
+		return rf(createDevice)
+	}
+	if rf, ok := ret.Get(0).(func(*repo.CreateDeviceReques) adminmodels.Devices); ok {
+		r0 = rf(createDevice)
+	} else {
+		r0 = ret.Get(0).(adminmodels.Devices)
+	}
+
+	if rf, ok := ret.Get(1).(func(*repo.CreateDeviceReques) error); ok {
+		r1 = rf(createDevice)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetDeviceById provides a mock function with given fields: createDevice
+func (_m *DeviceRepository) GetDeviceById(createDevice *repo.CreateDeviceReques) (adminmodels.Devices, error) {
+	ret := _m.Called(createDevice)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetDeviceById")
+	}
+
+	var r0 adminmodels.Devices
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*repo.CreateDeviceReques) (adminmodels.Devices, error)); ok {
+		return rf(createDevice)
+	}
+	if rf, ok := ret.Get(0).(func(*repo.CreateDeviceReques) adminmodels.Devices); ok {
+		r0 = rf(createDevice)
+	} else {
+		r0 = ret.Get(0).(adminmodels.Devices)
+	}
+
+	if rf, ok := ret.Get(1).(func(*repo.CreateDeviceReques) error); ok {
+		r1 = rf(createDevice)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateDeviceById provides a mock function with given fields: createDevice
+func (_m *DeviceRepository) UpdateDeviceById(createDevice *repo.CreateDeviceReques) (adminmodels.Devices, error) {
+	ret := _m.Called(createDevice)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateDeviceById")
+	}
+
+	var r0 adminmodels.Devices
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*repo.CreateDeviceReques) (adminmodels.Devices, error)); ok {
+		return rf(createDevice)
+	}
+	if rf, ok := ret.Get(0).(func(*repo.CreateDeviceReques) adminmodels.Devices); ok {
+		r0 = rf(createDevice)
+	} else {
+		r0 = ret.Get(0).(adminmodels.Devices)
+	}
+
+	if rf, ok := ret.Get(1).(func(*repo.CreateDeviceReques) error); ok {
+		r1 = rf(createDevice)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewDeviceRepository creates a new instance of DeviceRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewDeviceRepository(t interface {

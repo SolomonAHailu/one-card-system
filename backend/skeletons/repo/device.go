@@ -14,8 +14,16 @@ type CreateDeviceReques struct{
 
 type DeviceRepository interface{
 	CreatedDevice(createDevice *CreateDeviceReques) (adminmodels.Devices, error)
+	GetAllDevices(createDevice *CreateDeviceReques) (adminmodels.Devices, error)
+	GetDeviceById(createDevice *CreateDeviceReques) (adminmodels.Devices, error)
+	UpdateDeviceById(createDevice *CreateDeviceReques) (adminmodels.Devices, error)
+	DeleteDeviceById(createDevice *CreateDeviceReques) (adminmodels.Devices, error)
 }
 
 type DeviceUsecase interface{
 	CreatedDevice(createDevice *CreateDeviceReques) (adminmodels.Devices, error)
+	GetAllDevices(createDevice *CreateDeviceReques) (adminmodels.Devices, error)
+	GetDeviceById(createDevice *CreateDeviceReques) (adminmodels.Devices, error)
+	UpdateDeviceById(createDevice *CreateDeviceReques) (adminmodels.Devices, error)
+	DeleteDeviceById(createDevice *CreateDeviceReques) (adminmodels.Devices, error)
 }

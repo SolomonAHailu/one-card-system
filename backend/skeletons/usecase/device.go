@@ -23,3 +23,19 @@ func NewDeviceUsecase(deviceRespository repo.DeviceRepository) repo.DeviceUsecas
 func (d *deviceUsecase) CreatedDevice(createDevice *repo.CreateDeviceReques) (adminmodels.Devices, error) {
 	return d.deviceRespository.CreatedDevice(createDevice)
 }
+
+func (d *deviceUsecase) GetAllDevices(createDevice *repo.CreateDeviceReques) (adminmodels.Devices, error) {
+	return d.deviceRespository.GetAllDevices(createDevice)
+}
+
+func (d *deviceUsecase) GetDeviceById(createDevice *repo.CreateDeviceReques) (adminmodels.Devices, error) {
+	return d.deviceRespository.GetDeviceById(createDevice)
+}
+
+func (d *deviceUsecase) UpdateDeviceById(createDevice *repo.CreateDeviceReques) (adminmodels.Devices, error) {
+	return d.deviceRespository.UpdateDeviceById(createDevice)
+}
+
+func (d *deviceUsecase) DeleteDeviceById(createDevice *repo.CreateDeviceReques) (adminmodels.Devices, error) {
+	return d.deviceRespository.DeleteDeviceById(createDevice)
+}
