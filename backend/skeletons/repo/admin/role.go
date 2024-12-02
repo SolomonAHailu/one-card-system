@@ -1,4 +1,4 @@
-package rolemanagement
+package adminRepo
 
 import (
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"

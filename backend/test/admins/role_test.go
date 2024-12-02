@@ -3,10 +3,9 @@ package usecase_test
 import (
 	"errors"
 	"testing"
-
-	mocks "github.com/SolomonAHailu/one-card-system/skeletons/mocks/admin/admincontrollers/rolemock"
-	"github.com/SolomonAHailu/one-card-system/skeletons/repo/admin/admincontrollers/rolemanagement"
-	"github.com/SolomonAHailu/one-card-system/skeletons/usecase/admin/admincontrollers/roleusecase"
+	"github.com/SolomonAHailu/one-card-system/skeletons/mocks"
+	"github.com/SolomonAHailu/one-card-system/skeletons/repo/admin"
+	"github.com/SolomonAHailu/one-card-system/skeletons/usecase/admin"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
@@ -20,7 +19,7 @@ func TestCreateRole(t *testing.T) {
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
 
-	mockCreateRoleRequest := &rolemanagement.CreateRoleRequest{
+	mockCreateRoleRequest := &adminRepo.CreateRoleRequest{
 		Ctx : cc,
 		Gm : dbb,
 	}
@@ -34,7 +33,7 @@ func TestCreateRole(t *testing.T) {
 	t.Run("success", func(t *testing.T){
 
 		mockRole.On("CreatedRole",  mockCreateRoleRequest).Return(mockRoleTest, nil).Once()
-		uc := roleusecase.NewRoleUsecase(mockRole)
+		uc := adminUsecase .NewRoleUsecase(mockRole)
 		role, err := uc.CreatedRole(mockCreateRoleRequest)
 
 		assert.NoError(t, err)
@@ -46,7 +45,7 @@ func TestCreateRole(t *testing.T) {
 	t.Run("fail", func(t *testing.T){
 
 		mockRole.On("CreatedRole",  mockCreateRoleRequest).Return(adminmodels.Roles{}, errors.New("unexpected")).Once()
-		uc := roleusecase.NewRoleUsecase(mockRole)
+		uc := adminUsecase .NewRoleUsecase(mockRole)
 		role, err := uc.CreatedRole(mockCreateRoleRequest)
 
 		assert.Error(t, err)
@@ -60,7 +59,7 @@ func TestGetRoles(t *testing.T) {
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
 
-	mockCreateRoleRequest := &rolemanagement.CreateRoleRequest{
+	mockCreateRoleRequest := &adminRepo.CreateRoleRequest{
 		Ctx : cc,
 		Gm : dbb,
 	}
@@ -74,7 +73,7 @@ func TestGetRoles(t *testing.T) {
 	t.Run("success", func(t *testing.T){
 
 		mockRole.On("GetRoles",  mockCreateRoleRequest).Return(mockRoleTest, nil).Once()
-		uc := roleusecase.NewRoleUsecase(mockRole)
+		uc := adminUsecase.NewRoleUsecase(mockRole)
 		role, err := uc.GetRoles(mockCreateRoleRequest)
 
 		assert.NoError(t, err)
@@ -86,7 +85,7 @@ func TestGetRoles(t *testing.T) {
 	t.Run("fail", func(t *testing.T){
 
 		mockRole.On("GetRoles",  mockCreateRoleRequest).Return(adminmodels.Roles{}, errors.New("unexpected")).Once()
-		uc := roleusecase.NewRoleUsecase(mockRole)
+		uc := adminUsecase.NewRoleUsecase(mockRole)
 		role, err := uc.GetRoles(mockCreateRoleRequest)
 
 		assert.Error(t, err)
@@ -100,7 +99,7 @@ func TestGetRole(t *testing.T) {
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
 
-	mockCreateRoleRequest := &rolemanagement.CreateRoleRequest{
+	mockCreateRoleRequest := &adminRepo.CreateRoleRequest{
 		Ctx : cc,
 		Gm : dbb,
 	}
@@ -114,7 +113,7 @@ func TestGetRole(t *testing.T) {
 	t.Run("success", func(t *testing.T){
 
 		mockRole.On("GetRole",  mockCreateRoleRequest).Return(mockRoleTest, nil).Once()
-		uc := roleusecase.NewRoleUsecase(mockRole)
+		uc := adminUsecase.NewRoleUsecase(mockRole)
 		role, err := uc.GetRole(mockCreateRoleRequest)
 
 		assert.NoError(t, err)
@@ -126,7 +125,7 @@ func TestGetRole(t *testing.T) {
 	t.Run("fail", func(t *testing.T){
 
 		mockRole.On("GetRole",  mockCreateRoleRequest).Return(adminmodels.Roles{}, errors.New("unexpected")).Once()
-		uc := roleusecase.NewRoleUsecase(mockRole)
+		uc := adminUsecase.NewRoleUsecase(mockRole)
 		role, err := uc.GetRole(mockCreateRoleRequest)
 
 		assert.Error(t, err)
@@ -142,7 +141,7 @@ func TestUpdateRole(t *testing.T) {
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
 
-	mockCreateRoleRequest := &rolemanagement.CreateRoleRequest{
+	mockCreateRoleRequest := &adminRepo.CreateRoleRequest{
 		Ctx : cc,
 		Gm : dbb,
 	}
@@ -156,7 +155,7 @@ func TestUpdateRole(t *testing.T) {
 	t.Run("success", func(t *testing.T){
 
 		mockRole.On("UpdateRole",  mockCreateRoleRequest).Return(mockRoleTest, nil).Once()
-		uc := roleusecase.NewRoleUsecase(mockRole)
+		uc := adminUsecase.NewRoleUsecase(mockRole)
 		role, err := uc.UpdateRole(mockCreateRoleRequest)
 
 		assert.NoError(t, err)
@@ -168,7 +167,7 @@ func TestUpdateRole(t *testing.T) {
 	t.Run("fail", func(t *testing.T){
 
 		mockRole.On("UpdateRole",  mockCreateRoleRequest).Return(adminmodels.Roles{}, errors.New("unexpected")).Once()
-		uc := roleusecase.NewRoleUsecase(mockRole)
+		uc := adminUsecase.NewRoleUsecase(mockRole)
 		role, err := uc.UpdateRole(mockCreateRoleRequest)
 
 		assert.Error(t, err)
@@ -183,7 +182,7 @@ func TestDeleteRole(t *testing.T) {
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
 
-	mockCreateRoleRequest := &rolemanagement.CreateRoleRequest{
+	mockCreateRoleRequest := &adminRepo.CreateRoleRequest{
 		Ctx : cc,
 		Gm : dbb,
 	}
@@ -196,7 +195,7 @@ func TestDeleteRole(t *testing.T) {
 	t.Run("success", func(t *testing.T){
 
 		mockRole.On("DeleteRole",  mockCreateRoleRequest).Return(mockRoleTest, nil).Once()
-		uc := roleusecase.NewRoleUsecase(mockRole)
+		uc := adminUsecase.NewRoleUsecase(mockRole)
 		role, err := uc.DeleteRole(mockCreateRoleRequest)
 
 		assert.NoError(t, err)
@@ -208,7 +207,7 @@ func TestDeleteRole(t *testing.T) {
 	t.Run("fail", func(t *testing.T){
 
 		mockRole.On("DeleteRole",  mockCreateRoleRequest).Return(adminmodels.Roles{}, errors.New("unexpected")).Once()
-		uc := roleusecase.NewRoleUsecase(mockRole)
+		uc := adminUsecase.NewRoleUsecase(mockRole)
 		role, err := uc.DeleteRole(mockCreateRoleRequest)
 
 		assert.Error(t, err)

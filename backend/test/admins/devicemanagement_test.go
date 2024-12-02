@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/SolomonAHailu/one-card-system/skeletons/mocks"
-	"github.com/SolomonAHailu/one-card-system/skeletons/repo"
-	"github.com/SolomonAHailu/one-card-system/skeletons/usecase"
+	"github.com/SolomonAHailu/one-card-system/skeletons/repo/admin"
+	"github.com/SolomonAHailu/one-card-system/skeletons/usecase/admin"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
@@ -20,7 +20,7 @@ func TestCreateDevice(t *testing.T) {
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
 
-	mockCreateDeviceReques := &repo.CreateDeviceReques{
+	mockCreateDeviceReques := &adminRepo.CreateDeviceReques{
 		Ctx : cc,
 		Gm : dbb,
 	}
@@ -36,7 +36,7 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("success", func(t *testing.T){
 
 		mockDevice.On("CreatedDevice",  mockCreateDeviceReques).Return(mockDeviceTest, nil).Once()
-		uc := usecase.NewDeviceUsecase(mockDevice)
+		uc := adminUsecase .NewDeviceUsecase(mockDevice)
 		device, err := uc.CreatedDevice(mockCreateDeviceReques)
 
 		assert.NoError(t, err)
@@ -48,7 +48,7 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("fail", func(t *testing.T){
 
 		mockDevice.On("CreatedDevice",  mockCreateDeviceReques).Return(adminmodels.Devices{}, errors.New("unexpected")).Once()
-		uc := usecase.NewDeviceUsecase(mockDevice)
+		uc := adminUsecase .NewDeviceUsecase(mockDevice)
 		device, err := uc.CreatedDevice(mockCreateDeviceReques)
 
 		assert.Error(t, err)
@@ -62,7 +62,7 @@ func TestGetAllDevices(t *testing.T) {
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
 
-	mockCreateDeviceReques := &repo.CreateDeviceReques{
+	mockCreateDeviceReques := &adminRepo.CreateDeviceReques{
 		Ctx : cc,
 		Gm : dbb,
 	}
@@ -78,7 +78,7 @@ func TestGetAllDevices(t *testing.T) {
 	t.Run("success", func(t *testing.T){
 
 		mockDevice.On("GetAllDevices",  mockCreateDeviceReques).Return(mockDeviceTest, nil).Once()
-		uc := usecase.NewDeviceUsecase(mockDevice)
+		uc := adminUsecase .NewDeviceUsecase(mockDevice)
 		device, err := uc.GetAllDevices(mockCreateDeviceReques)
 
 		assert.NoError(t, err)
@@ -90,7 +90,7 @@ func TestGetAllDevices(t *testing.T) {
 	t.Run("fail", func(t *testing.T){
 
 		mockDevice.On("GetAllDevices",  mockCreateDeviceReques).Return(adminmodels.Devices{}, errors.New("unexpected")).Once()
-		uc := usecase.NewDeviceUsecase(mockDevice)
+		uc := adminUsecase .NewDeviceUsecase(mockDevice)
 		device, err := uc.GetAllDevices(mockCreateDeviceReques)
 
 		assert.Error(t, err)
@@ -104,7 +104,7 @@ func TestGetDeviceById(t *testing.T) {
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
 
-	mockCreateDeviceReques := &repo.CreateDeviceReques{
+	mockCreateDeviceReques := &adminRepo.CreateDeviceReques{
 		Ctx : cc,
 		Gm : dbb,
 	}
@@ -120,7 +120,7 @@ func TestGetDeviceById(t *testing.T) {
 	t.Run("success", func(t *testing.T){
 
 		mockDevice.On("GetDeviceById",  mockCreateDeviceReques).Return(mockDeviceTest, nil).Once()
-		uc := usecase.NewDeviceUsecase(mockDevice)
+		uc := adminUsecase .NewDeviceUsecase(mockDevice)
 		device, err := uc.GetDeviceById(mockCreateDeviceReques)
 
 		assert.NoError(t, err)
@@ -132,7 +132,7 @@ func TestGetDeviceById(t *testing.T) {
 	t.Run("fail", func(t *testing.T){
 
 		mockDevice.On("GetDeviceById",  mockCreateDeviceReques).Return(adminmodels.Devices{}, errors.New("unexpected")).Once()
-		uc := usecase.NewDeviceUsecase(mockDevice)
+		uc := adminUsecase .NewDeviceUsecase(mockDevice)
 		device, err := uc.GetDeviceById(mockCreateDeviceReques)
 
 		assert.Error(t, err)
@@ -148,7 +148,7 @@ func TestUpdateDeviceById(t *testing.T) {
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
 
-	mockCreateDeviceReques := &repo.CreateDeviceReques{
+	mockCreateDeviceReques := &adminRepo.CreateDeviceReques{
 		Ctx : cc,
 		Gm : dbb,
 	}
@@ -164,7 +164,7 @@ func TestUpdateDeviceById(t *testing.T) {
 	t.Run("success", func(t *testing.T){
 
 		mockDevice.On("UpdateDeviceById",  mockCreateDeviceReques).Return(mockDeviceTest, nil).Once()
-		uc := usecase.NewDeviceUsecase(mockDevice)
+		uc := adminUsecase .NewDeviceUsecase(mockDevice)
 		device, err := uc.UpdateDeviceById(mockCreateDeviceReques)
 
 		assert.NoError(t, err)
@@ -176,7 +176,7 @@ func TestUpdateDeviceById(t *testing.T) {
 	t.Run("fail", func(t *testing.T){
 
 		mockDevice.On("UpdateDeviceById",  mockCreateDeviceReques).Return(adminmodels.Devices{}, errors.New("unexpected")).Once()
-		uc := usecase.NewDeviceUsecase(mockDevice)
+		uc := adminUsecase .NewDeviceUsecase(mockDevice)
 		device, err := uc.UpdateDeviceById(mockCreateDeviceReques)
 
 		assert.Error(t, err)
@@ -191,7 +191,7 @@ func TestDeleteDeviceById(t *testing.T) {
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
 
-	mockCreateDeviceReques := &repo.CreateDeviceReques{
+	mockCreateDeviceReques := &adminRepo.CreateDeviceReques{
 		Ctx : cc,
 		Gm : dbb,
 	}
@@ -207,7 +207,7 @@ func TestDeleteDeviceById(t *testing.T) {
 	t.Run("success", func(t *testing.T){
 
 		mockDevice.On("DeleteDeviceById",  mockCreateDeviceReques).Return(mockDeviceTest, nil).Once()
-		uc := usecase.NewDeviceUsecase(mockDevice)
+		uc := adminUsecase .NewDeviceUsecase(mockDevice)
 		device, err := uc.DeleteDeviceById(mockCreateDeviceReques)
 
 		assert.NoError(t, err)
@@ -219,7 +219,7 @@ func TestDeleteDeviceById(t *testing.T) {
 	t.Run("fail", func(t *testing.T){
 
 		mockDevice.On("DeleteDeviceById",  mockCreateDeviceReques).Return(adminmodels.Devices{}, errors.New("unexpected")).Once()
-		uc := usecase.NewDeviceUsecase(mockDevice)
+		uc := adminUsecase .NewDeviceUsecase(mockDevice)
 		device, err := uc.DeleteDeviceById(mockCreateDeviceReques)
 
 		assert.Error(t, err)
