@@ -26,5 +26,9 @@ func RegisterUserManagementRoutes(r *gin.Engine) {
 		v1.GET("/users/:id", func(c *gin.Context) {
 			admincontrollers.GetUsersByRoleId(c, initializers.DB)
 		})
+		//get user information for the dashboard
+		v1.GET("/dashboard", func(c *gin.Context) {
+			admincontrollers.GetUserForDashboardDisplay(c, initializers.DB)
+		})
 	}
 }

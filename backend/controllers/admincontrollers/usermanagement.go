@@ -192,3 +192,33 @@ func GetUsersByRoleId(c *gin.Context, db *gorm.DB) {
 		"totalUsers":  total,
 	})
 }
+
+func GetUserForDashboardDisplay(c *gin.Context, db *gorm.DB) {
+	var totalUsers int64
+	var usersByRole []struct {
+		RoleID   int64  `json:"role_id"`
+		RoleName string `json:"role_name"`
+		Count    int64  `json:"count"`
+	}
+
+	// Get total number of users
+	if err := db.Model(&adminmodels.Users{}).Count(&totalUsers).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total users", err)
+		return
+	}
+
+	// Get number of users grouped by role_id with role information
+	if err := db.Model(&adminmodels.Users{}).
+		Select("roles.id as role_id, roles.role_name as role_name, COUNT(users.id) as count").
+		Joins("JOIN roles ON roles.id = users.role_id").
+		Group("roles.id, roles.role_name").
+		Scan(&usersByRole).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching users by role", err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"totalUsers":  totalUsers,
+		"usersByRole": usersByRole,
+	})
+}

@@ -2,6 +2,14 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosRequestConfig } from "axios";
 import { toast } from "sonner";
 
+export interface DataForDashboard {
+  totalUsers: number;
+  usersByRole: {
+    role_id: number;
+    role_name: string;
+    count: number;
+  }[];
+}
 export interface DataSendToFetchUsers {
   role_id: number;
   page: number;
@@ -72,6 +80,7 @@ export interface UserState {
   currentPage: number;
   totalPages: number;
   totalUsers: number;
+  userDashboardData: DataForDashboard | null;
 }
 
 const initialState: UserState = {
@@ -88,6 +97,7 @@ const initialState: UserState = {
   currentPage: 0,
   totalPages: 0,
   totalUsers: 0,
+  userDashboardData: null,
 };
 
 const userSlice = createSlice({
@@ -190,6 +200,19 @@ const userSlice = createSlice({
         state.sendEmailSuccess = false;
         state.sendEmailLoading = false;
         state.sendEmailError = "Send email failed";
+      })
+      .addCase(handleGetDashboardInformation.pending, (state) => {
+        state.isUserLoading = true;
+        state.isUserError = null;
+      })
+      .addCase(handleGetDashboardInformation.fulfilled, (state, action) => {
+        state.isUserLoading = false;
+        state.userDashboardData = action.payload;
+      })
+      .addCase(handleGetDashboardInformation.rejected, (state, action) => {
+        state.userDashboardData = null;
+        state.isUserLoading = false;
+        state.isUserError = action.error.message || "Fetch users failed";
       });
   },
 });
@@ -349,5 +372,41 @@ export const handleSendEmail = createAsyncThunk<string, DataSendToSendEmail>(
   }
 );
 
-export const { increareCurrentPage, removeCurrentUser,removeSendEmailSuccess } = userSlice.actions;
+export const handleGetDashboardInformation = createAsyncThunk<DataForDashboard>(
+  "user/dashboard",
+  async () => {
+    const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/admin/dashboard`;
+
+    const config: AxiosRequestConfig = {
+      url,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    try {
+      const response = await axios(config);
+      if (response.data) {
+        return response.data;
+      } else {
+        throw new Error("Fetch dashboard information failed");
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.error || "Fetch dashboard information failed"
+      );
+      throw new Error(
+        error.response?.data?.error || "Fetch dashboard information failed"
+      );
+    }
+  }
+);
+
+export const {
+  increareCurrentPage,
+  removeCurrentUser,
+  removeSendEmailSuccess,
+} = userSlice.actions;
 export default userSlice.reducer;

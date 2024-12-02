@@ -39,7 +39,14 @@ export function AppSidebar() {
       variant="floating"
     >
       <SidebarHeader>
-        <div className="flex items-center gap-x-2">
+        <div
+          className="flex items-center gap-x-2 cursor-pointer"
+          onClick={() =>
+            router.push(
+              `/${locale}/${user?.role.role_name.toLowerCase().trim()}`
+            )
+          }
+        >
           <div className="relative flex items-center justify-center h-[80px] w-[80px] rounded-full overflow-hidden">
             <Image
               width={65}
