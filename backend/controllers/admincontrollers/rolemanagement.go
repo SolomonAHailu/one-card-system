@@ -16,6 +16,11 @@ func CreateRole(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
+	var existingRole adminmodels.Roles
+	if err := db.Where("role_name = ?", role.RoleName).First(&existingRole).Error; err == nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Role already exists", nil)
+		return
+	}
 	if err := db.Create(&role).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
@@ -52,6 +57,11 @@ func UpdateRole(c *gin.Context, db *gorm.DB) {
 	}
 	if err := c.ShouldBindJSON(&role); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
+		return
+	}
+	var existingRole adminmodels.Roles
+	if err := db.Where("role_name = ?", role.RoleName).First(&existingRole).Error; err == nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Role already exists", nil)
 		return
 	}
 	if err := db.Save(&role).Error; err != nil {

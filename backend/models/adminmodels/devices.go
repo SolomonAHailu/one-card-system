@@ -8,9 +8,9 @@ import (
 
 type Devices struct {
 	gorm.Model
-	SerialNumber string `gorm:"type:varchar(255);not null;unique;" json:"serial_number"` // Unique identifier
+	SerialNumber string `gorm:"type:varchar(255);not null;unique;" json:"serial_number"`
 	Name         string `gorm:"type:varchar(255);not null;" json:"name"`
-	IPAddress    string `gorm:"type:varchar(255);not null;" json:"ip_address"`
+	IPAddress    string `gorm:"type:varchar(255);not null;unique;" json:"ip_address"`
 	Port         int    `gorm:"not null;" json:"port"`
 	Location     string `gorm:"type:varchar(255);not null;" json:"location"`
 }

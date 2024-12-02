@@ -18,10 +18,10 @@ const Navbar = () => {
   const t = useTranslations("navbar");
   return (
     // <div className="relative h-16 z-50 inset-0 bg-secondary rounded-xl">
-    <div className="relative h-14 z-50 inset-0 bg-secondary rounded-xl filter drop-shadow-sm">
+    <div className="relative min-h-11 z-50 inset-0 bg-secondary rounded-xl filter drop-shadow-sm">
       <MaxWidthWrapper className="h-full">
         {isAuthenticated && (
-          <SidebarTrigger className="absolute top-4 left-4" />
+          <SidebarTrigger className="absolute top-0 left-4 h-full" />
         )}
         <div className="flex items-center justify-end h-full w-full">
           <div className="hidden md:flex items-center gap-x-8">
