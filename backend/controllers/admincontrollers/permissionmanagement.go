@@ -16,6 +16,11 @@ func CreatePermission(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
+	var exstingPermission adminmodels.Permissions
+	if err := db.Where("permissions_name = ?", permission.PermissionsName).First(&exstingPermission).Error; err == nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Permission already exists", nil)
+		return
+	}
 	if err := db.Create(&permission).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
@@ -52,6 +57,11 @@ func UpdatePermission(c *gin.Context, db *gorm.DB) {
 	}
 	if err := c.ShouldBindJSON(&permission); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
+		return
+	}
+	var exstingPermission adminmodels.Permissions
+	if err := db.Where("permissions_name = ?", permission.PermissionsName).First(&exstingPermission).Error; err == nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Permission already exists", nil)
 		return
 	}
 	if err := db.Save(&permission).Error; err != nil {

@@ -1,6 +1,7 @@
 package admincontrollers
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
@@ -20,27 +21,46 @@ func CreateDevice(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid input", err)
 		return
 	}
+
 	if device.SerialNumber == "" {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Serial number cannot be empty", nil)
 		return
 	}
+
 	var existingDevice adminmodels.Devices
-	if err := db.Where("serial_number = ?", device.SerialNumber).First(&existingDevice).Error; err == nil {
+	serialNumberErr := db.Where("serial_number = ?", device.SerialNumber).First(&existingDevice).Error
+	if serialNumberErr != nil && !errors.Is(serialNumberErr, gorm.ErrRecordNotFound) {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error checking serial number", serialNumberErr)
+		return
+	}
+	if serialNumberErr == nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Serial number already exists", nil)
 		return
 	}
 
-	// // Validate LocationType and LocationID
-	// if err := validateLocationTypeAndID(db, device.LocationType, *device.LocationID); err != nil {
-	// 	utils.ResponseWithError(c, http.StatusBadRequest, "Invalid location type or ID", err)
-	// 	return
-	// }
+	ipAddressErr := db.Where("ip_address = ?", device.IPAddress).First(&existingDevice).Error
+	if ipAddressErr != nil && !errors.Is(ipAddressErr, gorm.ErrRecordNotFound) {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error checking IP Address", ipAddressErr)
+		return
+	}
+	if ipAddressErr == nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "IP Address already exists", nil)
+		return
+	}
+
+	if err := device.Validate(); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Port must be between 0 and 65535", err)
+		return
+	}
 
 	if err := db.Create(&device).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error creating device", err)
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "Device successfully created", "data": device})
+
+	c.JSON(http.StatusCreated, gin.H{
+		"data": device,
+	})
 }
 
 // get all devices
@@ -71,19 +91,36 @@ func UpdateDeviceById(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusNotFound, "Device not found", err)
 		return
 	}
-
 	// Bind JSON data to the device
 	if err := c.ShouldBindJSON(&device); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid input", err)
 		return
 	}
+	var existingDevice adminmodels.Devices
+	serialNumberErr := db.Where("serial_number = ?", device.SerialNumber).First(&existingDevice).Error
+	if serialNumberErr != nil && !errors.Is(serialNumberErr, gorm.ErrRecordNotFound) {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error checking serial number", serialNumberErr)
+		return
+	}
+	if serialNumberErr == nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Serial number already exists", nil)
+		return
+	}
 
-	// // Validate LocationType and LocationID
-	// if err := validateLocationTypeAndID(db, device.LocationType, *device.LocationID); err != nil {
-	// 	utils.ResponseWithError(c, http.StatusBadRequest, "Invalid location type or ID", err)
-	// 	return
-	// }
+	ipAddressErr := db.Where("ip_address = ?", device.IPAddress).First(&existingDevice).Error
+	if ipAddressErr != nil && !errors.Is(ipAddressErr, gorm.ErrRecordNotFound) {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error checking IP Address", ipAddressErr)
+		return
+	}
+	if ipAddressErr == nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "IP Address already exists", nil)
+		return
+	}
 
+	if err := device.Validate(); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Port must be between 0 and 65535", err)
+		return
+	}
 	if err := db.Save(&device).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error updating device", err)
 		return
@@ -104,85 +141,3 @@ func DeleteDeviceById(c *gin.Context, db *gorm.DB) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Device successfully deleted", "data": device})
 }
-
-// get devices by location_id and location_type with pagination and name filter
-// func GetDevicesByLocationId(c *gin.Context, db *gorm.DB) {
-// 	var devices []adminmodels.Devices
-// 	var total int64
-// 	locationID := c.Param("location_id")
-// 	locationType := c.Query("location_type") // Expecting a query parameter for location type
-
-// 	page := c.DefaultQuery("page", "1")
-// 	limit := c.DefaultQuery("limit", "10")
-// 	name := c.Query("name") // Optional name filter
-
-// 	pageInt, err := strconv.Atoi(page)
-// 	if err != nil || pageInt < 1 {
-// 		pageInt = 1
-// 	}
-// 	limitInt, err := strconv.Atoi(limit)
-// 	if err != nil || limitInt < 1 {
-// 		limitInt = 10
-// 	}
-
-// 	// Start query with location_type and location_id filter
-// 	query := db.Model(&adminmodels.Devices{}).Where("location_id = ? AND location_type = ?", locationID, locationType)
-
-// 	// Apply name filter if provided
-// 	if name != "" {
-// 		query = query.Where("LOWER(name) LIKE LOWER(?)", "%"+name+"%")
-// 	}
-
-// 	// Get total count for pagination
-// 	if err := query.Count(&total).Error; err != nil {
-// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching devices count", err)
-// 		return
-// 	}
-
-// 	// Fetch the paginated data with name filtering
-// 	if err := query.
-// 		Limit(limitInt).
-// 		Offset((pageInt - 1) * limitInt).
-// 		Find(&devices).Error; err != nil {
-// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching devices", err)
-// 		return
-// 	}
-
-// 	totalPages := int64(math.Ceil(float64(total) / float64(limitInt)))
-
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"data":         devices,
-// 		"currentPage":  pageInt,
-// 		"totalPages":   totalPages,
-// 		"totalDevices": total,
-// 	})
-// }
-
-// // validateLocationTypeAndID validates the combination of LocationType and LocationID
-// func validateLocationTypeAndID(db *gorm.DB, locationType string, locationID int) error {
-// 	switch locationType {
-// 	case "Cafeteria":
-// 		var cafeteria cafeteriamodels.Cafeterias
-// 		if err := db.First(&cafeteria, locationID).Error; err != nil {
-// 			return errors.New("invalid cafeteria ID")
-// 		}
-// 	case "Library":
-// 		var library librarymodels.Libraries
-// 		if err := db.First(&library, locationID).Error; err != nil {
-// 			return errors.New("invalid library ID")
-// 		}
-// 	case "MainGate":
-// 		var gate maingatemodels.MainGates
-// 		if err := db.First(&gate, locationID).Error; err != nil {
-// 			return errors.New("invalid gate ID")
-// 		}
-// 	case "Dormitory":
-// 		var dormitory dormitorymodels.Dormitories
-// 		if err := db.First(&dormitory, locationID).Error; err != nil {
-// 			return errors.New("invalid dormitory ID")
-// 		}
-// 	default:
-// 		return errors.New("invalid location type")
-// 	}
-// 	return nil
-// }

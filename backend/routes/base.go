@@ -14,6 +14,7 @@ func RegisterRoutes(r *gin.Engine) {
 	adminroutes.RegisterUserManagementRoutes(r)
 	adminroutes.RegisterUserPermissionManagementRoutes(r)
 	adminroutes.RegisterDeviceManagementRoutes(r)
+	adminroutes.RegisterSendEmailManagementRoutes(r)
 	userroutes.RegisterUserRoutes(r)
 	registrarroutes.RegisterStudentManagementRoutes(r)
 }

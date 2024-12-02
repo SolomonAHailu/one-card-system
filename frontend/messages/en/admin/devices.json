@@ -14,16 +14,17 @@
     "locationrequired": "Location required",
     "createdevice": "Create Device",
     "updatedevice": "Update Device",
-    "enterdevicename": "Enter Device Name",
-    "enterdeviceserialnumber": "Enter Device Serial Number",
-    "enterdeviceipaddress": "Enter Device IP Adddress",
-    "enterdeviceport": "Enter Device Port",
-    "enterdevicelocation": "Enter Device Location",
+    "enterdevicename": "Enter device name",
+    "enterdeviceserialnumber": "Enter device serial number",
+    "enterdeviceipaddress": "Enter device IP Adddress",
+    "enterdeviceport": "Enter device port",
+    "enterdevicelocation": "Enter device location",
     "edit": "Edit",
     "delete": "Delete",
     "suretodelete": "Are you sure you want to delete device",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "close": "Close"
+    "close": "Close",
+    "nodevice": "No Device Found"
   }
 }
