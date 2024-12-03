@@ -19,27 +19,30 @@ func NewrolepermissionmanagementUsecase(rolepermissionmanagementRepository admin
 
 
 // CreateRolePermission implements repo.RolepermissionmanagementUsecase.
-func (r *rolepermissionmanagementUsecase) CreateRolePermission(createDevice *adminRepo.CreateDeviceReques) (adminmodels.Devices, error) {
-	return r.RolepermissionmanagementRepository.CreateRolePermission(createDevice )
-}
-
-// DeleteRolePermissionById implements repo.RolepermissionmanagementUsecase.
-func (r *rolepermissionmanagementUsecase) DeleteRolePermissionById(createDevice *adminRepo.CreateDeviceReques) (adminmodels.Devices, error) {
-	return r.RolepermissionmanagementRepository.DeleteRolePermissionById(createDevice )
-}
-
-// GetRolePermissionByRoleId implements repo.RolepermissionmanagementUsecase.
-func (r *rolepermissionmanagementUsecase) GetRolePermissionByRoleId(createDevice *adminRepo.CreateDeviceReques) (adminmodels.Devices, error) {
-	return r.RolepermissionmanagementRepository.GetRolePermissionByRoleId(createDevice )
+func (r *rolepermissionmanagementUsecase) CreateRolePermission(creatcreateRolepermissioneDevice *adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error) {
+	return r.RolepermissionmanagementRepository.CreateRolePermission(creatcreateRolepermissioneDevice )
 }
 
 // GetRolePermissions implements repo.RolepermissionmanagementUsecase.
-func (r *rolepermissionmanagementUsecase) GetRolePermissions(createDevice *adminRepo.CreateDeviceReques) (adminmodels.Devices, error) {
-	return r.RolepermissionmanagementRepository.GetRolePermissions(createDevice )
+func (r *rolepermissionmanagementUsecase) GetRolePermissions(deleteRolepermissionById *adminRepo.RolepermissionmanagementRequest) ([]adminmodels.Permissions, error) {
+	return r.RolepermissionmanagementRepository.GetRolePermissions(deleteRolepermissionById )
 }
 
+
+
+// GetRolePermissionByRoleId implements repo.RolepermissionmanagementUsecase.
+func (r *rolepermissionmanagementUsecase) GetRolePermissionByRoleId(getRolepermissionById *adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error) {
+	return r.RolepermissionmanagementRepository.GetRolePermissionByRoleId(getRolepermissionById )
+}
+
+// DeleteRolePermissionById implements repo.RolepermissionmanagementUsecase.
+func (r *rolepermissionmanagementUsecase) DeleteRolePermissionById(getRolepermission *adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error) {
+	return r.RolepermissionmanagementRepository.DeleteRolePermissionById(getRolepermission )
+}
+
+
 // UpdateRolePermissions implements repo.RolepermissionmanagementUsecase.
-func (r *rolepermissionmanagementUsecase) UpdateRolePermissions(createDevice *adminRepo.CreateDeviceReques) (adminmodels.Devices, error) {
-	return r.RolepermissionmanagementRepository.UpdateRolePermissions(createDevice )
+func (r *rolepermissionmanagementUsecase) UpdateRolePermission(updateRolepermissionById *adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error) {
+	return r.RolepermissionmanagementRepository.UpdateRolePermission(updateRolepermissionById )
 }
 

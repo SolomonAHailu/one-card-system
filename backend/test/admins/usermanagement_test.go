@@ -1,3 +1,4 @@
+
 package usecase_test
 
 import (
@@ -214,3 +215,4 @@ func TestDeleteUserById(t *testing.T) {
 		mockUser.AssertExpectations(t)
 	})
 }
+

@@ -15,25 +15,26 @@ type RolepermissionmanagementRepository struct {
 }
 
 // CreateRolePermission provides a mock function with given fields: createRolepermission
-func (_m *RolepermissionmanagementRepository) CreateRolePermission(createRolepermission *adminRepo.CreateDeviceReques) (adminmodels.Devices, error) {
+func (_m *RolepermissionmanagementRepository) CreateRolePermission(createRolepermission *adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error) {
 	ret := _m.Called(createRolepermission)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateRolePermission")
 	}
 
-	var r0 adminmodels.Devices
+	var r0 adminmodels.Permissions
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*adminRepo.CreateDeviceReques) (adminmodels.Devices, error)); ok {
+	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error)); ok {
 		return rf(createRolepermission)
 	}
-	if rf, ok := ret.Get(0).(func(*adminRepo.CreateDeviceReques) adminmodels.Devices); ok {
+	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) adminmodels.Permissions); ok {
+
 		r0 = rf(createRolepermission)
 	} else {
-		r0 = ret.Get(0).(adminmodels.Devices)
+		r0 = ret.Get(0).(adminmodels.Permissions)
 	}
 
-	if rf, ok := ret.Get(1).(func(*adminRepo.CreateDeviceReques) error); ok {
+	if rf, ok := ret.Get(1).(func(*adminRepo.RolepermissionmanagementRequest) error); ok {
 		r1 = rf(createRolepermission)
 	} else {
 		r1 = ret.Error(1)
@@ -42,27 +43,27 @@ func (_m *RolepermissionmanagementRepository) CreateRolePermission(createRoleper
 	return r0, r1
 }
 
-// DeleteRolePermissionById provides a mock function with given fields: createDevice
-func (_m *RolepermissionmanagementRepository) DeleteRolePermissionById(createDevice *adminRepo.CreateDeviceReques) (adminmodels.Devices, error) {
-	ret := _m.Called(createDevice)
+// DeleteRolePermissionById provides a mock function with given fields: deleteRolepermissionById
+func (_m *RolepermissionmanagementRepository) DeleteRolePermissionById(deleteRolepermissionById *adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error) {
+	ret := _m.Called(deleteRolepermissionById)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteRolePermissionById")
 	}
 
-	var r0 adminmodels.Devices
+	var r0 adminmodels.Permissions
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*adminRepo.CreateDeviceReques) (adminmodels.Devices, error)); ok {
-		return rf(createDevice)
+	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error)); ok {
+		return rf(deleteRolepermissionById)
 	}
-	if rf, ok := ret.Get(0).(func(*adminRepo.CreateDeviceReques) adminmodels.Devices); ok {
-		r0 = rf(createDevice)
+	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) adminmodels.Permissions); ok {
+		r0 = rf(deleteRolepermissionById)
 	} else {
-		r0 = ret.Get(0).(adminmodels.Devices)
+		r0 = ret.Get(0).(adminmodels.Permissions)
 	}
 
-	if rf, ok := ret.Get(1).(func(*adminRepo.CreateDeviceReques) error); ok {
-		r1 = rf(createDevice)
+	if rf, ok := ret.Get(1).(func(*adminRepo.RolepermissionmanagementRequest) error); ok {
+		r1 = rf(deleteRolepermissionById)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -70,27 +71,27 @@ func (_m *RolepermissionmanagementRepository) DeleteRolePermissionById(createDev
 	return r0, r1
 }
 
-// GetRolePermissionByRoleId provides a mock function with given fields: getRolepermissionBy
-func (_m *RolepermissionmanagementRepository) GetRolePermissionByRoleId(getRolepermissionBy *adminRepo.CreateDeviceReques) (adminmodels.Devices, error) {
-	ret := _m.Called(getRolepermissionBy)
+// GetRolePermissionByRoleId provides a mock function with given fields: getRolepermissionById
+func (_m *RolepermissionmanagementRepository) GetRolePermissionByRoleId(getRolepermissionById *adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error) {
+	ret := _m.Called(getRolepermissionById)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetRolePermissionByRoleId")
 	}
 
-	var r0 adminmodels.Devices
+	var r0 adminmodels.Permissions
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*adminRepo.CreateDeviceReques) (adminmodels.Devices, error)); ok {
-		return rf(getRolepermissionBy)
+	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error)); ok {
+		return rf(getRolepermissionById)
 	}
-	if rf, ok := ret.Get(0).(func(*adminRepo.CreateDeviceReques) adminmodels.Devices); ok {
-		r0 = rf(getRolepermissionBy)
+	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) adminmodels.Permissions); ok {
+		r0 = rf(getRolepermissionById)
 	} else {
-		r0 = ret.Get(0).(adminmodels.Devices)
+		r0 = ret.Get(0).(adminmodels.Permissions)
 	}
 
-	if rf, ok := ret.Get(1).(func(*adminRepo.CreateDeviceReques) error); ok {
-		r1 = rf(getRolepermissionBy)
+	if rf, ok := ret.Get(1).(func(*adminRepo.RolepermissionmanagementRequest) error); ok {
+		r1 = rf(getRolepermissionById)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -99,25 +100,27 @@ func (_m *RolepermissionmanagementRepository) GetRolePermissionByRoleId(getRolep
 }
 
 // GetRolePermissions provides a mock function with given fields: getRolepermission
-func (_m *RolepermissionmanagementRepository) GetRolePermissions(getRolepermission *adminRepo.CreateDeviceReques) (adminmodels.Devices, error) {
+func (_m *RolepermissionmanagementRepository) GetRolePermissions(getRolepermission *adminRepo.RolepermissionmanagementRequest) ([]adminmodels.Permissions, error) {
 	ret := _m.Called(getRolepermission)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetRolePermissions")
 	}
 
-	var r0 adminmodels.Devices
+	var r0 []adminmodels.Permissions
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*adminRepo.CreateDeviceReques) (adminmodels.Devices, error)); ok {
+	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) ([]adminmodels.Permissions, error)); ok {
 		return rf(getRolepermission)
 	}
-	if rf, ok := ret.Get(0).(func(*adminRepo.CreateDeviceReques) adminmodels.Devices); ok {
+	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) []adminmodels.Permissions); ok {
 		r0 = rf(getRolepermission)
 	} else {
-		r0 = ret.Get(0).(adminmodels.Devices)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]adminmodels.Permissions)
+		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*adminRepo.CreateDeviceReques) error); ok {
+	if rf, ok := ret.Get(1).(func(*adminRepo.RolepermissionmanagementRequest) error); ok {
 		r1 = rf(getRolepermission)
 	} else {
 		r1 = ret.Error(1)
@@ -126,27 +129,27 @@ func (_m *RolepermissionmanagementRepository) GetRolePermissions(getRolepermissi
 	return r0, r1
 }
 
-// UpdateRolePermissions provides a mock function with given fields: createDevice
-func (_m *RolepermissionmanagementRepository) UpdateRolePermissions(createDevice *adminRepo.CreateDeviceReques) (adminmodels.Devices, error) {
-	ret := _m.Called(createDevice)
+// UpdateRolePermission provides a mock function with given fields: updateRolepermissionById
+func (_m *RolepermissionmanagementRepository) UpdateRolePermission(updateRolepermissionById *adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error) {
+	ret := _m.Called(updateRolepermissionById)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UpdateRolePermissions")
+		panic("no return value specified for UpdateRolePermission")
 	}
 
-	var r0 adminmodels.Devices
+	var r0 adminmodels.Permissions
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*adminRepo.CreateDeviceReques) (adminmodels.Devices, error)); ok {
-		return rf(createDevice)
+	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) (adminmodels.Permissions, error)); ok {
+		return rf(updateRolepermissionById)
 	}
-	if rf, ok := ret.Get(0).(func(*adminRepo.CreateDeviceReques) adminmodels.Devices); ok {
-		r0 = rf(createDevice)
+	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) adminmodels.Permissions); ok {
+		r0 = rf(updateRolepermissionById)
 	} else {
-		r0 = ret.Get(0).(adminmodels.Devices)
+		r0 = ret.Get(0).(adminmodels.Permissions)
 	}
 
-	if rf, ok := ret.Get(1).(func(*adminRepo.CreateDeviceReques) error); ok {
-		r1 = rf(createDevice)
+	if rf, ok := ret.Get(1).(func(*adminRepo.RolepermissionmanagementRequest) error); ok {
+		r1 = rf(updateRolepermissionById)
 	} else {
 		r1 = ret.Error(1)
 	}
