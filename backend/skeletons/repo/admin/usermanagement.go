@@ -26,4 +26,5 @@ type UserUsecase interface{
 	DeleteUserById(createUser *CreateUserRequest) (adminmodels.Users, error)
 	UpdateUserById(createUser *CreateUserRequest) (adminmodels.Users, error)
 	
+	
 }

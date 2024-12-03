@@ -28,7 +28,6 @@ func (_m *RolepermissionmanagementRepository) CreateRolePermission(createRoleper
 		return rf(createRolepermission)
 	}
 	if rf, ok := ret.Get(0).(func(*adminRepo.RolepermissionmanagementRequest) adminmodels.Permissions); ok {
-
 		r0 = rf(createRolepermission)
 	} else {
 		r0 = ret.Get(0).(adminmodels.Permissions)
