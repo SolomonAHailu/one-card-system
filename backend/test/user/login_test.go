@@ -1,12 +1,12 @@
-package test
+package usecase_test
 
 import (
 	"errors"
 	"testing"
 
 	"github.com/SolomonAHailu/one-card-system/skeletons/mocks"
-	"github.com/SolomonAHailu/one-card-system/skeletons/repo"
-	"github.com/SolomonAHailu/one-card-system/skeletons/usecase"
+	user"github.com/SolomonAHailu/one-card-system/skeletons/repo/user"
+	"github.com/SolomonAHailu/one-card-system/skeletons/usecase/user"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
@@ -21,7 +21,7 @@ func TestLoginUser(t *testing.T) {
 	// Mock request
 	cc := &gin.Context{}
 	dbb := &gorm.DB{}
-	mockLoginUserRequest := &repo.LoginUserRequest{
+	mockLoginUserRequest := &user.LoginUserRequest{
 		Ctx: cc,
 		Gm:  dbb,
 	}
@@ -37,7 +37,7 @@ func TestLoginUser(t *testing.T) {
 		mockUser.On("Login", mockLoginUserRequest).Return(mockUserTest, nil).Once()
 
 		// Create a usecase with the mocked repository
-		uc := usecase.NewLoginUserUsecase(mockUser)
+		uc := userUsecase.NewLoginUserUsecase(mockUser)
 
 		// Call the usecase method
 		user, err := uc.Login(mockLoginUserRequest)
@@ -53,7 +53,7 @@ func TestLoginUser(t *testing.T) {
 		mockUser.On("Login", mockLoginUserRequest).Return(adminmodels.Users{}, errors.New("unexpected")).Once()
 
 		// Create a usecase with the mocked repository
-		uc := usecase.NewLoginUserUsecase(mockUser)
+		uc := userUsecase.NewLoginUserUsecase(mockUser)
 
 		// Call the usecase method
 		user, err := uc.Login(mockLoginUserRequest)

@@ -1,4 +1,4 @@
-package repo
+package userRepo
 
 import (
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
