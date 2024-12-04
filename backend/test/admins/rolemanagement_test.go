@@ -9,8 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
-
-	// "github.com/stretchr/testify/mock"
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
 )
 
