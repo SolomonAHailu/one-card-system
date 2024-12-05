@@ -37,11 +37,11 @@ const LogoutButton = () => {
           <DialogTitle className=" text-center">Are you sure?</DialogTitle>
         </DialogHeader>
         <div className="flex items-center justify-evenly">
-          <DialogClose className="bg-red-500 hover:bg-red-400 px-7 py-2 rounded-sm">
+          <DialogClose className="bg-red-500 hover:bg-red-400 px-7 py-2 rounded-sm text-white">
             Cancel
           </DialogClose>
           <Button
-            className="bg-green-500 hover:bg-green-400 px-7"
+            className="bg-green-500 hover:bg-green-400 px-7 text-white"
             onClick={() =>
               dispatch<any>(handleLogout({ router, languagePrefix }))
             }

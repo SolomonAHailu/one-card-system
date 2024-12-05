@@ -26,5 +26,8 @@ func RegisterStudentManagementRoutes(r *gin.Engine) {
 		v1.PATCH("/student/photo/:id", func(c *gin.Context) {
 			registrarcontrollers.UpdateStudentPhoto(c, initializers.DB)
 		})
+		v1.GET("/dashboard", func(c *gin.Context) {
+			registrarcontrollers.GetStudentForDashboard(c, initializers.DB)
+		})
 	}
 }

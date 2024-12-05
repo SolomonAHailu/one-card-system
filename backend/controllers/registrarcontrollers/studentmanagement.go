@@ -253,6 +253,48 @@ func UpdateStudentPhoto(c *gin.Context, db *gorm.DB) {
 	})
 }
 
+func GetStudentForDashboard(c *gin.Context, db *gorm.DB) {
+	var totalStudents int64
+	var studentsByCategory []struct {
+		Category string `json:"category"`
+		Count    int64  `json:"count"`
+	}
+
+	// Get total number of students
+	if err := db.Model(&registrarmodels.Student{}).Count(&totalStudents).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total students", err)
+		return
+	}
+
+	// Use a raw query to fetch counts for each category
+	if err := db.Raw(`
+		SELECT 
+			'Active Students' AS category, COUNT(*) AS count 
+		FROM students WHERE status = 'Active'
+		UNION ALL
+		SELECT 
+			'Inactive Students' AS category, COUNT(*) AS count 
+		FROM students WHERE status = 'Inactive'
+		UNION ALL
+		SELECT 
+			'Students with Cards' AS category, COUNT(*) AS count 
+		FROM students WHERE card_number IS NOT NULL
+		UNION ALL
+		SELECT 
+			'Students without Cards' AS category, COUNT(*) AS count 
+		FROM students WHERE card_number IS NULL
+	`).Scan(&studentsByCategory).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching students by category", err)
+		return
+	}
+
+	// Prepare the response
+	c.JSON(http.StatusOK, gin.H{
+		"totalStudents":      totalStudents,
+		"studentsByCategory": studentsByCategory,
+	})
+}
+
 func sendStudentToDeviceForUpdateCard(device adminmodels.Devices, student registrarmodels.Student, hasCard bool, prevCardNumber string) {
 	username := os.Getenv("DEVICE_USERNAME")
 	password := os.Getenv("DEVICE_PASSWORD")

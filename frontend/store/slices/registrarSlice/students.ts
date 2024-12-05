@@ -2,6 +2,14 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosRequestConfig } from "axios";
 import { toast } from "sonner";
 
+export interface DataForDashboard {
+  totalStudents: number;
+  studentsByCategory: {
+    category: string;
+    count: 10;
+  }[];
+}
+
 export enum SexType {
   Male = "Male",
   Female = "Female",
@@ -145,6 +153,9 @@ export interface StudentState {
   isUpdateStudentCardLoading: boolean;
   isUpdateStudentError: null | string;
   totalStudents: number;
+  isStudentLoading: boolean;
+  isStudentError: null | string;
+  studentDataForDashboard: DataForDashboard | null;
 }
 
 const initialState: StudentState = {
@@ -158,6 +169,9 @@ const initialState: StudentState = {
   currentPage: 0,
   totalPages: 0,
   totalStudents: 0,
+  isStudentLoading: false,
+  isStudentError: null,
+  studentDataForDashboard: null,
 };
 
 const studentSlice = createSlice({
@@ -240,7 +254,26 @@ const studentSlice = createSlice({
         state.isUpdateStudentCardLoading = false;
         state.isUpdateStudentError =
           action.error.message || "Fetch students failed";
-      });
+      })
+      .addCase(handleGetDashboardInformationForStudent.pending, (state) => {
+        state.isStudentLoading = true;
+        state.isStudentError = null;
+      })
+      .addCase(
+        handleGetDashboardInformationForStudent.fulfilled,
+        (state, action) => {
+          state.isStudentLoading = false;
+          state.studentDataForDashboard = action.payload;
+        }
+      )
+      .addCase(
+        handleGetDashboardInformationForStudent.rejected,
+        (state, action) => {
+          state.studentDataForDashboard = null;
+          state.isStudentLoading = false;
+          state.isStudentError = action.error.message || "Fetch users failed";
+        }
+      );
   },
 });
 
@@ -408,6 +441,36 @@ export const handleUpdateStudentStatus = createAsyncThunk<
     throw new Error(error.response?.data?.error || "Update Student failed");
   }
 });
+
+export const handleGetDashboardInformationForStudent =
+  createAsyncThunk<DataForDashboard>("user/dashboard", async () => {
+    const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/registrar/dashboard`;
+
+    const config: AxiosRequestConfig = {
+      url,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    try {
+      const response = await axios(config);
+      if (response.data) {
+        return response.data;
+      } else {
+        throw new Error("Fetch dashboard information failed");
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.error || "Fetch dashboard information failed"
+      );
+      throw new Error(
+        error.response?.data?.error || "Fetch dashboard information failed"
+      );
+    }
+  });
 
 export const {} = studentSlice.actions;
 export default studentSlice.reducer;
