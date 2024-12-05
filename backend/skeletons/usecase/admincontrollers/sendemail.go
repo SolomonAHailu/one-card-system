@@ -1,9 +1,7 @@
 package adminUsecase
 
 import (
-	adminRepo "github.com/SolomonAHailu/one-card-system/skeletons/repo/admin"
-	// "github.com/gin-gonic/gin"
-	// "gorm.io/gorm"
+	adminRepo "github.com/SolomonAHailu/one-card-system/skeletons/repo/admincontrollers"
 )
 
 type sendEmailUsecase struct {

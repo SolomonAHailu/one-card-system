@@ -2,7 +2,7 @@ package userUsecase
 
 import (
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
-	user "github.com/SolomonAHailu/one-card-system/skeletons/repo/user"
+	user "github.com/SolomonAHailu/one-card-system/skeletons/repo/usercontrollers"
 	// "github.com/gin-gonic/gin"
 	// "gorm.io/gorm"
 )

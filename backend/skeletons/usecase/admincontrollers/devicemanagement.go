@@ -2,7 +2,7 @@ package adminUsecase
 
 import (
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
-	"github.com/SolomonAHailu/one-card-system/skeletons/repo/admin"
+	adminRepo "github.com/SolomonAHailu/one-card-system/skeletons/repo/admincontrollers"
 	// "github.com/gin-gonic/gin"
 	// "gorm.io/gorm"
 )

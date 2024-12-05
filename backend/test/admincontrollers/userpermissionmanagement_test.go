@@ -6,8 +6,8 @@ import (
 
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
 	"github.com/SolomonAHailu/one-card-system/skeletons/mocks"
-	"github.com/SolomonAHailu/one-card-system/skeletons/repo/admin"
-	"github.com/SolomonAHailu/one-card-system/skeletons/usecase/admin"
+	adminRepo "github.com/SolomonAHailu/one-card-system/skeletons/repo/admincontrollers"
+	adminUsecase "github.com/SolomonAHailu/one-card-system/skeletons/usecase/admincontrollers"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"

@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/SolomonAHailu/one-card-system/skeletons/mocks"
-	user"github.com/SolomonAHailu/one-card-system/skeletons/repo/user"
-	"github.com/SolomonAHailu/one-card-system/skeletons/usecase/user"
+	user"github.com/SolomonAHailu/one-card-system/skeletons/repo/usercontrollers"
+	"github.com/SolomonAHailu/one-card-system/skeletons/usecase/usercontrollers"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
