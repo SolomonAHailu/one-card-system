@@ -103,6 +103,7 @@ func RoleRequired(roles ...int) gin.HandlerFunc {
 			return
 		}
 		fmt.Println("ROLE OF THE USER", roles)
+		fmt.Println("ROLE OF THE USER TWO", claims)
 		// Check if the user role is allowed to access the route
 		for _, role := range roles {
 			if claims.UserRole == role {

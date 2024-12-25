@@ -26,11 +26,18 @@ export function AppSidebar() {
   const userRole = user?.role.role_name.toLowerCase().trim();
   const adminSidebar = useTranslations("adminsidebar");
   const registrarSidebar = useTranslations("registrarsidebar");
-  const t = user?.role.role_name === "Admin" ? adminSidebar : registrarSidebar;
+  const gateSidebar = useTranslations("gatesidebar");
+  const t =
+    user?.role.role_name === "Admin"
+      ? adminSidebar
+      : user?.role.role_name === "Registrar"
+      ? registrarSidebar
+      : gateSidebar;
 
   const currentSidebarItems = rolePermission.filter(
     (role) => role.role.toLowerCase().trim() === userRole
   );
+  console.log("CUURENT SIDE BAR ITEMS", currentSidebarItems);
 
   return (
     <Sidebar

@@ -40,14 +40,14 @@ const RegistrarDashboardData = () => {
   //   Prepare data for the pie chart
   const chartData = {
     labels:
-      studentDataForDashboard?.studentsByCategory.map(
+      studentDataForDashboard?.studentsByCategory?.map(
         (item) => item.category
       ) || [],
     datasets: [
       {
         label: "Users by Role",
         data:
-          studentDataForDashboard?.studentsByCategory.map(
+          studentDataForDashboard?.studentsByCategory?.map(
             (item) => item.count
           ) || [],
         backgroundColor: [
