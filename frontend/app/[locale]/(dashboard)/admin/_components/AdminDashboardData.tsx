@@ -37,11 +37,11 @@ const AdminDashboardData = () => {
 
   // Prepare data for the pie chart
   const chartData = {
-    labels: userDashboardData?.usersByRole.map((item) => item.role_name) || [],
+    labels: userDashboardData?.usersByRole?.map((item) => item.role_name) || [],
     datasets: [
       {
         label: "Users by Role",
-        data: userDashboardData?.usersByRole.map((item) => item.count) || [],
+        data: userDashboardData?.usersByRole?.map((item) => item.count) || [],
         backgroundColor: [
           "#FF6384",
           "#36A2EB",
