@@ -104,7 +104,7 @@ export const handleLogin = createAsyncThunk<
     const response = await axios(config);
     if (response.data.data) {
       router.push(`${response.data.data.role?.role_name.toLowerCase().trim()}`);
-      toast.success("Login Successfully");
+      toast.success("Logged in successfully");
       return response.data;
     } else {
       toast.error("Invalid login data");
@@ -124,7 +124,7 @@ export const handleLogout = createAsyncThunk(
     { dispatch }: { dispatch: AppDispatch }
   ) => {
     dispatch(clearAuthUser());
-    toast.success("Logout Successfully");
+    toast.success("Logged out successfully");
     router.push(`/${languagePrefix}/login`);
   }
 );

@@ -4,6 +4,9 @@ import { toast } from "sonner";
 
 export interface DataForDashboard {
   totalUsers: number;
+  totalDevices: number;
+  totalRoles: number;
+  totalPermissions: number;
   usersByRole: {
     role_id: number;
     role_name: string;

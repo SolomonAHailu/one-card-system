@@ -11,7 +11,8 @@ export default function DashboardLayout({
     <div className="relative">
       <SidebarProvider>
         <AppSidebar />
-        <main className="w-full h-screen overflow-hidden px-2 py-2 flex flex-col gap-y-2">
+        {/* <main className="w-full h-screen overflow-hidden px-2 py-2 flex flex-col gap-y-2"> */}
+        <main className="h-fit w-full lg:h-screen lg:overflow-hidden px-2 py-2 flex flex-col gap-y-2">
           <Navbar />
           <div className="flex-1 ">{children}</div>
         </main>

@@ -2,26 +2,64 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { RootState } from "@/store";
 import { handleGetDashboardInformation } from "@/store/slices/adminSlice/user";
-import {
-  BookOpen,
-  Building2,
-  DoorOpen,
-  NotebookPen,
-  UserRoundPlus,
-} from "lucide-react";
+import { Users2, Shield, KeyRound, Monitor } from "lucide-react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import CountUp from "react-countup";
+import Card, { CardProps } from "@/components/adminDashboard/Card";
+import { BarGraph } from "@/components/adminDashboard/BarGraph";
+import { RadarGraph } from "@/components/adminDashboard/RadarGraph";
 
-// Chart.js imports
-import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+// Helper to generate bar chart data
+const formatBarChartData = (usersByRole: any[]) =>
+  usersByRole.map((item, index) => ({
+    name: item.role_name,
+    total: item.count,
+    fill: `hsl(var(--chart-${index + 1}))`,
+  }));
 
-// Register Chart.js modules
-ChartJS.register(ArcElement, Tooltip, Legend);
+// Helper to generate bar chart config
+const generateBarChartConfig = (usersByRole: any[]) =>
+  usersByRole.reduce((config, item, index) => {
+    config[item.role_name.toLowerCase().replace(" ", "_")] = {
+      label: item.role_name,
+      color: `hsl(var(--chart-${index + 1}))`,
+    };
+    return config;
+  }, {} as Record<string, { label: string; color: string }>);
+
+// Utility function to get card data
+const getCardData = (userDashboardData: any): CardProps[] => {
+  return [
+    {
+      label: "Total Users",
+      amount: userDashboardData?.totalUsers?.toString() || "0",
+      description: "Total number of users.",
+      icon: Users2,
+    },
+    {
+      label: "Total Roles",
+      amount: userDashboardData?.totalRoles?.toString() || "0",
+      description: "Total number of roles.",
+      icon: Shield,
+    },
+    {
+      label: "Total Permissions",
+      amount: userDashboardData?.totalPermissions?.toString() || "0",
+      description: "Total number of permissions.",
+      icon: KeyRound,
+    },
+    {
+      label: "Total Devices",
+      amount: userDashboardData?.totalDevices?.toString() || "0",
+      description: "Total number of devices.",
+      icon: Monitor,
+    },
+  ];
+};
 
 const AdminDashboardData = () => {
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch<any>(handleGetDashboardInformation());
   }, [dispatch]);
@@ -30,114 +68,67 @@ const AdminDashboardData = () => {
     (state: RootState) => state.user
   );
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-  };
+  // Use the utility function to get card data
+  const cardData = getCardData(userDashboardData);
+  const usersByRole = userDashboardData?.usersByRole || [];
+  const barChartData = formatBarChartData(usersByRole);
+  const barChartConfig = generateBarChartConfig(usersByRole);
 
-  // Prepare data for the pie chart
-  const chartData = {
-    labels: userDashboardData?.usersByRole?.map((item) => item.role_name) || [],
-    datasets: [
-      {
-        label: "Users by Role",
-        data: userDashboardData?.usersByRole?.map((item) => item.count) || [],
-        backgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-          "#FFA500",
-        ],
-        hoverBackgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-          "#FFA500",
-        ],
-      },
-    ],
+  const currentDate = new Date();
+  const options: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   };
-
-  console.log("CHART DATA", chartData);
+  const formattedDate = currentDate.toLocaleDateString("en-US", options);
 
   return (
     <div>
       {isUserLoading ? (
-        <div className="grid grid-cols-2 gap-2">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton
-              key={index}
-              className="col-span-1 rounded-sm bg-secondary/60 h-36"
-            />
-          ))}
+        <div className="flex flex-col gap-5 w-full">
+          <h2></h2> {/* for the space between */}
+          <section className="grid w-full grid-cols-1 gap-4 gap-x-8 transition-all sm:grid-cols-2 xl:grid-cols-4">
+            {/* Skeletons for cards */}
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="col-span-1 rounded-lg bg-secondary/60 h-36"
+              />
+            ))}
+          </section>
+          <section className="grid grid-cols-1 gap-4 transition-all lg:grid-cols-2">
+            {/* Skeletons for graphs */}
+            <Skeleton className="rounded-lg bg-secondary/60 h-96" />
+            <Skeleton className="rounded-lg bg-secondary/60 h-96" />
+          </section>
         </div>
       ) : (
-        <div className="flex flex-col gap-y-4">
-          {/* User data display */}
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            {chartData.datasets[0].data.map((count, index) => (
-              <div
+        <div className="flex flex-col gap-5 w-full">
+          <h2></h2> {/* for the space between */}
+          <section className="grid w-full grid-cols-1 gap-4 gap-x-8 transition-all sm:grid-cols-2 xl:grid-cols-4">
+            {cardData.map((data, index) => (
+              <Card
                 key={index}
-                className="flex flex-col gap-y-3 rounded-sm p-8 h-40"
-                style={{
-                  backgroundColor: chartData.datasets[0].backgroundColor[index],
-                }}
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-xl text-[#24377a] font-semibold">
-                    {chartData.labels[index]}
-                  </p>
-                  <div>
-                    {chartData.labels[index].toLowerCase() === "admin" ? (
-                      <UserRoundPlus size={26} color="#24377a" />
-                    ) : chartData.labels[index].toLowerCase() ===
-                      "registrar" ? (
-                      <NotebookPen size={26} color="#24377a" />
-                    ) : chartData.labels[index].toLowerCase() === "gate" ? (
-                      <DoorOpen size={26} color="#24377a" />
-                    ) : chartData.labels[index].toLowerCase() === "dorm" ? (
-                      <Building2 size={26} color="#24377a" />
-                    ) : chartData.labels[index].toLowerCase() === "library" ? (
-                      <BookOpen size={26} color="#24377a" />
-                    ) : null}
-                  </div>
-                </div>
-                <p className="text-lg text-[#24377a] ">
-                  {`${count} ${count > 1 ? "users" : "user"}`}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Total user count and pie chart */}
-          <div className="flex items-center justify-between mt-6">
-            {/* Total user count */}
-            <div className="w-1/2 flex items-center rounded-md justify-center gap-x-4 text-[#3a509f]">
-              <h3 className="text-4xl font-semibold">Total Users</h3>
-              <CountUp
-                end={userDashboardData?.totalUsers || 0}
-                className="text-4xl font-bold flex items-center min-h-72"
+                label={data.label}
+                amount={data.amount}
+                description={data.description}
+                icon={data.icon}
               />
-            </div>
-
-            {/* Pie chart */}
-            <div className="w-1/2 flex flex-col items-center">
-              <h3 className="text-3xl font-semibold mb-2 text-[#3a509f]">
-                User Distribution
-              </h3>
-              <div className="w-full min-h-72">
-                {userDashboardData?.usersByRole?.length ?? 0 > 0 ? (
-                  <Pie data={chartData} options={options} />
-                ) : (
-                  <p className="text-sm  text-[#3a509f]">No data available</p>
-                )}
-              </div>
-            </div>
-          </div>
+            ))}
+          </section>
+          <section className="grid grid-cols-1 gap-4 transition-all lg:grid-cols-2">
+            <BarGraph
+              chartData={barChartData}
+              chartConfig={barChartConfig}
+              title="User Role Distribution"
+              desc={`As of ${formattedDate}`}
+            />
+            <RadarGraph
+              pieData={barChartData}
+              title="Student Categories Overview"
+              desc={`As of ${formattedDate}`}
+            />
+          </section>
         </div>
       )}
     </div>
