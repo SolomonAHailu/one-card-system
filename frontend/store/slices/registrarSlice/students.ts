@@ -4,9 +4,12 @@ import { toast } from "sonner";
 
 export interface DataForDashboard {
   totalStudents: number;
+  // totalClasses: number;
+  // totalDepartments: number;
+  // totalDormitories: number;
   studentsByCategory: {
     category: string;
-    count: 10;
+    count: number;
   }[];
 }
 

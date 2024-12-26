@@ -1,27 +1,245 @@
+// "use client";
+// import { Skeleton } from "@/components/ui/skeleton";
+// import { RootState } from "@/store";
+// import { handleGetDashboardInformationForStudent } from "@/store/slices/registrarSlice/students";
+// import { CreditCard, UserCheck, UserX, XCircle } from "lucide-react";
+// import { useEffect } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import Card from "@/components/registrarDashboard/Card";
+// import { RadarGraph } from "@/components/registrarDashboard/RadarGraph";
+// import { BarGraph } from "@/components/registrarDashboard/BarChart";
+
+// const RegistrarDashboardData = () => {
+//   const dispatch = useDispatch();
+//   useEffect(() => {
+//     dispatch<any>(handleGetDashboardInformationForStudent());
+//   }, [dispatch]);
+
+//   const { studentDataForDashboard, isStudentLoading } = useSelector(
+//     (state: RootState) => state.student
+//   );
+
+//   const cardData = [
+//     {
+//       label: "Active Students",
+//       amount:
+//         studentDataForDashboard?.studentsByCategory
+//           ?.find((item) => item.category === "Active Students")
+//           ?.count?.toString() || "0",
+//       description: "Total number of active students.",
+//       icon: UserCheck,
+//     },
+//     {
+//       label: "Inactive Students",
+//       amount:
+//         studentDataForDashboard?.studentsByCategory
+//           ?.find((item) => item.category === "Inactive Students")
+//           ?.count?.toString() || "0",
+//       description: "Total number of inactive students.",
+//       icon: UserX,
+//     },
+//     {
+//       label: "Students with Cards",
+//       amount:
+//         studentDataForDashboard?.studentsByCategory
+//           ?.find((item) => item.category === "Students with Cards")
+//           ?.count?.toString() || "0",
+//       description: "Total number of students with cards.",
+//       icon: CreditCard,
+//     },
+//     {
+//       label: "Students without Cards",
+//       amount:
+//         studentDataForDashboard?.studentsByCategory
+//           ?.find((item) => item.category === "Students without Cards")
+//           ?.count?.toString() || "0",
+//       description: "Total number of students without cards.",
+//       icon: XCircle,
+//     },
+//   ];
+
+//   const pieData =
+//     studentDataForDashboard?.studentsByCategory?.map(
+//       (student: { category: any; count: any }) => ({
+//         name: student.category
+//           .replace("Active Students", "Active")
+//           .replace("Inactive Students", "Inactive")
+//           .replace("Students with Cards", "WithCards")
+//           .replace("Students without Cards", "WithoutCards"),
+//         total: student.count,
+//       })
+//     ) || [];
+
+//   const studentsByCategory = studentDataForDashboard?.studentsByCategory || [];
+
+//   const chartConfig =
+//     studentsByCategory.reduce((config, student, index) => {
+//       if (student && student.category) {
+//         const name = student.category
+//           .replace("Active Students", "Active")
+//           .replace("Inactive Students", "Inactive")
+//           .replace("Students with Cards", "With Cards")
+//           .replace("Students without Cards", "Without Cards");
+
+//         config[name.toLowerCase().replace(" ", "_")] = {
+//           label: name,
+//           color: `hsl(var(--chart-${index + 1}))`,
+//         };
+//       }
+//       return config;
+//     }, {} as Record<string, { label: string; color: string }>) || {};
+
+//   const chartData = studentsByCategory
+//     .map((student, index) => {
+//       if (student && student.category && typeof student.count === "number") {
+//         return {
+//           name: student.category
+//             .replace("Active Students", "Active")
+//             .replace("Inactive Students", "Inactive")
+//             .replace("Students with Cards", "With Cards")
+//             .replace("Students without Cards", "Without Cards"),
+//           total: student.count,
+//           fill: `hsl(var(--chart-${index + 1}))`,
+//         };
+//       }
+//       return null; // Keep this line for incomplete data handling
+//     })
+//     .filter(
+//       (item): item is { name: string; total: number; fill: string } =>
+//         item !== null
+//     ); // Narrow down type
+
+//   return (
+//     <div>
+//       {isStudentLoading ? (
+//         <div className="grid grid-cols-2 gap-2">
+//           {Array.from({ length: 4 }).map((_, index) => (
+//             <Skeleton
+//               key={index}
+//               className="col-span-1 rounded-sm bg-secondary/60 h-36"
+//             />
+//           ))}
+//         </div>
+//       ) : (
+//         <div className="flex flex-col gap-5 w-full">
+//           <h2></h2> {/*  for the space between */}
+//           <section className="grid w-full grid-cols-1 gap-4 gap-x-8 transition-all sm:grid-cols-2 xl:grid-cols-4">
+//             {cardData.map((data, index) => (
+//               <Card
+//                 key={index}
+//                 label={data.label}
+//                 amount={data.amount}
+//                 description={data.description}
+//                 icon={data.icon}
+//               />
+//             ))}
+//           </section>
+//           <h2></h2>
+//           <section className="grid grid-cols-1 gap-4 tranasition-all lg:grid-cols-2">
+//             <BarGraph
+//               chartData={chartData}
+//               chartConfig={chartConfig}
+//               title="Distribution of Students"
+//             />
+//             <RadarGraph
+//               pieData={pieData}
+//               title="Student Categories Overview"
+//               desc="Students categorized"
+//             />
+//           </section>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default RegistrarDashboardData;
+///////////////
+///////////////
+///////////////
+///////////////
 "use client";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { RootState } from "@/store";
 import { handleGetDashboardInformationForStudent } from "@/store/slices/registrarSlice/students";
-import {
-  BookOpen,
-  Building2,
-  DoorOpen,
-  NotebookPen,
-  UserRoundPlus,
-} from "lucide-react";
+import { CreditCard, UserCheck, UserX, XCircle } from "lucide-react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import CountUp from "react-countup";
+import Card from "@/components/registrarDashboard/Card";
+import { RadarGraph } from "@/components/registrarDashboard/RadarGraph";
+import { BarGraph } from "@/components/registrarDashboard/BarChart";
 
-// Chart.js imports
-import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+// Helper to extract student category data
+const getCardData = (studentsByCategory: any[]) => [
+  {
+    label: "Active Students",
+    amount:
+      studentsByCategory
+        .find((item) => item.category === "Active Students")
+        ?.count?.toString() || "0",
+    description: "Total number of active students.",
+    icon: UserCheck,
+  },
+  {
+    label: "Inactive Students",
+    amount:
+      studentsByCategory
+        .find((item) => item.category === "Inactive Students")
+        ?.count?.toString() || "0",
+    description: "Total number of inactive students.",
+    icon: UserX,
+  },
+  {
+    label: "Students with Cards",
+    amount:
+      studentsByCategory
+        .find((item) => item.category === "Students with Cards")
+        ?.count?.toString() || "0",
+    description: "Total number of students with cards.",
+    icon: CreditCard,
+  },
+  {
+    label: "Students without Cards",
+    amount:
+      studentsByCategory
+        .find((item) => item.category === "Students without Cards")
+        ?.count?.toString() || "0",
+    description: "Total number of students without cards.",
+    icon: XCircle,
+  },
+];
 
-// Register Chart.js modules
-ChartJS.register(ArcElement, Tooltip, Legend);
+// Helper to format chart data
+const formatChartData = (studentsByCategory: any[]) =>
+  studentsByCategory.map((student, index) => ({
+    name: student.category
+      .replace("Active Students", "Active")
+      .replace("Inactive Students", "Inactive")
+      .replace("Students with Cards", "With Cards")
+      .replace("Students without Cards", "Without Cards"),
+    total: student.count,
+    fill: `hsl(var(--chart-${index + 1}))`,
+  }));
+
+// Helper to generate chart configuration
+const generateChartConfig = (studentsByCategory: any[]) =>
+  studentsByCategory.reduce((config, student, index) => {
+    const name = student.category
+      .replace("Active Students", "Active")
+      .replace("Inactive Students", "Inactive")
+      .replace("Students with Cards", "With Cards")
+      .replace("Students without Cards", "Without Cards");
+    config[name.toLowerCase().replace(" ", "_")] = {
+      label: name,
+      color: `hsl(var(--chart-${index + 1}))`,
+    };
+    return config;
+  }, {} as Record<string, { label: string; color: string }>);
 
 const RegistrarDashboardData = () => {
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch<any>(handleGetDashboardInformationForStudent());
   }, [dispatch]);
@@ -30,122 +248,66 @@ const RegistrarDashboardData = () => {
     (state: RootState) => state.student
   );
 
-  console.log("STUDENT DATA FOR THE DASHBOARD", studentDataForDashboard);
+  const studentsByCategory = studentDataForDashboard?.studentsByCategory || [];
+  const cardData = getCardData(studentsByCategory);
+  const chartData = formatChartData(studentsByCategory);
+  const chartConfig = generateChartConfig(studentsByCategory);
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
+  const currentDate = new Date();
+  const options: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   };
-
-  //   Prepare data for the pie chart
-  const chartData = {
-    labels:
-      studentDataForDashboard?.studentsByCategory.map(
-        (item) => item.category
-      ) || [],
-    datasets: [
-      {
-        label: "Users by Role",
-        data:
-          studentDataForDashboard?.studentsByCategory.map(
-            (item) => item.count
-          ) || [],
-        backgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-          "#FFA500",
-        ],
-        hoverBackgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-          "#FFA500",
-        ],
-      },
-    ],
-  };
+  const formattedDate = currentDate.toLocaleDateString("en-US", options);
 
   return (
     <div>
       {isStudentLoading ? (
-        <div className="grid grid-cols-2 gap-2">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton
-              key={index}
-              className="col-span-1 rounded-sm bg-secondary/60 h-36"
-            />
-          ))}
+        <div className="flex flex-col gap-5 w-full">
+          <h2></h2> {/* for the space between */}
+          <section className="grid w-full grid-cols-1 gap-4 gap-x-8 transition-all sm:grid-cols-2 xl:grid-cols-4">
+            {/* Skeletons for cards */}
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="col-span-1 rounded-lg bg-secondary/60 h-36"
+              />
+            ))}
+          </section>
+          <section className="grid grid-cols-1 gap-4 transition-all lg:grid-cols-2">
+            {/* Skeletons for graphs */}
+            <Skeleton className="rounded-lg bg-secondary/60 h-96" />
+            <Skeleton className="rounded-lg bg-secondary/60 h-96" />
+          </section>
         </div>
       ) : (
-        <div className="flex flex-col gap-y-4">
-          {/* Student data display */}
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            {chartData.datasets[0].data.map((count, index) => (
-              <div
+        <div className="flex flex-col gap-5 w-full">
+          <h2></h2> {/* for the space between */}
+          <section className="grid w-full grid-cols-1 gap-4 gap-x-8 transition-all sm:grid-cols-2 xl:grid-cols-4">
+            {cardData.map((data, index) => (
+              <Card
                 key={index}
-                className="flex flex-col gap-y-3 rounded-sm p-8 h-40"
-                style={{
-                  backgroundColor: chartData.datasets[0].backgroundColor[index],
-                }}
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-xl text-[#24377a] font-semibold">
-                    {chartData.labels[index]}
-                  </p>
-                  <div>
-                    {chartData.labels[index].toLowerCase() === "admin" ? (
-                      <UserRoundPlus size={26} color="#24377a" />
-                    ) : chartData.labels[index].toLowerCase() ===
-                      "registrar" ? (
-                      <NotebookPen size={26} color="#24377a" />
-                    ) : chartData.labels[index].toLowerCase() === "gate" ? (
-                      <DoorOpen size={26} color="#24377a" />
-                    ) : chartData.labels[index].toLowerCase() === "dorm" ? (
-                      <Building2 size={26} color="#24377a" />
-                    ) : chartData.labels[index].toLowerCase() === "library" ? (
-                      <BookOpen size={26} color="#24377a" />
-                    ) : null}
-                  </div>
-                </div>
-                <p className="text-lg text-[#24377a] ">
-                  {`${count} ${count > 1 ? "users" : "user"}`}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Total student count and pie chart */}
-          <div className="flex items-center justify-between mt-6">
-            {/* Total student count */}
-            <div className="w-1/2 flex items-center rounded-md justify-center gap-x-4 text-[#3a509f]">
-              <h3 className="text-4xl font-semibold">Total Students</h3>
-              <CountUp
-                end={studentDataForDashboard?.totalStudents || 0}
-                className="text-4xl font-bold flex items-center min-h-72"
-                duration={3}
+                label={data.label}
+                amount={data.amount}
+                description={data.description}
+                icon={data.icon}
               />
-            </div>
-
-            {/* Pie chart */}
-            <div className="w-1/2 flex flex-col items-center">
-              <h3 className="text-3xl font-semibold mb-2 text-[#3a509f]">
-                Student Distribution
-              </h3>
-              <div className="w-full min-h-72">
-                {studentDataForDashboard?.studentsByCategory?.length ??
-                0 > 0 ? (
-                  <Pie data={chartData} options={options} />
-                ) : (
-                  <p className="text-sm  text-[#3a509f]">No data available</p>
-                )}
-              </div>
-            </div>
-          </div>
+            ))}
+          </section>
+          <section className="grid grid-cols-1 gap-4 transition-all lg:grid-cols-2">
+            <BarGraph
+              chartData={chartData}
+              chartConfig={chartConfig}
+              title="Distribution of Students"
+              desc={`As of ${formattedDate}`}
+            />
+            <RadarGraph
+              pieData={chartData}
+              title="Student Categories Overview"
+              desc={`As of ${formattedDate}`}
+            />
+          </section>
         </div>
       )}
     </div>

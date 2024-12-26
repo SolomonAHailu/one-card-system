@@ -193,32 +193,118 @@ func GetUsersByRoleId(c *gin.Context, db *gorm.DB) {
 	})
 }
 
+// func GetUserForDashboardDisplay(c *gin.Context, db *gorm.DB) {
+// 	var totalUsers int64
+// 	var totalDevices int64
+// 	var totalRoles int64
+// 	var totalPermissions int64
+// 	var usersByRole []struct {
+// 		RoleID   int64  `json:"role_id"`
+// 		RoleName string `json:"role_name"`
+// 		Count    int64  `json:"count"`
+// 	}
+
+// 	// // Get total number of users
+// 	// if err := db.Model(&adminmodels.Users{}).Count(&totalUsers).Error; err != nil {
+// 	// 	utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total users", err)
+// 	// 	return
+// 	// }
+
+// 	// Modified the above
+// 	if err := db.Raw("SELECT COUNT(*) FROM users").Scan(&totalUsers).Error; err != nil {
+// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total users", err)
+// 		return
+// 	}
+
+// 	// Get total number of devices
+// 	if err := db.Model(&adminmodels.Devices{}).Count(&totalDevices).Error; err != nil {
+// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total devices", err)
+// 		return
+// 	}
+
+// 	// Get total number of roles
+// 	if err := db.Model(&adminmodels.Roles{}).Count(&totalRoles).Error; err != nil {
+// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total roles", err)
+// 		return
+// 	}
+
+// 	// Get total number of permissions
+// 	if err := db.Model(&adminmodels.Permissions{}).Count(&totalPermissions).Error; err != nil {
+// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total permissions", err)
+// 		return
+// 	}
+
+// 	// Get number of users grouped by role_id with role information
+// 	if err := db.Model(&adminmodels.Roles{}).
+// 		Select("roles.id as role_id, roles.role_name as role_name, COUNT(users.id) as count").
+// 		Joins("LEFT JOIN users ON roles.id = users.role_id").
+// 		Group("roles.id, roles.role_name").
+// 		Scan(&usersByRole).Error; err != nil {
+// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching users by role", err)
+// 		return
+// 	}
+
+//		// Respond with dashboard data
+//		c.JSON(http.StatusOK, gin.H{
+//			"totalUsers":       totalUsers,
+//			"usersByRole":      usersByRole,
+//			"totalDevices":     totalDevices,
+//			"totalRoles":       totalRoles,
+//			"totalPermissions": totalPermissions,
+//		})
+//	}
 func GetUserForDashboardDisplay(c *gin.Context, db *gorm.DB) {
 	var totalUsers int64
+	var totalDevices int64
+	var totalRoles int64
+	var totalPermissions int64
 	var usersByRole []struct {
 		RoleID   int64  `json:"role_id"`
 		RoleName string `json:"role_name"`
 		Count    int64  `json:"count"`
 	}
 
-	// Get total number of users
-	if err := db.Model(&adminmodels.Users{}).Count(&totalUsers).Error; err != nil {
+	// Get total number of users excluding soft-deleted users
+	if err := db.Model(&adminmodels.Users{}).Where("deleted_at IS NULL").Count(&totalUsers).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total users", err)
 		return
 	}
 
-	// Get number of users grouped by role_id with role information
-	if err := db.Model(&adminmodels.Users{}).
+	// Get total number of devices excluding soft-deleted devices
+	if err := db.Model(&adminmodels.Devices{}).Where("deleted_at IS NULL").Count(&totalDevices).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total devices", err)
+		return
+	}
+
+	// Get total number of roles excluding soft-deleted roles
+	if err := db.Model(&adminmodels.Roles{}).Where("deleted_at IS NULL").Count(&totalRoles).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total roles", err)
+		return
+	}
+
+	// Get total number of permissions excluding soft-deleted permissions
+	if err := db.Model(&adminmodels.Permissions{}).Where("deleted_at IS NULL").Count(&totalPermissions).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total permissions", err)
+		return
+	}
+
+	// Get number of users grouped by role_id with role information, excluding soft-deleted users
+	if err := db.Model(&adminmodels.Roles{}).
 		Select("roles.id as role_id, roles.role_name as role_name, COUNT(users.id) as count").
-		Joins("JOIN roles ON roles.id = users.role_id").
+		Joins("LEFT JOIN users ON roles.id = users.role_id AND users.deleted_at IS NULL").
 		Group("roles.id, roles.role_name").
+		Having("roles.deleted_at IS NULL").
 		Scan(&usersByRole).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching users by role", err)
 		return
 	}
 
+	// Respond with dashboard data
 	c.JSON(http.StatusOK, gin.H{
-		"totalUsers":  totalUsers,
-		"usersByRole": usersByRole,
+		"totalUsers":       totalUsers,
+		"usersByRole":      usersByRole,
+		"totalDevices":     totalDevices,
+		"totalRoles":       totalRoles,
+		"totalPermissions": totalPermissions,
 	})
 }

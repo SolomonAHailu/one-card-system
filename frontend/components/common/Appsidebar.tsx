@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Separator } from "../ui/separator";
+import { MdDashboard } from "react-icons/md";
 
 export function AppSidebar() {
   const router = useRouter();
