@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import EditUser from "./EditUser";
 import UserDetails from "./userdetails/UserDetails";
 import { DeleteIcon, EditIcon } from "lucide-react";
 import { MdDelete, MdDetails } from "react-icons/md";
