@@ -54,6 +54,9 @@ const permissionSlice = createSlice({
     resetRoleCreateSuccess: (state) => {
       state.isPermissionCreateSuccess = false;
     },
+    resetPermissionCreateSuccess: (state) => {
+      state.isPermissionCreateSuccess = false;
+    },
     resetPermissionUpdateSuccess: (state) => {
       state.isPermissionUpdateSuccess = false;
     },
@@ -247,6 +250,6 @@ export const handleDeletePermission = createAsyncThunk<
   }
 });
 
-export const { resetRoleCreateSuccess, resetPermissionUpdateSuccess } =
+export const { resetRoleCreateSuccess, resetPermissionUpdateSuccess,resetPermissionCreateSuccess } =
   permissionSlice.actions;
 export default permissionSlice.reducer;

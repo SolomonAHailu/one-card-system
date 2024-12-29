@@ -1,10 +1,7 @@
-import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
-import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { createDeviceSchema } from "@/validators/admin/create-device-validator";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
@@ -13,187 +10,151 @@ import { FaSpinner } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import {
   DataSendToCreateDevice,
+  DeviceRecieved,
   handleCreateDevice,
+  handleUpdateDevice,
   resetDeviceCreateSuccess,
+  resetDeviceUpdateSuccess,
 } from "@/store/slices/adminSlice/device";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { MdOutlinePersonAddAlt1 } from "react-icons/md";
-import { TbDeviceDesktopPlus } from "react-icons/tb";
-import { UserRoundPlus } from "lucide-react";
+import { Form } from "@/components/ui/form";
+import CustomInputWithLabel from "@/components/inputs/customInputWithLabel";
 
-const CreateDevice = () => {
+type Props = {
+  device?: DeviceRecieved;
+};
+const CreateDevice = ({ device }: Props) => {
   const t = useTranslations("adminDevice");
   const dispatch = useDispatch();
-  const { isDeviceCreateLoading, isDeviceCreateError, isDeviceCreateSuccess } =
-    useSelector((state: RootState) => state.device);
   const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<DataSendToCreateDevice>({
-    resolver: yupResolver(createDeviceSchema(t)),
-  });
+    isDeviceCreateLoading,
+    isDeviceCreateError,
+    isDeviceCreateSuccess,
+    isDeviceUpdateLoading,
+    isDeviceUpdateSuccess,
+  } = useSelector((state: RootState) => state.device);
 
-  const onSubmit = (data: DataSendToCreateDevice) => {
-    dispatch<any>(handleCreateDevice(data));
-  };
+  const form = useForm<DataSendToCreateDevice>({
+    resolver: yupResolver(createDeviceSchema(t)),
+    defaultValues: {
+      id: device?.ID ?? undefined,
+      ip_address: device?.ip_address ?? "",
+      location: device?.location ?? "",
+      name: device?.name ?? "",
+      port: device?.port ?? undefined,
+      serial_number: device?.serial_number ?? "",
+    },
+  });
 
   useEffect(() => {
     if (isDeviceCreateSuccess) {
       dispatch(resetDeviceCreateSuccess());
-      reset();
+      form.reset();
     }
-  }, [isDeviceCreateSuccess, reset, dispatch]);
+  }, [isDeviceCreateSuccess, form, t, dispatch]);
+
+  const onSubmit = (data: DataSendToCreateDevice) => {
+    if (device?.ID) {
+      dispatch<any>(handleUpdateDevice(data));
+    } else {
+      dispatch<any>(handleCreateDevice(data));
+    }
+  };
 
   return (
-    <Dialog>
-      <DialogTrigger className="h-8 w-8 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm">
-        {/* <MdOutlinePersonAddAlt1 className="text-xl text-white" /> */}
-        <TbDeviceDesktopPlus className="text-xl text-white" />
-      </DialogTrigger>
-      <DialogContent className="max-h-[700px] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{t("createdevice")}</DialogTitle>
-          <DialogDescription>{t("becarefull")}</DialogDescription>
-        </DialogHeader>
+    <DialogContent className="max-h-[700px] overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle>
+          {device?.ID ? t("updatedevice") : t("createdevice")}
+        </DialogTitle>
+        <DialogDescription>{t("becarefull")}</DialogDescription>
+      </DialogHeader>
 
+      <Form {...form}>
         <form
           className="flex flex-col gap-y-6"
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onSubmit)}
         >
           <div className="text-center flex flex-col gap-y-4">
             {isDeviceCreateError && (
               <p className="text-red-500">{isDeviceCreateError}</p>
             )}
-            <div className="flex flex-col gap-y-1 items-start">
-              <Label
-                htmlFor="name"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                {t("name")}
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder={t("enterdevicename")}
-                {...register("name")}
-                className={cn(
-                  { "focus-visible:ring-red-600": errors.name },
-                  "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
+            <CustomInputWithLabel
+              fieldTitle={t("name")}
+              nameInSchema="name"
+              placeholder={t("enterdevicename")}
+            />
+            <CustomInputWithLabel
+              fieldTitle={t("serial_number")}
+              nameInSchema="serial_number"
+              placeholder={t("enterdeviceserialnumber")}
+            />
+            <CustomInputWithLabel
+              fieldTitle={t("ip_address")}
+              nameInSchema="ip_address"
+              placeholder={t("enterdeviceipaddress")}
+            />
+            <CustomInputWithLabel
+              fieldTitle={t("port")}
+              nameInSchema="port"
+              placeholder={t("enterdeviceport")}
+            />
+            <CustomInputWithLabel
+              fieldTitle={t("location")}
+              nameInSchema="location"
+              placeholder={t("enterdevicelocation")}
+            />
+            {device?.ID ? (
+              <>
+                {(device?.ID && isDeviceUpdateSuccess) ||
+                (!device?.ID && isDeviceUpdateSuccess) ? (
+                  <DialogClose
+                    type="button"
+                    onClick={() => {
+                      dispatch(resetDeviceCreateSuccess());
+                      dispatch(resetDeviceUpdateSuccess());
+                    }}
+                    className="bg-green-600 hover:bg-green-700 py-3.5 rounded-sm text-white"
+                  >
+                    {t("close")}
+                  </DialogClose>
+                ) : (
+                  <Button
+                    type="submit"
+                    disabled={isDeviceUpdateLoading}
+                    className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
+                  >
+                    <span>{t("updatedevice")}</span>
+                    {isDeviceUpdateLoading && (
+                      <FaSpinner className="animate-spin ml-2 text-white" />
+                    )}
+                  </Button>
                 )}
-              />
-              {errors.name && (
-                <p className="text-red-500 mt-1">{errors.name.message}</p>
-              )}
-            </div>
-            <div className="flex flex-col gap-y-1 items-start">
-              <Label
-                htmlFor="serial_number"
-                className="block text-sm font-medium text-muted-foreground"
+              </>
+            ) : (
+              <Button
+                type="submit"
+                disabled={isDeviceCreateLoading}
+                className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
               >
-                {t("serial_number")}
-              </Label>
-              <Input
-                id="serial_number"
-                type="text"
-                placeholder={t("enterdeviceserialnumber")}
-                {...register("serial_number")}
-                className={cn(
-                  { "focus-visible:ring-red-600": errors.serial_number },
-                  "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
+                <span>{t("createdevice")}</span>
+                {isDeviceCreateLoading && (
+                  <FaSpinner className="animate-spin ml-2 text-white" />
                 )}
-              />
-              {errors.serial_number && (
-                <p className="text-red-500 mt-1">
-                  {errors.serial_number.message}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-col gap-y-1 items-start">
-              <Label
-                htmlFor="ip_address"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                {t("ip_address")}
-              </Label>
-              <Input
-                id="ip_address"
-                type="text"
-                placeholder={t("enterdeviceipaddress")}
-                {...register("ip_address")}
-                className={cn(
-                  { "focus-visible:ring-red-600": errors.ip_address },
-                  "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
-                )}
-              />
-              {errors.ip_address && (
-                <p className="text-red-500 mt-1">{errors.ip_address.message}</p>
-              )}
-            </div>
-            <div className="flex flex-col gap-y-1 items-start">
-              <Label
-                htmlFor="port"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                {t("port")}
-              </Label>
-              <Input
-                id="port"
-                type="text"
-                placeholder={t("enterdeviceport")}
-                {...register("port")}
-                className={cn(
-                  { "focus-visible:ring-red-600": errors.port },
-                  "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
-                )}
-              />
-              {errors.port && (
-                <p className="text-red-500 mt-1">{errors.port.message}</p>
-              )}
-            </div>
-            <div className="flex flex-col gap-y-1 items-start">
-              <Label
-                htmlFor="location"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                {t("location")}
-              </Label>
-              <Input
-                id="location"
-                type="text"
-                placeholder={t("enterdevicelocation")}
-                {...register("location")}
-                className={cn(
-                  { "focus-visible:ring-red-600": errors.location },
-                  "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
-                )}
-              />
-              {errors?.location && (
-                <p className="text-red-500 mt-1">{errors?.location.message}</p>
-              )}
-            </div>
-            <Button
-              type="submit"
-              disabled={isDeviceCreateLoading}
-              className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
-            >
-              <span>{t("createdevice")}</span>
-              {isDeviceCreateLoading && (
-                <FaSpinner className="animate-spin ml-2 text-white" />
-              )}
-            </Button>
+              </Button>
+            )}
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </Form>
+    </DialogContent>
   );
 };
 

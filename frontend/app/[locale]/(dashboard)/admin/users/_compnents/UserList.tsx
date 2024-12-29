@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import AddUser from "./AddUser";
 
 const UserList = ({
   role_id,
@@ -117,7 +118,7 @@ const UserList = ({
 
   if (isUserLoading) {
     return (
-      <div className="h-[calc(100vh-165px)] flex flex-col items-center justify-between w-full">
+      <div className="h-[calc(100vh-120px)] flex flex-col items-center justify-between w-full">
         <div className="flex flex-col items-center w-full gap-y-8">
           {Array.from({ length: 7 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
@@ -134,7 +135,7 @@ const UserList = ({
     return <div className="text-[#3A5DD9]">{t("nouser")}</div>;
   } else {
     return (
-      <div className="relative rounded-xl p-0 h-[calc(100vh-165px)] flex flex-col gap-y-2">
+      <div className="relative rounded-xl p-0 h-[calc(100vh-120px)] flex flex-col gap-y-2">
         <div className="h-5/6 flex-1 rounded-xl rounded-bl-none rounded-br-none overflow-y-auto">
           <Table>
             <TableHeader>
@@ -181,7 +182,7 @@ const UserList = ({
                       >
                         <EditIcon size={20} className="text-yellow-600" />
                       </DialogTrigger>
-                      <EditUser user={user} />
+                      <AddUser user={user} />
                     </Dialog>
                   </TableCell>
                   <TableCell>

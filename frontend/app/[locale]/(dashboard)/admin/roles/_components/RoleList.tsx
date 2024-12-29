@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TbListDetails } from "react-icons/tb";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Dialog,
@@ -19,11 +18,9 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import EditRole from "./EditRole";
 import { Button } from "@/components/ui/button";
 import {
   handleDeleteRole,
-  resetRoleDeleteSuccess,
   resetRoleUpdateSuccess,
   RoleRecieved,
 } from "@/store/slices/adminSlice/role";
@@ -32,6 +29,7 @@ import { EditIcon } from "lucide-react";
 import { MdDelete } from "react-icons/md";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import AddRole from "./AddRole";
 
 const RoleList = ({ searchTerm }: { searchTerm: string }) => {
   const t = useTranslations("roles");
@@ -113,7 +111,7 @@ const RoleList = ({ searchTerm }: { searchTerm: string }) => {
                     >
                       <EditIcon size={20} className="text-yellow-600" />
                     </DialogTrigger>
-                    <EditRole role={role} />
+                    <AddRole role={role} />
                   </Dialog>
                 </TableCell>
                 <TableCell>
@@ -132,7 +130,10 @@ const RoleList = ({ searchTerm }: { searchTerm: string }) => {
                         </p>
                       </DialogHeader>
                       <div className="flex items-center justify-evenly">
-                        <DialogClose className="bg-red-700 hover:bg-red-800 px-7 py-2 rounded-sm text-white lowercase">
+                        <DialogClose
+                          className="bg-red-700 hover:bg-red-800 px-7 py-2 rounded-sm text-white lowercase"
+                          disabled={isRoleDeleteLoading}
+                        >
                           {t("cancel")}
                         </DialogClose>
                         <Button
@@ -140,6 +141,7 @@ const RoleList = ({ searchTerm }: { searchTerm: string }) => {
                           onClick={() =>
                             dispatch<any>(handleDeleteRole({ id: role.ID }))
                           }
+                          disabled={isRoleDeleteLoading}
                         >
                           {t("confirm")}
                           {isRoleDeleteLoading && (

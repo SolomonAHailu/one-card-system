@@ -14,7 +14,7 @@ const UserDetails = ({ user }: { user: UserRecieved }) => {
   const t = useTranslations("adminusers");
   const [page, setPage] = useState<number>(1);
   return (
-    <DialogContent className="max-h-[700px] overflow-y-auto">
+    <DialogContent className="max-h-[700px] min-w-[900px] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>
           {page == 1

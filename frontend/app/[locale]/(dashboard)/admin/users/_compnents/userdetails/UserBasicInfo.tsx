@@ -1,127 +1,81 @@
-import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
-import { Input } from "@/components/ui/input";
 import {
   DataSendToCreateUser,
   UserRecieved,
 } from "@/store/slices/adminSlice/user";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { createUserSchema } from "@/validators/admin/create-user-validator";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import CustomInputWithLabel from "@/components/inputs/customInputWithLabel";
 
 const UserBasicInfo = ({ user }: { user: UserRecieved }) => {
+  console.log("UserBasicInfo", user);
+
   const t = useTranslations("adminusers");
-  const [roleSelect, setRoleSelect] = useState("");
   const { roles } = useSelector((state: RootState) => state.role);
 
-  const { setValue } = useForm<DataSendToCreateUser>({
-    resolver: yupResolver(createUserSchema(t)),
+  const formMethods = useForm<any>({
     defaultValues: {
       first_name: user.first_name,
       father_name: user.father_name,
       grand_father_name: user.grand_father_name,
       email: user.email,
-      role_id: user.role_id,
+      role_name: user.role.role_name,
     },
   });
 
-  useEffect(() => {
-    const currentRole = roles.find(
-      (role) => role.ID === user.role_id
-    )?.role_name;
-    if (currentRole) {
-      setRoleSelect(currentRole);
-    }
-  }, [roles, user.role_id, setValue]);
+  const { setValue } = formMethods;
 
   return (
-    <form className="flex flex-col gap-y-6">
-      <div className="text-center flex flex-col gap-y-4">
-        <div className="flex flex-col gap-y-1 items-start">
-          <Label
-            htmlFor="firstname"
-            className="block text-sm font-medium text-muted-foreground"
-          >
-            {t("firstname")}
-          </Label>
-          <Input
-            id="firstname"
-            type="text"
-            placeholder={t("enterfirstname")}
+    <FormProvider {...formMethods}>
+      <form className="flex flex-col gap-y-6">
+        <div className="text-center grid grid-cols-2 gap-4">
+          <CustomInputWithLabel
+            fieldTitle={t("firstname")}
+            nameInSchema="first_name"
             value={user.first_name}
+            placeholder={t("enterfirstname")}
             disabled
             className="cursor-not-allowed border-muted-foreground border-2"
           />
-        </div>
-        <div className="flex flex-col gap-y-1 items-start">
-          <Label
-            htmlFor="fathername"
-            className="block text-sm font-medium text-muted-foreground"
-          >
-            {t("fathername")}
-          </Label>
-          <Input
-            id="fathername"
-            type="text"
-            placeholder={t("enterfathername")}
+          <CustomInputWithLabel
+            fieldTitle={t("fathername")}
+            nameInSchema="father_name"
             value={user.father_name}
+            placeholder={t("enterfathername")}
             disabled
             className="cursor-not-allowed border-muted-foreground border-2"
           />
-        </div>
-        <div className="flex flex-col gap-y-1 items-start">
-          <Label
-            htmlFor="grandfathername"
-            className="block text-sm font-medium text-muted-foreground"
-          >
-            {t("grandfathername")}
-          </Label>
-          <Input
-            id="grandfathername"
-            type="text"
-            placeholder={t("entergrandfathername")}
+          <CustomInputWithLabel
+            fieldTitle={t("grandfathername")}
+            nameInSchema="grand_father_name"
             value={user.grand_father_name}
+            placeholder={t("entergrandfathername")}
             disabled
             className="cursor-not-allowed border-muted-foreground border-2"
           />
-        </div>
-        <div className="flex flex-col gap-y-1 items-start">
-          <Label
-            htmlFor="email"
-            className="block text-sm font-medium text-muted-foreground"
-          >
-            {t("email")}
-          </Label>
-          <Input
-            id="email"
-            type="text"
-            placeholder={t("enteremail")}
+          <CustomInputWithLabel
+            fieldTitle={t("email")}
+            nameInSchema="email"
             value={user.email}
+            placeholder={t("enteremail")}
             disabled
             className="cursor-not-allowed border-muted-foreground border-2"
           />
-        </div>
-        <div className="flex flex-col gap-y-1 items-start">
-          <Label
-            htmlFor="role"
-            className="block text-sm font-medium text-muted-foreground"
-          >
-            {t("role")}
-          </Label>
-          <Input
-            id="role"
-            type="text"
+          <CustomInputWithLabel
+            fieldTitle={t("role")}
+            nameInSchema="role_name"
+            value={user.role.role_name}
             placeholder={t("enterrole")}
-            value={roleSelect}
             disabled
             className="cursor-not-allowed border-muted-foreground border-2"
           />
         </div>
-      </div>
-    </form>
+      </form>
+    </FormProvider>
   );
 };
 

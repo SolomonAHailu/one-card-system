@@ -39,7 +39,8 @@
     "useraccountcreated": "Account Created Successfully!",
     "temporarypassword": "Temporary password for user",
     "pleasechangepassword": "Please change this password after logging in for security",
-    "passwordsaved": "I have saved password",
+    "proceed": "You can procced🎉🎉🎉",
+    "ok": "Ok Got It!",
     "thankyouproceed": "Thank you! You can now proceed",
     "takecareofpassword": "Please take care of the password",
     "details": "Details",
@@ -58,6 +59,7 @@
     "editpermission": "Edit permission",
     "copypassword": "Copy Password",
     "useraccountupdated": "Account Updated Successfully!",
-    "passwordcopied": "Password copied to clipboard"
+    "passwordcopied": "Password copied to clipboard",
+    "sendemail": "Send Email"
   }
 }

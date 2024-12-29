@@ -51,23 +51,38 @@ func GetPermission(c *gin.Context, db *gorm.DB) {
 // update permission by id
 func UpdatePermission(c *gin.Context, db *gorm.DB) {
 	var permission adminmodels.Permissions
+
+	// Fetch the permission by ID
 	if err := db.First(&permission, c.Param("id")).Error; err != nil {
-		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
+		utils.ResponseWithError(c, http.StatusNotFound, "Permission not found", err)
 		return
 	}
-	if err := c.ShouldBindJSON(&permission); err != nil {
+
+	// Parse the incoming request payload into a temporary variable
+	var updatedPermission adminmodels.Permissions
+	if err := c.ShouldBindJSON(&updatedPermission); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
-	var exstingPermission adminmodels.Permissions
-	if err := db.Where("permissions_name = ?", permission.PermissionsName).First(&exstingPermission).Error; err == nil {
-		utils.ResponseWithError(c, http.StatusBadRequest, "Permission already exists", nil)
+
+	// Check if the new PermissionsName already exists in the database for another record
+	var existingPermission adminmodels.Permissions
+	if err := db.Where("permissions_name = ? AND id != ?", updatedPermission.PermissionsName, permission.ID).First(&existingPermission).Error; err == nil {
+		utils.ResponseWithError(c, http.StatusConflict, "Permission name already exists", nil)
 		return
 	}
+
+	// Update the permission fields
+	permission.PermissionsName = updatedPermission.PermissionsName
+	permission.Description = updatedPermission.Description
+
+	// Save the updated permission
 	if err := db.Save(&permission).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
 	}
+
+	// Respond with the updated permission data
 	c.JSON(http.StatusOK, gin.H{"data": permission})
 }
 

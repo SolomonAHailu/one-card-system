@@ -23,9 +23,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   DataSendToCreateUserPermission,
   handleCreateUserPermission,
+  handleFetchUserPermission,
 } from "@/store/slices/adminSlice/userpermission";
-import { increareCurrentPage } from "@/store/slices/adminSlice/user";
+import {
+  increareCurrentPage,
+  UserRecieved,
+} from "@/store/slices/adminSlice/user";
 import { useTranslations } from "next-intl";
+import { handleFetchDevice } from "@/store/slices/adminSlice/device";
+import CustomCheckBoxWithLabel from "@/components/inputs/customCheckBoxWithLabel";
 
 const AdditionalInformationForm = () => {
   const t = useTranslations("adminusers");
@@ -36,6 +42,7 @@ const AdditionalInformationForm = () => {
   const {
     userPermissions,
     isUserPermissionCreateLoading,
+    isUserPermissionLoading,
     isUserPermissionError,
   } = useSelector((state: RootState) => state.userPermission);
 
@@ -44,14 +51,19 @@ const AdditionalInformationForm = () => {
     name: permission.permission.permissions_name,
     description: permission.permission.description,
   }));
+  const { devices, isDeviceLoading } = useSelector(
+    (state: RootState) => state.device
+  );
 
   useEffect(() => {
     if (user?.role_id !== undefined) {
       dispatch<any>(
         handleFetchPermissionForSpecificRole({ role_id: user.role_id })
       );
+      dispatch<any>(handleFetchUserPermission(user.ID));
+      dispatch<any>(handleFetchDevice());
     }
-  }, [dispatch, user?.role_id]);
+  }, [dispatch, user?.role_id, user?.ID]);
 
   const FormSchema = z.object({
     selectedPermissions: z.array(z.number()).optional(),
@@ -63,6 +75,20 @@ const AdditionalInformationForm = () => {
       selectedPermissions: [],
     },
   });
+  useEffect(() => {
+    if (userPermissions) {
+      form.reset({
+        selectedPermissions: userPermissions.map((perm) => perm.permission_id),
+      });
+    } else {
+      form.reset({
+        selectedPermissions: [],
+      });
+    }
+  }, [userPermissions, form, dispatch]);
+  console.log("USER PERMISSIONS", userPermissions);
+
+  console.log("SELECTED PERMISSION", form.watch("selectedPermissions"));
 
   const onSubmit = async (data: { selectedPermissions?: number[] }) => {
     if (user?.ID !== undefined) {
@@ -78,81 +104,66 @@ const AdditionalInformationForm = () => {
   };
 
   return (
-    <div className="flex flex-col gap-y-4">
-      <p>
-        {allowedUserPermissions.length === 0
-          ? t("nopermissionforrole")
-          : t("assignpermissiontouser")}
-      </p>
-      {isRolePermissionError && (
+    <>
+      {isRolePermissionError ? (
         <p className="text-red-500">{isRolePermissionError}</p>
-      )}
-      {isRolePermissionLoading ? (
-        <div className="flex flex-col items-center w-full gap-y-8">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
-          ))}
-        </div>
       ) : (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {allowedUserPermissions.map((permission) => (
-              <FormField
-                key={permission.id}
-                control={form.control}
-                name="selectedPermissions"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={
-                          field?.value?.includes(permission.id!) ?? false
-                        }
-                        onCheckedChange={(checked) => {
-                          field.onChange(
-                            checked
-                              ? [...(field.value ?? []), permission.id]
-                              : (field.value ?? []).filter(
-                                  (id) => id !== permission.id
-                                )
-                          );
-                        }}
-                        disabled={isUserPermissionCreateLoading}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>{permission.name.toUpperCase()}</FormLabel>
-                      <p>{permission.description}</p>
-                    </div>
-                  </FormItem>
-                )}
-              />
-            ))}
-            {allowedUserPermissions.length === 0 ? (
-              <Button
-                type="button"
-                className="bg-green-500 hover:bg-green-600 w-full px-4 py-7 rounded-md text-white text-sm"
-                onClick={() => dispatch<any>(increareCurrentPage())}
+        <div className="flex flex-col gap-y-4">
+          <p>
+            {allowedUserPermissions.length === 0
+              ? t("nopermissionforrole")
+              : t("assignpermissiontouser")}
+          </p>
+          {isRolePermissionLoading || isUserPermissionLoading ? (
+            <div className="grid grid-cols-2 gap-4 w-full">
+              {Array.from({ length: 9 }).map((_, index) => (
+                <Skeleton key={index} className="col-span-1 h-[50px]" />
+              ))}
+            </div>
+          ) : (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="grid grid-cols-2 gap-4 items-center"
               >
-                {t("getpassword")}
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                className="bg-[#3A5DD9] hover:bg-[#2a4bc6] w-full px-4 py-7 rounded-md text-white text-sm"
-                disabled={isUserPermissionCreateLoading}
-              >
-                {t("assign")}
-                {isUserPermissionCreateLoading && (
-                  <FaSpinner className="animate-spin ml-2 text-white" />
+                {allowedUserPermissions.map((permission) => (
+                  <CustomCheckBoxWithLabel
+                    key={permission.id}
+                    fieldTitle={permission.name.toUpperCase()}
+                    currentId={permission.id}
+                    nameInSchema="selectedPermissions"
+                    message={permission.description}
+                    disabled={isUserPermissionCreateLoading}
+                    className="col-span-1"
+                  />
+                ))}
+                {allowedUserPermissions.length === 0 ? (
+                  <Button
+                    type="button"
+                    className="bg-green-500 hover:bg-green-600 w-full px-4 py-7 rounded-md text-white text-sm"
+                    onClick={() => dispatch<any>(increareCurrentPage())}
+                  >
+                    {t("getpassword")}
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    className="bg-[#3A5DD9] hover:bg-[#2a4bc6] py-2 text-white w-full"
+                    disabled={isUserPermissionCreateLoading}
+                  >
+                    {t("assign")}
+                    {isUserPermissionCreateLoading && (
+                      <FaSpinner className="animate-spin ml-2 text-white" />
+                    )}
+                  </Button>
                 )}
-              </Button>
-            )}
-          </form>
-        </Form>
+              </form>
+            </Form>
+          )}
+          <CreateUserFooter />
+        </div>
       )}
-      <CreateUserFooter />
-    </div>
+    </>
   );
 };
 
