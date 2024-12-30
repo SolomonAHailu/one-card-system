@@ -1,12 +1,7 @@
 import { RootState } from "@/store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  handleDeleteUser,
-  handleFetchUser,
-} from "@/store/slices/adminSlice/user";
 import {
   Pagination,
   PaginationContent,
@@ -26,17 +21,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { DeleteIcon, EditIcon } from "lucide-react";
-import { MdDelete, MdDetails } from "react-icons/md";
-import { FaListAlt, FaSpinner } from "react-icons/fa";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { EditIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { handleFetchStudents } from "@/store/slices/registrarSlice/students";
 
@@ -117,7 +102,7 @@ const StudentsList = ({
 
   if (isGetStudentLoading) {
     return (
-      <div className="h-[calc(100vh-120px)] flex flex-col items-center justify-between w-full mt-2">
+      <div className="h-[calc(100vh-130px)] flex flex-col items-center justify-between w-full mt-2">
         <div className="flex flex-col items-center w-full gap-y-8">
           {Array.from({ length: 7 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />

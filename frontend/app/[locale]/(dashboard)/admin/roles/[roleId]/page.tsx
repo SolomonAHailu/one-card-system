@@ -108,14 +108,14 @@ const RoleDetailPage = ({ params }: { params: { roleId: string } }) => {
             </span>
           </h1>
           <div className="flex items-center justify-center gap-2 relative">
-            <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
               <Search size={18} />
             </div>
             <Input
-              id="search by name"
+              id="search-by-name"
               type="text"
               placeholder={t("searchbyname")}
-              className="border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0 min-w-64"
+              className="pl-10 ring-0 border-2 focus-visible:ring-offset-0 focus-visible:ring-1 min-w-96"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />

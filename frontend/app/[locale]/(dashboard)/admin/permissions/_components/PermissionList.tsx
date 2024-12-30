@@ -28,8 +28,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { FaSpinner } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import EditPermission from "./EditPermission";
 import { useEffect, useState } from "react";
+import AddPermissions from "./AddPermission";
 
 const PermissionList = ({ searchTerm }: { searchTerm: string }) => {
   const t = useTranslations("permission");
@@ -96,7 +96,7 @@ const PermissionList = ({ searchTerm }: { searchTerm: string }) => {
                     >
                       <EditIcon size={20} className="text-yellow-600" />
                     </DialogTrigger>
-                    <EditPermission permission={permission} />
+                    <AddPermissions permission={permission} />
                   </Dialog>
                 </TableCell>
                 <TableCell>
@@ -125,6 +125,7 @@ const PermissionList = ({ searchTerm }: { searchTerm: string }) => {
                               handleDeletePermission({ id: permission.ID })
                             )
                           }
+                          disabled={isPermissionDeleteLoading}
                         >
                           {t("confirm")}
                           {isPermissionDeleteLoading && (

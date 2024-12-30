@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import {
+  handleFetchUser,
   handleSendEmail,
   removeCurrentUser,
   removeSendEmailSuccess,
@@ -34,6 +35,14 @@ const CreateUserSuccess = () => {
     dispatch<any>(removeCurrentUser());
     dispatch<any>(resetUserPermissionState());
     dispatch<any>(removeSendEmailSuccess());
+    dispatch<any>(
+      handleFetchUser({
+        role_id: user?.role_id!,
+        page: 1,
+        limit: 10,
+        name: "",
+      })
+    );
     toast.success(t("thankyouproceed"));
   };
 
@@ -81,22 +90,22 @@ const CreateUserSuccess = () => {
           <p className="text-center mt-2">{t("pleasechangepassword")}</p>
         </div>
         {sendEmailSuccess ? (
-          <DialogClose
-            onClick={handleConfirmClick}
-            className="bg-green-600 hover:bg-green-700  py-4 px-4 rounded mt-2"
-          >
-            {t("passwordsaved")}
-          </DialogClose>
+          <>
+            <h1 className="w-fit mx-auto text-green-600">{t("proceed")}</h1>
+            <DialogClose
+              onClick={handleConfirmClick}
+              className="bg-green-600 hover:bg-green-700 w-1/2 mx-auto h-fit py-3 px-4 rounded mt-2 text-white text-sm"
+            >
+              {t("ok")}
+            </DialogClose>
+          </>
         ) : (
           <Button
-            className="bg-green-600 hover:bg-green-700  h-fit py-2 px-4 rounded mt-2 flex items-center flex-col gap-x-4 text-white text-lg"
+            className="bg-green-600 hover:bg-green-700 w-1/2 mx-auto h-fit py-3 px-4 rounded mt-2 text-white text-sm"
             onClick={handleSendEmailForUser}
             disabled={sendEmailLoading}
           >
-            Send Temporary Password To
-            <span className="text-[#19285e] italic text-lg block">
-              {user?.email}
-            </span>
+            {t("sendemail")}
             {sendEmailLoading && (
               <FaSpinner className="animate-spin ml-2 text-white" />
             )}

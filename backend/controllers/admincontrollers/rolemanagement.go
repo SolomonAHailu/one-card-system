@@ -51,23 +51,37 @@ func GetRole(c *gin.Context, db *gorm.DB) {
 // update role by id
 func UpdateRole(c *gin.Context, db *gorm.DB) {
 	var role adminmodels.Roles
+
+	// Fetch the role by ID
 	if err := db.First(&role, c.Param("id")).Error; err != nil {
-		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occured", err)
+		utils.ResponseWithError(c, http.StatusNotFound, "Role not found", err)
 		return
 	}
-	if err := c.ShouldBindJSON(&role); err != nil {
+
+	// Parse the incoming request payload into a temporary variable
+	var updatedRole adminmodels.Roles
+	if err := c.ShouldBindJSON(&updatedRole); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
+
+	// Check if the new RoleName already exists in the database for another record
 	var existingRole adminmodels.Roles
-	if err := db.Where("role_name = ?", role.RoleName).First(&existingRole).Error; err == nil {
-		utils.ResponseWithError(c, http.StatusBadRequest, "Role already exists", nil)
+	if err := db.Where("role_name = ? AND id != ?", updatedRole.RoleName, role.ID).First(&existingRole).Error; err == nil {
+		utils.ResponseWithError(c, http.StatusConflict, "Role name already exists", nil)
 		return
 	}
+
+	// Update the role fields
+	role.RoleName = updatedRole.RoleName
+	role.Description = updatedRole.Description
+
+	// Save the updated role
 	if err := db.Save(&role).Error; err != nil {
-		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occured", err)
+		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"data": role})
 }
 

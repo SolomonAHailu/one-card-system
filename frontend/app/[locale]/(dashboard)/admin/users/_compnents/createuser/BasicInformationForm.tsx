@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import {
   DataSendToCreateUser,
   handleCreateUser,
+  handleUpdateUser,
+  UserRecieved,
 } from "@/store/slices/adminSlice/user";
 import { useForm } from "react-hook-form";
 import { createUserSchema } from "@/validators/admin/create-user-validator";
@@ -30,200 +32,91 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { useDispatch } from "react-redux";
+import CustomInputWithLabel from "@/components/inputs/customInputWithLabel";
+import { Form } from "@/components/ui/form";
+import CustomSelectWithLabel from "@/components/inputs/customSelectWithLabel";
 
-const BasicInformationForm = () => {
+type Props = {
+  user?: UserRecieved;
+};
+const BasicInformationForm = ({ user }: Props) => {
   const t = useTranslations("adminusers");
   const dispatch = useDispatch();
-  const [open, setOpen] = useState(false);
-  const [roleSelect, setRoleSelect] = useState("");
   const { roles } = useSelector((state: RootState) => state.role);
   const { isUserCreateLoading, isUserCreateError } = useSelector(
     (state: RootState) => state.user
   );
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    clearErrors,
-    formState: { errors },
-  } = useForm<DataSendToCreateUser>({
+
+  const roleForSelect = roles?.map((role) => {
+    return { id: role.ID, name: role.role_name, description: role.description };
+  });
+  const form = useForm<DataSendToCreateUser>({
     resolver: yupResolver(createUserSchema(t)),
+    defaultValues: {
+      id: user?.ID ?? undefined,
+      first_name: user?.first_name ?? "",
+      father_name: user?.father_name ?? "",
+      grand_father_name: user?.grand_father_name ?? "",
+      email: user?.email ?? "",
+      role_id: user?.role_id ?? undefined,
+    },
   });
 
   const onSubmit = (data: DataSendToCreateUser) => {
-    dispatch<any>(handleCreateUser(data));
+    if (user?.ID) {
+      dispatch<any>(handleUpdateUser(data));
+    } else {
+      dispatch<any>(handleCreateUser(data));
+    }
   };
 
   return (
-    <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="text-center flex flex-col gap-y-4">
-        {isUserCreateError && (
-          <p className="text-red-500">{isUserCreateError}</p>
-        )}
-        <div className="flex flex-col gap-y-1 items-start">
-          <Label
-            htmlFor="firstname"
-            className="block text-sm font-medium text-muted-foreground"
+    <Form {...form}>
+      <form
+        className="grid grid-cols-2 gap-4 items-center"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <CustomInputWithLabel
+          fieldTitle={t("firstname")}
+          nameInSchema="first_name"
+          placeholder={t("enterfirstname")}
+        />
+        <CustomInputWithLabel
+          fieldTitle={t("fathername")}
+          nameInSchema="father_name"
+          placeholder={t("enterfathername")}
+        />
+        <CustomInputWithLabel
+          fieldTitle={t("grandfathername")}
+          nameInSchema="grand_father_name"
+          placeholder={t("entergrandfathername")}
+        />
+        <CustomInputWithLabel
+          fieldTitle={t("email")}
+          nameInSchema="email"
+          placeholder={t("enteremail")}
+        />
+        <CustomSelectWithLabel
+          fieldTitle={t("role")}
+          nameInSchema="role_id"
+          data={roleForSelect}
+        />
+        {/* Spacer to push the button to the next row */}
+        <div className="col-span-1 flex justify-center h-full items-end w-full">
+          <Button
+            type="submit"
+            disabled={isUserCreateLoading}
+            className="bg-[#3A5DD9] hover:bg-[#2a4bc6] py-2 text-white w-full"
           >
-            {t("firstname")}
-          </Label>
-          <Input
-            id="firstname"
-            type="text"
-            placeholder={t("enterfirstname")}
-            {...register("first_name")}
-            className={cn(
-              { "focus-visible:ring-red-600": errors.first_name },
-              "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
+            <span>{user?.ID ? t("edituser") : t("createuser")}</span>
+            {isUserCreateLoading && (
+              <FaSpinner className="animate-spin ml-2 text-white" />
             )}
-          />
-          {errors.first_name && (
-            <p className="text-red-500 mt-1">{errors.first_name.message}</p>
-          )}
+          </Button>
         </div>
-        <div className="flex flex-col gap-y-1 items-start">
-          <Label
-            htmlFor="fathername"
-            className="block text-sm font-medium text-muted-foreground"
-          >
-            {t("fathername")}
-          </Label>
-          <Input
-            id="fathername"
-            type="text"
-            placeholder={t("enterfathername")}
-            {...register("father_name")}
-            className={cn(
-              { "focus-visible:ring-red-600": errors.father_name },
-              "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
-            )}
-          />
-          {errors.father_name && (
-            <p className="text-red-500 mt-1">{errors.father_name.message}</p>
-          )}
-        </div>
-        <div className="flex flex-col gap-y-1 items-start">
-          <Label
-            htmlFor="grandfathername"
-            className="block text-sm font-medium text-muted-foreground"
-          >
-            {t("grandfathername")}
-          </Label>
-          <Input
-            id="grandfathername"
-            type="text"
-            placeholder={t("entergrandfathername")}
-            {...register("grand_father_name")}
-            className={cn(
-              { "focus-visible:ring-red-600": errors.grand_father_name },
-              "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
-            )}
-          />
-          {errors.grand_father_name && (
-            <p className="text-red-500 mt-1">
-              {errors.grand_father_name.message}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-col gap-y-1 items-start">
-          <Label
-            htmlFor="email"
-            className="block text-sm font-medium text-muted-foreground"
-          >
-            {t("email")}
-          </Label>
-          <Input
-            id="email"
-            type="text"
-            placeholder={t("enteremail")}
-            {...register("email")}
-            className={cn(
-              { "focus-visible:ring-red-600": errors.email },
-              "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0"
-            )}
-          />
-          {errors.email && (
-            <p className="text-red-500 mt-1">{errors.email.message}</p>
-          )}
-        </div>
-        <div className="flex flex-col gap-y-1 items-start">
-          <Label
-            htmlFor="role"
-            className="block text-sm font-medium text-muted-foreground"
-          >
-            {t("role")}
-          </Label>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={open}
-                className="w-full justify-between h-12"
-              >
-                {roleSelect
-                  ? t(
-                      roles
-                        .find((role) => role.role_name === roleSelect)
-                        ?.role_name.toLowerCase() ?? t("selectrole")
-                    )
-                  : t("selectrole")}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[350px] p-0" align="start">
-              <Command>
-                <CommandInput placeholder={t("searchrole")} />
-                <CommandList>
-                  <CommandEmpty>{t("norole")}</CommandEmpty>
-                  <CommandGroup>
-                    {roles.map((role) => (
-                      <CommandItem
-                        key={role.ID}
-                        onSelect={(currentroleSelect) => {
-                          setRoleSelect(
-                            currentroleSelect === roleSelect
-                              ? ""
-                              : currentroleSelect
-                          );
-                          clearErrors("role_id");
-                          setValue("role_id", role.ID);
-                          setOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            roleSelect === role.role_name
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-                        {role.role_name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          {errors.role_id && (
-            <p className="text-red-500 mt-1">{errors.role_id.message}</p>
-          )}
-        </div>
-        <Button
-          type="submit"
-          disabled={isUserCreateLoading}
-          className="w-full bg-[#3A5DD9] hover:bg-[#2a4bc6] py-6 text-white"
-        >
-          <span>{t("createuser")}</span>
-          {isUserCreateLoading && (
-            <FaSpinner className="animate-spin ml-2 text-white" />
-          )}
-        </Button>
-      </div>
+      </form>
       <CreateUserFooter />
-    </form>
+    </Form>
   );
 };
 

@@ -1,8 +1,9 @@
 import { RootState } from "@/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  DeviceRecieved,
   handleDeleteDevice,
   handleFetchDevice,
   resetDeviceUpdateSuccess,
@@ -29,9 +30,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import EditDevice from "./EditDevice";
+import CreateDevice from "./CreateDevice";
 
-const DeviceList = () => {
+const DeviceList = ({ searchTerm }: { searchTerm?: string }) => {
   const t = useTranslations("adminDevice");
   const dispatch = useDispatch();
   const router = useRouter();
@@ -43,10 +44,20 @@ const DeviceList = () => {
     isDeviceDeleteLoading,
     isDeviceCreateLoading,
   } = useSelector((state: RootState) => state.device);
+  const [deviceToDisplay, setDeviceToDisplay] =
+    useState<DeviceRecieved[]>(devices);
 
   useEffect(() => {
-    dispatch<any>(handleFetchDevice());
-  }, [dispatch]);
+    if (searchTerm) {
+      setDeviceToDisplay(
+        devices.filter((device) =>
+          device.location.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    } else {
+      setDeviceToDisplay(devices);
+    }
+  }, [searchTerm, devices, dispatch]);
   return (
     <div className="relative rounded-xl p-0 h-[calc(100vh-120px)] flex flex-col gap-y-2">
       {isDeviceLoading ? (
@@ -55,7 +66,7 @@ const DeviceList = () => {
             <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
           ))}
         </div>
-      ) : devices.length === 0 ? (
+      ) : deviceToDisplay.length === 0 ? (
         <p>{t("nodevice")}</p>
       ) : (
         <Table className="mt-3">
@@ -71,7 +82,7 @@ const DeviceList = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {devices.map((device, index) => (
+            {deviceToDisplay.map((device, index) => (
               <TableRow
                 key={index}
                 className={cn(
@@ -93,7 +104,7 @@ const DeviceList = () => {
                     >
                       <EditIcon size={20} className="text-yellow-600" />
                     </DialogTrigger>
-                    <EditDevice device={device} />
+                    <CreateDevice device={device} />
                   </Dialog>
                 </TableCell>
                 <TableCell>

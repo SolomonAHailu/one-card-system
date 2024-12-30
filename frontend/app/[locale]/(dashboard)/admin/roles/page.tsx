@@ -1,4 +1,5 @@
 "use client";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import AddRole from "./_components/AddRole";
 import RoleList from "@/app/[locale]/(dashboard)/admin/roles/_components/RoleList";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ImLoop2 } from "react-icons/im";
 import { useDispatch, useSelector } from "react-redux";
+import { MdDomainAdd } from "react-icons/md";
 
 const AllrolesPage = () => {
   const dispatch = useDispatch();
@@ -27,32 +29,36 @@ const AllrolesPage = () => {
   return (
     <div className="flex flex-col">
       <div className="flex items-baseline justify-between gap-x-4">
-        <div />
-        <div className="flex items-center justify-center gap-2 relative">
-          <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2">
-            <Search size={18} />
-          </div>
-          <Input
-            id="search by name"
-            type="text"
-            placeholder={t("searchbyname")}
-            className="border-gray-300 rounded-md shadow-sm focus:ring-0 focus:border-0 min-w-96"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+        <div
+          className="h-8 w-8 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer"
+          onClick={refetchRoles}
+        >
+          <ImLoop2
+            className={`text-sm transition-transform duration-500 text-white ${
+              refetchRole ? "animate-spin" : ""
+            }`}
           />
         </div>
-        <div className="flex items-center gap-x-4">
-          <div
-            className="h-8 w-8 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer"
-            onClick={refetchRoles}
-          >
-            <ImLoop2
-              className={`text-sm transition-transform duration-500 text-white ${
-                refetchRole ? "animate-spin" : ""
-              }`}
+        <div className="flex items-center gap-x-20">
+          <div className="flex items-center justify-center gap-2 relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+              <Search size={18} />
+            </div>
+            <Input
+              id="search-by-name"
+              type="text"
+              placeholder={t("searchbyname")}
+              className="pl-10 ring-0 border-2 focus-visible:ring-offset-0 focus-visible:ring-1 min-w-96"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <AddRole />
+          <Dialog>
+            <DialogTrigger className="h-8 w-8 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer">
+              <MdDomainAdd className="text-xl text-white" />
+            </DialogTrigger>
+            <AddRole />
+          </Dialog>
         </div>
       </div>
       <RoleList searchTerm={searchTerm} />

@@ -87,17 +87,23 @@ func GetDeviceById(c *gin.Context, db *gorm.DB) {
 // update device by id with location type and ID
 func UpdateDeviceById(c *gin.Context, db *gorm.DB) {
 	var device adminmodels.Devices
+
+	// Fetch the device by ID
 	if err := db.First(&device, c.Param("id")).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusNotFound, "Device not found", err)
 		return
 	}
-	// Bind JSON data to the device
-	if err := c.ShouldBindJSON(&device); err != nil {
+
+	// Parse the incoming request payload into a temporary variable
+	var updatedDevice adminmodels.Devices
+	if err := c.ShouldBindJSON(&updatedDevice); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid input", err)
 		return
 	}
+
+	// Check if the serial number already exists in the database for another device
 	var existingDevice adminmodels.Devices
-	serialNumberErr := db.Where("serial_number = ?", device.SerialNumber).First(&existingDevice).Error
+	serialNumberErr := db.Where("serial_number = ? AND id != ?", updatedDevice.SerialNumber, device.ID).First(&existingDevice).Error
 	if serialNumberErr != nil && !errors.Is(serialNumberErr, gorm.ErrRecordNotFound) {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error checking serial number", serialNumberErr)
 		return
@@ -107,24 +113,38 @@ func UpdateDeviceById(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	ipAddressErr := db.Where("ip_address = ?", device.IPAddress).First(&existingDevice).Error
+	// Check if the IP address already exists in the database for another device
+	ipAddressErr := db.Where("ip_address = ? AND id != ?", updatedDevice.IPAddress, device.ID).First(&existingDevice).Error
 	if ipAddressErr != nil && !errors.Is(ipAddressErr, gorm.ErrRecordNotFound) {
-		utils.ResponseWithError(c, http.StatusInternalServerError, "Error checking IP Address", ipAddressErr)
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error checking IP address", ipAddressErr)
 		return
 	}
 	if ipAddressErr == nil {
-		utils.ResponseWithError(c, http.StatusBadRequest, "IP Address already exists", nil)
+		utils.ResponseWithError(c, http.StatusBadRequest, "IP address already exists", nil)
 		return
 	}
 
-	if err := device.Validate(); err != nil {
-		utils.ResponseWithError(c, http.StatusBadRequest, "Port must be between 0 and 65535", err)
+	// Validate the device data (e.g., port validation)
+	if err := updatedDevice.Validate(); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid device data", err)
 		return
 	}
+
+	// Update the device fields
+	device.SerialNumber = updatedDevice.SerialNumber
+	device.IPAddress = updatedDevice.IPAddress
+	device.Location = updatedDevice.Location
+	device.Name = updatedDevice.Name
+	device.Port = updatedDevice.Port
+	device.Model = updatedDevice.Model
+
+	// Save the updated device
 	if err := db.Save(&device).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error updating device", err)
 		return
 	}
+
+	// Respond with the updated device data
 	c.JSON(http.StatusOK, gin.H{"message": "Device successfully updated", "data": device})
 }
 
