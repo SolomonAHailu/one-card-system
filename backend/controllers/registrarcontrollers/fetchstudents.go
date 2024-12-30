@@ -50,7 +50,7 @@ func SyncDataFromSMS(c *gin.Context, db *gorm.DB) {
 		apiURL := fmt.Sprintf("http://%s/cgi-bin/AccessUser.cgi?action=fetch", device.IPAddress)
 		_, err := client.Get(apiURL)
 		if err != nil {
-			utils.ResponseWithError(c, http.StatusInternalServerError, "Failed to check device status", err)
+			// utils.ResponseWithError(c, http.StatusInternalServerError, "Failed to check device status", err)
 			log.Printf("Failed to check device status: %v\n", err)
 			return
 		}

@@ -8,12 +8,11 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslations } from "next-intl";
 import { createLoginSchema } from "@/validators/common/login-validator";
-import { FaEye, FaSpinner } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { handleLogin } from "@/store/slices/common/authSlice";
 import { useRouter } from "next/navigation";
-import { IoMdEyeOff } from "react-icons/io";
 import { cn } from "@/lib/utils";
 import { Eye, EyeClosed } from "lucide-react";
 import Image from "next/image";
@@ -59,7 +58,7 @@ const LoginPage = () => {
         <CardContent className="space-y-6">
           {error && <p className="text-red-500 text-center">{error}</p>}
           <div>
-            <Label htmlFor="username" className="block text-sm font-medium ">
+            <Label htmlFor="username" className="block text-sm font-medium">
               {t("email")}
             </Label>
             <Input
@@ -77,7 +76,10 @@ const LoginPage = () => {
             )}
           </div>
           <div className="grid gap-2 py-2">
-            <Label htmlFor="password">Password</Label>
+            {/* <Label htmlFor="password">Password</Label> */}
+            <Label htmlFor="password" className="block text-sm font-medium">
+              {t("password")}
+            </Label>
             <div className="flex items-center justify-center gap-2 relative">
               <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2">
                 {visible ? (

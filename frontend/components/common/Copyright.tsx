@@ -1,15 +1,10 @@
-// const Copyright = () => {
-//   return <div> © {new Date().getFullYear()} Convergence </div>;
-// };
-
-// export default Copyright;
-const Copyright = ({ name }: any) => {
+const Copyright = ({ name, text }: { name: string; text: string }) => {
   return (
-    <div className="text-xs text-sidebar-foreground text-center">
-      <p>
+    <div className="text-[10px] leading-tight text-sidebar-foreground text-center">
+      <p className="mb-1">
         ©{new Date().getFullYear()} {name}.
       </p>
-      All rights reserved.
+      <p className="mb-0">{text}</p>
     </div>
   );
 };

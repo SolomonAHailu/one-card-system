@@ -1,9 +1,5 @@
 "use client";
-import MaxWidthWrapper from "@/components/common/MaxSizeWrapper";
-import { ThemeSelector } from "@/components/common/ThemeSelector";
-import { Link } from "@/navigation";
 import { RootState } from "@/store";
-import { useTranslations } from "next-intl";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
