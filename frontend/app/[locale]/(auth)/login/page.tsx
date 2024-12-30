@@ -15,6 +15,8 @@ import { handleLogin } from "@/store/slices/common/authSlice";
 import { useRouter } from "next/navigation";
 import { IoMdEyeOff } from "react-icons/io";
 import { cn } from "@/lib/utils";
+import { Eye, EyeClosed } from "lucide-react";
+import Image from "next/image";
 
 interface LoginFormInputs {
   email: string;
@@ -41,20 +43,23 @@ const LoginPage = () => {
   };
 
   return (
-    <Card className="w-full py-16 px-0 md:px-8 shadow-lg rounded-lg max-w-xs sm:max-w-lg md:max-w-xl h-fit">
-      <CardHeader className="text-center mb-4">
-        <CardTitle className="text-2xl font-semibold">{t("welcome")}</CardTitle>
-        <p className="text-foreground">{t("logintocontinue")}</p>
+    <Card className="w-full py-16 px-0 md:px-8 rounded-lg border-0 max-w-xs sm:max-w-lg md:max-w-xl h-fit">
+      <CardHeader className="text-center mb-4 flex flex-col items-center">
+        <Image
+          src="/assets/images/logo.png"
+          alt="logo"
+          width={120}
+          height={120}
+          className="mb-4"
+        />
+        <CardTitle className="text-4xl font-semibold">{t("welcome")}</CardTitle>
       </CardHeader>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           {error && <p className="text-red-500 text-center">{error}</p>}
           <div>
-            <Label
-              htmlFor="username"
-              className="block text-sm font-medium text-muted-foreground"
-            >
+            <Label htmlFor="username" className="block text-sm font-medium ">
               {t("email")}
             </Label>
             <Input
@@ -76,13 +81,13 @@ const LoginPage = () => {
             <div className="flex items-center justify-center gap-2 relative">
               <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2">
                 {visible ? (
-                  <IoMdEyeOff
+                  <EyeClosed
                     size={22}
                     className="cursor-pointer text-primary"
                     onClick={() => setVisible(!visible)}
                   />
                 ) : (
-                  <FaEye
+                  <Eye
                     size={22}
                     className="cursor-pointer text-primary"
                     onClick={() => setVisible(!visible)}

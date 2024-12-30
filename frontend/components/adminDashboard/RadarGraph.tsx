@@ -30,16 +30,8 @@ export function RadarGraph({ pieData, title, desc }: PieComponentProps) {
     },
   } satisfies ChartConfig;
 
-  // const currentDate = new Date();
-  // const options: Intl.DateTimeFormatOptions = {
-  //   month: "long",
-  //   day: "numeric",
-  //   year: "numeric",
-  // };
-  // const formattedDate = currentDate.toLocaleDateString("en-US", options);
-
   return (
-    <Card>
+    <Card className="transition-transform duration-200 hover:shadow-lg hover:border-gray-200">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{desc}</CardDescription>
