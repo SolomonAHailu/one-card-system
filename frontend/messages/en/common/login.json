@@ -1,7 +1,6 @@
 {
   "login": {
     "welcome": "Welcome",
-    "logintocontinue": "Log in to continue",
     "email": "Email",
     "enteremail": "Enter your email",
     "password": "Password",

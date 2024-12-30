@@ -1,0 +1,15 @@
+{
+"admindashboard": {
+    "totalusers": "ጠቅላላ ተጠቃሚዎች",
+    "totalroles": "ጠቅላላ ሚናዎች",
+    "totalpermissions": "ጠቅላላ ፍቃዶች",
+    "totaldevices": "ጠቅላላ መሳሪያዎች",
+    "userroledistribution": "የተጠቃሚዎች ሚናዎች ስርጭት",
+    "studentcategoriesoverview": "የተጠቃሚዎች ሚናዎች ራዳር እይታ",
+    "totalusersdescription": "አጠቃላይ የተጠቃሚዎች ብዛት",
+    "totalrolesdescription": "አጠቃላይ የሚናዎች ብዛት",
+    "totalpermissionsdescription": "አጠቃላይ የፍቃዶች ብዛት",
+    "totaldevicesdescription": "አጠቃላይ የመሳሪያዎች ብዛት",
+    "asof":"እ.ኤ.አ"
+    }  
+}

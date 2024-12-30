@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Card, { CardProps } from "@/components/adminDashboard/Card";
 import { BarGraph } from "@/components/adminDashboard/BarGraph";
 import { RadarGraph } from "@/components/adminDashboard/RadarGraph";
+import { useTranslations } from "next-intl";
 
 // Helper to generate bar chart data
 const formatBarChartData = (usersByRole: any[]) =>
@@ -28,36 +29,38 @@ const generateBarChartConfig = (usersByRole: any[]) =>
   }, {} as Record<string, { label: string; color: string }>);
 
 // Utility function to get card data
-const getCardData = (userDashboardData: any): CardProps[] => {
+const getCardData = (userDashboardData: any, t: any): CardProps[] => {
   return [
     {
-      label: "Total Users",
+      label: t("totalusers"),
       amount: userDashboardData?.totalUsers?.toString() || "0",
-      description: "Total number of users.",
+      description: t("totalusersdescription"),
       icon: Users2,
     },
     {
-      label: "Total Roles",
+      label: t("totalroles"),
       amount: userDashboardData?.totalRoles?.toString() || "0",
-      description: "Total number of roles.",
+      description: t("totalrolesdescription"),
       icon: Shield,
     },
     {
-      label: "Total Permissions",
+      label: t("totalpermissions"),
       amount: userDashboardData?.totalPermissions?.toString() || "0",
-      description: "Total number of permissions.",
+      description: t("totalpermissionsdescription"),
       icon: KeyRound,
     },
     {
-      label: "Total Devices",
+      label: t("totaldevices"),
       amount: userDashboardData?.totalDevices?.toString() || "0",
-      description: "Total number of devices.",
+      description: t("totaldevicesdescription"),
       icon: Monitor,
     },
   ];
 };
 
 const AdminDashboardData = () => {
+  const t = useTranslations("admindashboard");
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -68,8 +71,8 @@ const AdminDashboardData = () => {
     (state: RootState) => state.user
   );
 
-  // Use the utility function to get card data
-  const cardData = getCardData(userDashboardData);
+  // Use the utility function to get card data with translations
+  const cardData = getCardData(userDashboardData, t);
   const usersByRole = userDashboardData?.usersByRole || [];
   const barChartData = formatBarChartData(usersByRole);
   const barChartConfig = generateBarChartConfig(usersByRole);
@@ -92,14 +95,14 @@ const AdminDashboardData = () => {
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton
                 key={index}
-                className="col-span-1 rounded-lg bg-secondary/60 h-36"
+                className="col-span-1 rounded-lg bg-secondary/60 h-32"
               />
             ))}
           </section>
           <section className="grid grid-cols-1 gap-4 transition-all lg:grid-cols-2">
             {/* Skeletons for graphs */}
-            <Skeleton className="rounded-lg bg-secondary/60 h-96" />
-            <Skeleton className="rounded-lg bg-secondary/60 h-96" />
+            <Skeleton className="rounded-lg bg-secondary/60 h-[28.5rem]" />
+            <Skeleton className="rounded-lg bg-secondary/60 h-[28.5rem]" />
           </section>
         </div>
       ) : (
@@ -120,13 +123,13 @@ const AdminDashboardData = () => {
             <BarGraph
               chartData={barChartData}
               chartConfig={barChartConfig}
-              title="User Role Distribution"
-              desc={`As of ${formattedDate}`}
+              title={t("userroledistribution")}
+              desc={`${t("asof")} ${formattedDate}`}
             />
             <RadarGraph
               pieData={barChartData}
-              title="Student Categories Overview"
-              desc={`As of ${formattedDate}`}
+              title={t("studentcategoriesoverview")}
+              desc={`${t("asof")} ${formattedDate}`}
             />
           </section>
         </div>
