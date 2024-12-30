@@ -28,7 +28,7 @@ export function BarGraph({
   desc,
 }: ChartCardProps) {
   return (
-    <Card>
+    <Card className="transition-transform duration-200 hover:shadow-lg hover:border-gray-200">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{desc}</CardDescription>

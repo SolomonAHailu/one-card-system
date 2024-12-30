@@ -31,7 +31,7 @@ export function RadarGraph({ pieData, title, desc }: PieComponentProps) {
   } satisfies ChartConfig;
 
   return (
-    <Card>
+    <Card className="transition-transform duration-200 hover:shadow-lg hover:border-gray-200">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{desc}</CardDescription>
@@ -39,7 +39,7 @@ export function RadarGraph({ pieData, title, desc }: PieComponentProps) {
       <CardContent className="pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto w-[600] max-h-[250px]"
+          className="mx-auto w-[600] max-h-[350px]"
         >
           <RadarChart data={pieData}>
             <ChartTooltip

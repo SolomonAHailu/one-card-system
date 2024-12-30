@@ -16,17 +16,10 @@ const StaticNavbar = () => {
   );
   const t = useTranslations("navbar");
   return (
-    <div className="relative h-16 z-50 inset-0 bg-secondary rounded-xl">
+    <div className="relative h-16 z-50 inset-0  rounded-xl">
       <MaxWidthWrapper className="h-full">
         <div className="flex items-center justify-between h-full w-full">
-          <div className="relative flex items-center justify-center">
-            <Image
-              src="/assets/images/logo.png"
-              alt="logo"
-              width={60}
-              height={60}
-            />
-          </div>
+          <div className="relative flex items-center justify-center"></div>
           <div className="hidden md:flex items-center gap-x-8">
             {isAuthenticated && (
               <p className="text-sm">
