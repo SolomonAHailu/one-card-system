@@ -16,7 +16,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Separator } from "../ui/separator";
-import { MdDashboard } from "react-icons/md";
 
 export function AppSidebar() {
   const router = useRouter();
@@ -41,11 +40,7 @@ export function AppSidebar() {
   console.log("CUURENT SIDE BAR ITEMS", currentSidebarItems);
 
   return (
-    <Sidebar
-      // className="rounded-xl border-none bg-secondary "
-      // className="border-none"
-      variant="floating"
-    >
+    <Sidebar variant="floating">
       <SidebarHeader>
         <div
           className="flex items-center gap-x-2 cursor-pointer"
@@ -66,8 +61,12 @@ export function AppSidebar() {
             />
           </div>
           <p className="text-center text-sm uppercase font-medium">
-            <span className="text-blue-500">Semera</span>{" "}
-            <span className="block text-green-400">University</span>
+            <span className="text-blue-500">
+              <strong>Samara</strong>
+            </span>
+            <span className="block text-green-500">
+              <strong>University</strong>
+            </span>
           </p>
         </div>
         <Separator className="my-4" />
@@ -110,7 +109,7 @@ export function AppSidebar() {
         </SidebarGroupContent>
       </SidebarContent>
       <SidebarFooter>
-        <Copyright name="Semera University" />
+        <Copyright name="Samara University" text="All rights reserved." />
       </SidebarFooter>
     </Sidebar>
   );

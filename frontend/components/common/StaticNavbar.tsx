@@ -5,28 +5,20 @@ import { ThemeSelector } from "./ThemeSelector";
 import { useSelector } from "react-redux";
 import LanguangeSelector from "./LanguangeSelector";
 import LogoutButton from "./Logout";
-import { useState } from "react";
 import NavbarSheet from "./NavbarSheet";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 
 const StaticNavbar = () => {
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.auth
   );
   const t = useTranslations("navbar");
+
   return (
-    <div className="relative h-16 z-50 inset-0 bg-secondary rounded-xl">
+    <div className="fixed top-0 left-0 w-full h-16 z-50">
       <MaxWidthWrapper className="h-full">
         <div className="flex items-center justify-between h-full w-full">
-          <div className="relative flex items-center justify-center">
-            <Image
-              src="/assets/images/logo.png"
-              alt="logo"
-              width={60}
-              height={60}
-            />
-          </div>
+          <div className="relative flex items-center justify-center"></div>
           <div className="hidden md:flex items-center gap-x-8">
             {isAuthenticated && (
               <p className="text-sm">

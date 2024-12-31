@@ -5,10 +5,8 @@ import { ThemeSelector } from "./ThemeSelector";
 import { useSelector } from "react-redux";
 import LanguangeSelector from "./LanguangeSelector";
 import LogoutButton from "./Logout";
-import { useState } from "react";
 import NavbarSheet from "./NavbarSheet";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { SidebarTrigger } from "../ui/sidebar";
 
 const Navbar = () => {

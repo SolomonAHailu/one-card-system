@@ -29,7 +29,7 @@ export function CardContent(props: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       {...props}
-      className="flex w-full flex-col gap-3 rounded-xl border p-5 shadow"
+      className="flex w-full flex-col gap-3 rounded-xl border p-5 transition-transform duration-200 hover:shadow-lg hover:border-gray-200"
     />
   );
 }

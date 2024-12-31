@@ -27,22 +27,14 @@ export function BarGraph({
   title,
   desc,
 }: ChartCardProps) {
-  const currentDate = new Date();
-  const options: Intl.DateTimeFormatOptions = {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  };
-  const formattedDate = currentDate.toLocaleDateString("en-US", options);
-
   return (
-    <Card>
+    <Card className="transition-transform duration-200 hover:shadow-lg hover:border-gray-200">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{desc}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="max-h-[335px]">
+        <ChartContainer config={chartConfig} className="max-h-[400px]">
           <BarChart
             data={chartData}
             margin={{ top: 20, right: 10, left: 10, bottom: 5 }}

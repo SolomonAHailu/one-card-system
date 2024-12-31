@@ -16,14 +16,10 @@ export default function Card(props: CardProps) {
         <p className="text-sm">{props.label}</p>
         {/* icon */}
         <props.icon className="h-4 w-4 text-gray-400" />
-        {/* <props.icon className="h-4 w-4 text-card-icon-gray" /> */}
       </section>
       <section className="flex flex-col gap-1">
         <h2 className="text-2xl font-semibold">{props.amount}</h2>
         <p className="text-xs text-gray-500">{props.description}</p>
-        {/* <p className="text-xs text-card-description-gray"> */}
-        {/* {props.description}
-        </p> */}
       </section>
     </CardContent>
   );
@@ -33,7 +29,7 @@ export function CardContent(props: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       {...props}
-      className="flex w-full flex-col gap-3 rounded-xl border p-5 shadow"
+      className="flex w-full flex-col gap-3 rounded-xl border p-5 transition-transform duration-200 hover:shadow-lg hover:border-gray-200"
     />
   );
 }

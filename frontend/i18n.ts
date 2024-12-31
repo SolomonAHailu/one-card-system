@@ -24,11 +24,17 @@ export default getRequestConfig(async ({ locale }: { locale: string }) => {
   const adminDeviceImport = (
     await import(`./messages/${locale}/admin/devices.json`)
   ).default;
+  const adminDashboardImport = (
+    await import(`./messages/${locale}/admin/dashboard.json`)
+  ).default;
   const registrarSidebarImport = (
     await import(`./messages/${locale}/registrar/sidebar.json`)
   ).default;
   const createStudentImport = (
     await import(`./messages/${locale}/registrar/student.json`)
+  ).default;
+  const registrarDashboardImport = (
+    await import(`./messages/${locale}/registrar/dashboard.json`)
   ).default;
   const gateSidebarImport = (
     await import(`./messages/${locale}/gate/sidebar.json`)
@@ -42,7 +48,9 @@ export default getRequestConfig(async ({ locale }: { locale: string }) => {
       ...adminUserImport,
       ...adminPermissionImport,
       ...adminDeviceImport,
+      ...adminDashboardImport,
       ...registrarSidebarImport,
+      ...registrarDashboardImport,
       ...createStudentImport,
       ...gateSidebarImport,
     },

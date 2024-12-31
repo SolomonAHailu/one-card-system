@@ -1,6 +1,5 @@
 import StaticNavbar from "@/components/common/StaticNavbar";
 
-
 export default function LoginLayout({
   children,
 }: {
