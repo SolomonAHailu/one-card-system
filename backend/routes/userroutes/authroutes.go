@@ -12,5 +12,8 @@ func RegisterUserRoutes(r *gin.Engine) {
 		v1.POST("/login", func(c *gin.Context) {
 			usercontrollers.Login(c, initializers.DB)
 		})
+		v1.POST("/resetpassword", func(c *gin.Context) {
+			usercontrollers.ResetPassword(c, initializers.DB)
+		})
 	}
 }

@@ -1,6 +1,8 @@
 package usercontrollers
 
 import (
+	// "fmt"
+	"fmt"
 	"net/http"
 
 	"github.com/SolomonAHailu/one-card-system/models/adminmodels"
@@ -52,4 +54,52 @@ func Login(c *gin.Context, db *gorm.DB) {
 	}
 	c.SetCookie("token", token, 60*60*24, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{"data": user, "token": token})
+}
+
+func ResetPassword(c *gin.Context, db *gorm.DB) {
+	var input struct {
+		UserID      uint   `json:"user_id" binding:"required"`
+		OldPassword string `json:"old_password" binding:"required"`
+		NewPassword string `json:"new_password" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid input", err)
+		return
+	}
+
+	var user adminmodels.Users
+	if err := db.First(&user, input.UserID).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusNotFound, "User not found", err)
+		return
+	}
+
+	// Validate the old password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.OldPassword)); err != nil {
+		utils.ResponseWithError(c, http.StatusUnauthorized, "Invalid old password", err)
+		return
+	}
+
+	// Hash the new password
+	hashedNewPassword, err := bcrypt.GenerateFromPassword([]byte(input.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Could not hash new password", err)
+		return
+	}
+
+	// Update the user's password field
+	user.Password = string(hashedNewPassword)
+
+	// Save the updated user record, skipping hooks to avoid re-hashing
+	if err := db.Session(&gorm.Session{SkipHooks: true}).Save(&user).Error; err != nil {
+		fmt.Println("Error saving new password:", err)
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Could not update password", err)
+		return
+	}
+
+	// Debugging logs
+	fmt.Println("Updated password in DB:", user.Password)
+
+	// Respond with success
+	c.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
 }
