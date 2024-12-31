@@ -10,10 +10,11 @@ import SelectLimit from "@/app/[locale]/(dashboard)/registrar/_components/Select
 import StudentsList from "./_components/StudentsList";
 import StatusFilter from "../_components/StatusFilter";
 import CustomDebounceSearch from "@/components/inputs/CustomDebounceSearch";
-import { Form } from "@/components/ui/form";
+import { useRouter } from "next/navigation";
 
 const StudentsPage = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const locale = usePathname().split("/")[1];
   const [limit, setLimit] = useState<number>(10);
   const [status, setStatus] = useState<string>("Active");
@@ -32,7 +33,7 @@ const StudentsPage = () => {
     }, 500);
     dispatch<any>(
       handleFetchStudents({
-        page,
+        page: 1,
         limit,
         name: name ?? "",
         status,
@@ -62,7 +63,7 @@ const StudentsPage = () => {
             <SelectLimit limit={limit} setLimit={setLimit} />
             <StatusFilter status={status} setStatus={setStatus} />
           </div>
-          <div>
+          <div className="flex items-center gap-x-20">
             <CustomDebounceSearch
               value={name}
               onChange={setName}
@@ -70,6 +71,12 @@ const StudentsPage = () => {
               className="min-w-[350px]"
               delay={1000}
             />
+            <div
+              className="h-8 w-8 bg-[#3A5DD9] hover:bg-[#2a4bc6] flex items-center justify-center rounded-sm cursor-pointer"
+              onClick={() => router.push(`/${locale}/registrar/students/form`)}
+            >
+              <MdOutlinePersonAddAlt1 />
+            </div>
           </div>
         </div>
       </form>

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 
 type StateOptions = {
-  id: number;
+  id: number | string;
   name: string;
   description: string;
 };
@@ -25,6 +25,7 @@ type Props = {
   className?: string;
   nameInSchema: string;
   data: StateOptions[];
+  disabled?: boolean;
 };
 
 export default function CustomSelectWithLabel({
@@ -32,6 +33,7 @@ export default function CustomSelectWithLabel({
   data,
   nameInSchema,
   fieldTitle,
+  disabled,
 }: Props) {
   const form = useFormContext();
 
@@ -46,7 +48,8 @@ export default function CustomSelectWithLabel({
           </FormLabel>
           <Select
             value={field.value?.toString() || ""}
-            onValueChange={(value) => field.onChange(Number(value))}
+            onValueChange={(value) => field.onChange(value)}
+            disabled={disabled}
           >
             <FormControl>
               <SelectTrigger

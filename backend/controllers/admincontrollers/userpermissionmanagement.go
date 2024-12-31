@@ -15,7 +15,7 @@ type UserPermissionRequest struct {
 	PermissionIds []uint `json:"permission_ids" binding:"required"`
 }
 
-// CreateUserPermission creates new permissions for a user based on an array of PermissionIds,
+// Create user permission creates new permissions for a user based on an array of PermissionIds,
 // and returns the created permissions with related user and permission data.
 func CreateUserPermission(c *gin.Context, db *gorm.DB) {
 	var req UserPermissionRequest
@@ -97,11 +97,12 @@ func CreateUserPermission(c *gin.Context, db *gorm.DB) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"data": updatedPermissions,
+		"message:": "User permissions successfully created",
+		"data":     updatedPermissions,
 	})
 }
 
-// get permission specific to the user
+// Get permission specific to the user
 func GetUserPermission(c *gin.Context, db *gorm.DB) {
 	userId := c.Param("id")
 	var userPermission []adminmodels.UserPermissions
@@ -115,10 +116,10 @@ func GetUserPermission(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": userPermission})
+	c.JSON(http.StatusOK, gin.H{"message": "User permissions successfully fetched", "data": userPermission})
 }
 
-// handleUserPermissionUpdate updates the permissions for a user by deleting any permissions
+// HandleUserPermissionUpdate updates the permissions for a user by deleting any permissions
 // not in the request and adding any new ones, then returns the updated permissions with related user and permission data.
 func HandleUserPermissionUpdate(c *gin.Context, db *gorm.DB) {
 	var req UserPermissionRequest
@@ -205,6 +206,7 @@ func HandleUserPermissionUpdate(c *gin.Context, db *gorm.DB) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": updatedPermissions,
+		"message": "User permissions successfully updated",
+		"data":    updatedPermissions,
 	})
 }

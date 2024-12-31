@@ -9,46 +9,45 @@ import (
 	"gorm.io/gorm"
 )
 
-// create permission for the user
+// Create permission for the user
 func CreatePermission(c *gin.Context, db *gorm.DB) {
 	var permission adminmodels.Permissions
 	if err := c.ShouldBindJSON(&permission); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
-	var exstingPermission adminmodels.Permissions
-	if err := db.Where("permissions_name = ?", permission.PermissionsName).First(&exstingPermission).Error; err == nil {
-		utils.ResponseWithError(c, http.StatusBadRequest, "Permission already exists", nil)
+	if err := permission.ValidatePermission(db); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
 	if err := db.Create(&permission).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"data": permission})
+	c.JSON(http.StatusCreated, gin.H{"message": "Permission successfully created", "data": permission})
 }
 
-// get all permissions
+// Get all permissions
 func GetPermissions(c *gin.Context, db *gorm.DB) {
 	var permissions []adminmodels.Permissions
-	if err := db.Find(&permissions).Error; err != nil {
+	if err := db.Order("updated_at DESC").Find(&permissions).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"data": permissions})
+	c.JSON(http.StatusCreated, gin.H{"message": "Permissions successfully fetched", "data": permissions})
 }
 
-// get permission by id
+// Get permission by id
 func GetPermission(c *gin.Context, db *gorm.DB) {
 	var permission adminmodels.Permissions
 	if err := db.First(&permission, c.Param("id")).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": permission})
+	c.JSON(http.StatusOK, gin.H{"message": "Permission successfully fetched", "data": permission})
 }
 
-// update permission by id
+// Update permission by id
 func UpdatePermission(c *gin.Context, db *gorm.DB) {
 	var permission adminmodels.Permissions
 
@@ -65,28 +64,23 @@ func UpdatePermission(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	// Check if the new PermissionsName already exists in the database for another record
-	var existingPermission adminmodels.Permissions
-	if err := db.Where("permissions_name = ? AND id != ?", updatedPermission.PermissionsName, permission.ID).First(&existingPermission).Error; err == nil {
-		utils.ResponseWithError(c, http.StatusConflict, "Permission name already exists", nil)
+	// Validate the updated permission data
+	if err := updatedPermission.ValidatePermissionForUpdate(db, permission.ID); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Validation error", err)
 		return
 	}
 
-	// Update the permission fields
-	permission.PermissionsName = updatedPermission.PermissionsName
-	permission.Description = updatedPermission.Description
-
-	// Save the updated permission
-	if err := db.Save(&permission).Error; err != nil {
+	// Use GORM's Updates method to update the permission
+	if err := db.Model(&permission).Updates(updatedPermission).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
 	}
 
 	// Respond with the updated permission data
-	c.JSON(http.StatusOK, gin.H{"data": permission})
+	c.JSON(http.StatusOK, gin.H{"message": "Permission successfully updated", "data": permission})
 }
 
-// delete permission by id
+// Delete permission by id
 func DeletePermission(c *gin.Context, db *gorm.DB) {
 	var permission adminmodels.Permissions
 	if err := db.First(&permission, c.Param("id")).Error; err != nil {
@@ -97,5 +91,5 @@ func DeletePermission(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": permission})
+	c.JSON(http.StatusOK, gin.H{"message": "Permission successfully deleted", "data": permission})
 }

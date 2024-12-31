@@ -9,46 +9,45 @@ import (
 	"gorm.io/gorm"
 )
 
-// create role for the user
+// Create role for the user
 func CreateRole(c *gin.Context, db *gorm.DB) {
 	var role adminmodels.Roles
 	if err := c.ShouldBindJSON(&role); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
-	var existingRole adminmodels.Roles
-	if err := db.Where("role_name = ?", role.RoleName).First(&existingRole).Error; err == nil {
-		utils.ResponseWithError(c, http.StatusBadRequest, "Role already exists", nil)
+	if err := role.ValidateRole(db); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
 	if err := db.Create(&role).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"data": role})
+	c.JSON(http.StatusCreated, gin.H{"message": "Role successfully created", "data": role})
 }
 
-// get all roles
+// Get all roles
 func GetRoles(c *gin.Context, db *gorm.DB) {
 	var roles []adminmodels.Roles
-	if err := db.Find(&roles).Error; err != nil {
+	if err := db.Order("updated_at DESC").Find(&roles).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": roles})
+	c.JSON(http.StatusOK, gin.H{"message": "Roles successfully fetched", "data": roles})
 }
 
-// get role by id
+// Get role by id
 func GetRole(c *gin.Context, db *gorm.DB) {
 	var role adminmodels.Roles
 	if err := db.First(&role, c.Param("id")).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": role})
+	c.JSON(http.StatusOK, gin.H{"message": "Role successfully fetched", "data": role})
 }
 
-// update role by id
+// Update role by id
 func UpdateRole(c *gin.Context, db *gorm.DB) {
 	var role adminmodels.Roles
 
@@ -64,17 +63,16 @@ func UpdateRole(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
-
-	// Check if the new RoleName already exists in the database for another record
-	var existingRole adminmodels.Roles
-	if err := db.Where("role_name = ? AND id != ?", updatedRole.RoleName, role.ID).First(&existingRole).Error; err == nil {
-		utils.ResponseWithError(c, http.StatusConflict, "Role name already exists", nil)
+	// Validate the updated role data
+	if err := updatedRole.ValidateRoleForUpdate(db, role.ID); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Validation error", err)
 		return
 	}
-
-	// Update the role fields
-	role.RoleName = updatedRole.RoleName
-	role.Description = updatedRole.Description
+	// Use GORM's Updates method to update the role
+	if err := db.Model(&role).Updates(updatedRole).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occurred", err)
+		return
+	}
 
 	// Save the updated role
 	if err := db.Save(&role).Error; err != nil {
@@ -82,10 +80,10 @@ func UpdateRole(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": role})
+	c.JSON(http.StatusOK, gin.H{"message": "Role successfully updated", "data": role})
 }
 
-// delete role by id
+// Delete role by id
 func DeleteRole(c *gin.Context, db *gorm.DB) {
 	var role adminmodels.Roles
 	if err := db.First(&role, c.Param("id")).Error; err != nil {
@@ -96,5 +94,5 @@ func DeleteRole(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "An internal server error occured", err)
 		return
 	}
-	c.JSON(200, gin.H{"data": role})
+	c.JSON(200, gin.H{"message": "Role successfully deleted", "data": role})
 }

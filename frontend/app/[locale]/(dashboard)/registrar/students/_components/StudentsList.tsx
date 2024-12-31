@@ -21,9 +21,10 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { EditIcon } from "lucide-react";
+import { EditIcon, IdCard } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { handleFetchStudents } from "@/store/slices/registrarSlice/students";
+import StudentsDisplayLoading from "./StudentsDisplayLoading";
 
 const StudentsList = ({
   limit,
@@ -101,20 +102,7 @@ const StudentsList = ({
   };
 
   if (isGetStudentLoading) {
-    return (
-      <div className="h-[calc(100vh-130px)] flex flex-col items-center justify-between w-full mt-2">
-        <div className="flex flex-col items-center w-full gap-y-8">
-          {Array.from({ length: 7 }).map((_, index) => (
-            <Skeleton key={index} className="w-full h-[44px] rounded-sm" />
-          ))}
-        </div>
-        <div className="flex gap-x-2">
-          <Skeleton className="w-[70px] h-[34px] rounded-sm" />
-          <Skeleton className="w-[150px] h-[34px] rounded-sm" />
-          <Skeleton className="w-[70px] h-[34px] rounded-sm" />
-        </div>
-      </div>
-    );
+    return <StudentsDisplayLoading />;
   } else if (students?.length === 0) {
     return <div className="text-[#3A5DD9]">{t("nouser")}</div>;
   } else {
@@ -154,7 +142,9 @@ const StudentsList = ({
                   <TableCell>{student.father_name}</TableCell>
                   <TableCell>{student.grand_father_name}</TableCell>
                   <TableCell>{student.phone}</TableCell>
-                  <TableCell>{student.card_number}</TableCell>
+                  <TableCell className="text-center grid place-items-center">
+                    {student.card_number ? <IdCard /> : "-"}
+                  </TableCell>
                   <TableCell className="text-center">{student.sex}</TableCell>
                   <TableCell className="text-center">
                     {student.program}
@@ -170,7 +160,9 @@ const StudentsList = ({
                   <TableCell
                     className="cursor-pointer text-center"
                     onClick={() =>
-                      router.push(`/${locale}/registrar/students/${student.ID}`)
+                      router.push(
+                        `/${locale}/registrar/students/form/?studentId=${student.ID}`
+                      )
                     }
                   >
                     <EditIcon size={20} className="text-yellow-600" />
