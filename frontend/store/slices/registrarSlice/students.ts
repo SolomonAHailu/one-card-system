@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosRequestConfig } from "axios";
+import { actionAsyncStorage } from "next/dist/client/components/action-async-storage-instance";
 import { toast } from "sonner";
+import { UserRecieved } from "../adminSlice/user";
 
 export interface DataForDashboard {
   totalStudents: number;
@@ -62,9 +64,34 @@ export interface StudentRecieved {
   cafeteria_assigned: CafeRecieved;
   dormitory_id: number;
   dormitory_assigned: DormRecieved;
-  registered_by: number | null;
-  registered_date: Date | null;
+  registered_by_id: number;
+  registered_by: UserRecieved;
+  registered_date: Date;
   status: StatusType;
+  is_manually_add: boolean;
+}
+
+export interface DataSendToCreateStudent {
+  id?: number;
+  student_id: string;
+  first_name: string;
+  father_name: string;
+  grand_father_name: string;
+  email: string;
+  phone: string;
+  sex: SexType;
+  date_of_birth: Date;
+  program: string;
+  section: string;
+  year: number;
+  semester: number;
+  religion: string;
+  library_id: number | null;
+  cafeteria_id: number | null;
+  dormitory_id: number | null;
+  registered_by_id: number | null;
+  status: string;
+  is_manually_add: boolean;
 }
 
 export interface DataSendToUpdateStudent {
@@ -87,7 +114,7 @@ export interface DataSendToUpdateStudent {
   library_id: number;
   cafeteria_id: number;
   dormitory_id: number;
-  registered_by: number | null;
+  registered_by_id: number;
   status: StatusType;
 }
 
@@ -148,6 +175,9 @@ export interface DormRecieved {
 export interface StudentState {
   students: StudentRecieved[];
   student: StudentRecieved | null;
+  isCreateStudentLoading: boolean;
+  isCreateStudentError: string | null;
+  isUpdateStudentLoading: boolean;
   isGetStudentLoading: boolean;
   isGetStudentError: string | null;
   currentPage: number;
@@ -156,24 +186,27 @@ export interface StudentState {
   isUpdateStudentCardLoading: boolean;
   isUpdateStudentError: null | string;
   totalStudents: number;
-  isStudentLoading: boolean;
-  isStudentError: null | string;
+  isGetStudentForDashboardLoading: boolean;
+  isGetStudentForDashboardError: null | string;
   studentDataForDashboard: DataForDashboard | null;
 }
 
 const initialState: StudentState = {
   students: [],
   student: null,
+  isCreateStudentLoading: false,
+  isCreateStudentError: null,
+  isUpdateStudentLoading: false,
+  isUpdateStudentError: null,
   isGetStudentLoading: false,
   isGetStudentError: null,
   isUpdateStudentPhotoLoading: false,
   isUpdateStudentCardLoading: false,
-  isUpdateStudentError: null,
   currentPage: 0,
   totalPages: 0,
   totalStudents: 0,
-  isStudentLoading: false,
-  isStudentError: null,
+  isGetStudentForDashboardLoading: false,
+  isGetStudentForDashboardError: null,
   studentDataForDashboard: null,
 };
 
@@ -183,6 +216,42 @@ const studentSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
+      .addCase(handleCreateStudent.pending, (state) => {
+        state.student = null;
+        state.isCreateStudentLoading = true;
+        state.isCreateStudentError = null;
+      })
+      .addCase(
+        handleCreateStudent.fulfilled,
+        (state, action: PayloadAction<StudentRecieved>) => {
+          state.isCreateStudentLoading = false;
+          state.isCreateStudentError = null;
+          state.student = action.payload;
+        }
+      )
+      .addCase(handleCreateStudent.rejected, (state, action) => {
+        state.student = null;
+        state.isCreateStudentLoading = false;
+        state.isCreateStudentError =
+          action.error.message || "Create Student Failed";
+      })
+      .addCase(handleUpdateStudent.pending, (state) => {
+        state.isUpdateStudentLoading = true;
+        state.isUpdateStudentError = null;
+      })
+      .addCase(
+        handleUpdateStudent.fulfilled,
+        (state, action: PayloadAction<StudentRecieved>) => {
+          state.isUpdateStudentLoading = false;
+          state.isUpdateStudentError = null;
+          state.student = action.payload;
+        }
+      )
+      .addCase(handleUpdateStudent.rejected, (state, action) => {
+        state.isUpdateStudentLoading = false;
+        state.isUpdateStudentError =
+          action.error.message || "Create Student Failed";
+      })
       .addCase(handleFetchStudents.pending, (state) => {
         state.isGetStudentLoading = true;
         state.isGetStudentError = null;
@@ -207,6 +276,7 @@ const studentSlice = createSlice({
       .addCase(handleGetSingleStudent.pending, (state) => {
         state.isGetStudentLoading = true;
         state.isGetStudentError = null;
+        state.student = null;
       })
       .addCase(
         handleGetSingleStudent.fulfilled,
@@ -217,6 +287,7 @@ const studentSlice = createSlice({
         }
       )
       .addCase(handleGetSingleStudent.rejected, (state, action) => {
+        state.student = null;
         state.isGetStudentLoading = false;
         state.isGetStudentError =
           action.error.message || "Fetch students failed";
@@ -259,13 +330,13 @@ const studentSlice = createSlice({
           action.error.message || "Fetch students failed";
       })
       .addCase(handleGetDashboardInformationForStudent.pending, (state) => {
-        state.isStudentLoading = true;
-        state.isStudentError = null;
+        state.isGetStudentForDashboardLoading = true;
+        state.isGetStudentForDashboardError = null;
       })
       .addCase(
         handleGetDashboardInformationForStudent.fulfilled,
         (state, action) => {
-          state.isStudentLoading = false;
+          state.isGetStudentForDashboardLoading = false;
           state.studentDataForDashboard = action.payload;
         }
       )
@@ -273,8 +344,9 @@ const studentSlice = createSlice({
         handleGetDashboardInformationForStudent.rejected,
         (state, action) => {
           state.studentDataForDashboard = null;
-          state.isStudentLoading = false;
-          state.isStudentError = action.error.message || "Fetch users failed";
+          state.isGetStudentForDashboardLoading = false;
+          state.isGetStudentForDashboardError =
+            action.error.message || "Fetch users failed";
         }
       );
   },
@@ -344,12 +416,68 @@ export const handleGetSingleStudent = createAsyncThunk<
   }
 });
 
+export const handleCreateStudent = createAsyncThunk<
+  StudentRecieved,
+  DataSendToCreateStudent
+>("student/createStudent", async (data) => {
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/registrar/student/create`;
+  const config: AxiosRequestConfig = {
+    url,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data,
+    withCredentials: true,
+  };
+  try {
+    const response = await axios(config);
+    if (response.data) {
+      toast.success("Student created successfully");
+      return response.data.data;
+    } else {
+      toast.error("Create Student failed");
+      throw new Error("Create Student failed");
+    }
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Create Student failed");
+    throw new Error(error.response?.data?.error || "Create Student failed");
+  }
+});
+
+export const handleUpdateStudent = createAsyncThunk<
+  StudentRecieved,
+  DataSendToCreateStudent
+>("student/updateStudent", async (data) => {
+  const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/registrar/student/edit/${data.id}`;
+  const config: AxiosRequestConfig = {
+    url,
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data,
+    withCredentials: true,
+  };
+  try {
+    const response = await axios(config);
+    if (response.data) {
+      toast.success("Student updated successfully");
+      return response.data.data;
+    } else {
+      toast.error("Update Student failed");
+      throw new Error("Update Student failed");
+    }
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Update Student failed");
+    throw new Error(error.response?.data?.error || "Update Student failed");
+  }
+});
+
 export const handleUpdateStudentPhoto = createAsyncThunk<
   StudentRecieved,
   DataSendToUpdateStudent
 >("student/updateStudentPhoto", async (data) => {
-  console.log("DATA SEND TO UPDATE STUDENT PHOTO", data);
-
   const url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/v1/registrar/student/photo/${data.ID}`;
 
   const config: AxiosRequestConfig = {

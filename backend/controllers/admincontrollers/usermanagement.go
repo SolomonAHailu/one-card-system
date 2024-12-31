@@ -11,22 +11,19 @@ import (
 	"gorm.io/gorm"
 )
 
-// create user
+// Create user
 func CreateUser(c *gin.Context, db *gorm.DB) {
 	var user adminmodels.Users
 	if err := c.ShouldBindJSON(&user); err != nil {
 		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid input", err)
 		return
 	}
-	if user.Email == "" {
-		utils.ResponseWithError(c, http.StatusBadRequest, "email cannot be empty", nil)
+
+	if err := user.ValidateUser(db); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid input", err)
 		return
 	}
-	var existingUser adminmodels.Users
-	if err := db.Where("email = ?", user.Email).First(&existingUser).Error; err == nil {
-		utils.ResponseWithError(c, http.StatusBadRequest, "email already exists", nil)
-		return
-	}
+
 	if err := db.Create(&user).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error creating user", err)
 		return
@@ -35,7 +32,7 @@ func CreateUser(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching user role", err)
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"data": user})
+	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully", "data": user})
 }
 
 // update user by id
@@ -97,7 +94,7 @@ func UpdateUserById(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	c.JSON(http.StatusOK, gin.H{"message": "", "data": user})
 }
 
 // delete user by id
@@ -141,7 +138,7 @@ func DeleteUserById(c *gin.Context, db *gorm.DB) {
 	c.JSON(http.StatusOK, gin.H{"message": "User and related permissions deleted successfully", "data": user})
 }
 
-// get users by using role_id with limit and page number and name of the user if provided
+// Get users by using role_id with limit and page number and name of the user if provided
 func GetUsersByRoleId(c *gin.Context, db *gorm.DB) {
 	var users []adminmodels.Users
 	var total int64
@@ -177,6 +174,7 @@ func GetUsersByRoleId(c *gin.Context, db *gorm.DB) {
 	// Fetch the paginated data with preload and name filtering
 	if err := query.Preload("Role").
 		Limit(limitInt).
+		Order("updated_at DESC").
 		Offset((pageInt - 1) * limitInt).
 		Find(&users).Error; err != nil {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching users", err)
@@ -193,66 +191,7 @@ func GetUsersByRoleId(c *gin.Context, db *gorm.DB) {
 	})
 }
 
-// func GetUserForDashboardDisplay(c *gin.Context, db *gorm.DB) {
-// 	var totalUsers int64
-// 	var totalDevices int64
-// 	var totalRoles int64
-// 	var totalPermissions int64
-// 	var usersByRole []struct {
-// 		RoleID   int64  `json:"role_id"`
-// 		RoleName string `json:"role_name"`
-// 		Count    int64  `json:"count"`
-// 	}
-
-// 	// // Get total number of users
-// 	// if err := db.Model(&adminmodels.Users{}).Count(&totalUsers).Error; err != nil {
-// 	// 	utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total users", err)
-// 	// 	return
-// 	// }
-
-// 	// Modified the above
-// 	if err := db.Raw("SELECT COUNT(*) FROM users").Scan(&totalUsers).Error; err != nil {
-// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total users", err)
-// 		return
-// 	}
-
-// 	// Get total number of devices
-// 	if err := db.Model(&adminmodels.Devices{}).Count(&totalDevices).Error; err != nil {
-// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total devices", err)
-// 		return
-// 	}
-
-// 	// Get total number of roles
-// 	if err := db.Model(&adminmodels.Roles{}).Count(&totalRoles).Error; err != nil {
-// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total roles", err)
-// 		return
-// 	}
-
-// 	// Get total number of permissions
-// 	if err := db.Model(&adminmodels.Permissions{}).Count(&totalPermissions).Error; err != nil {
-// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching total permissions", err)
-// 		return
-// 	}
-
-// 	// Get number of users grouped by role_id with role information
-// 	if err := db.Model(&adminmodels.Roles{}).
-// 		Select("roles.id as role_id, roles.role_name as role_name, COUNT(users.id) as count").
-// 		Joins("LEFT JOIN users ON roles.id = users.role_id").
-// 		Group("roles.id, roles.role_name").
-// 		Scan(&usersByRole).Error; err != nil {
-// 		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching users by role", err)
-// 		return
-// 	}
-
-//		// Respond with dashboard data
-//		c.JSON(http.StatusOK, gin.H{
-//			"totalUsers":       totalUsers,
-//			"usersByRole":      usersByRole,
-//			"totalDevices":     totalDevices,
-//			"totalRoles":       totalRoles,
-//			"totalPermissions": totalPermissions,
-//		})
-//	}
+// Get user for the dashboard display
 func GetUserForDashboardDisplay(c *gin.Context, db *gorm.DB) {
 	var totalUsers int64
 	var totalDevices int64

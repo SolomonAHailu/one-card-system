@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// SendHTMLEmail sends an email with HTML content.
+// Send HTML email sends an email with HTML content.
 func SendHTMLEmail(c *gin.Context, db *gorm.DB) {
 	// Define the request body structure
 	type EmailRequest struct {

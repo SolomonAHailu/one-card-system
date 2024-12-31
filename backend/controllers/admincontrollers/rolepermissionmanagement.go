@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// get role permission by role id
+// Get role permission by role id
 func GetRolePermissionByRoleId(c *gin.Context, db *gorm.DB) {
 	var rolePermissions []adminmodels.RolePermissions
 	if err := db.Preload("Role").Preload("Permission").
@@ -17,12 +17,11 @@ func GetRolePermissionByRoleId(c *gin.Context, db *gorm.DB) {
 		utils.ResponseWithError(c, http.StatusInternalServerError, "RolePermissions not found", err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": rolePermissions})
+	c.JSON(http.StatusOK, gin.H{"message": "RolePermissions successfully fetched", "data": rolePermissions})
 }
 
-// UpdateRolePermissions updates the permissions for a specific role
+// Update role permissions updates the permissions for a specific role
 func UpdateRolePermissions(c *gin.Context, db *gorm.DB) {
-	// Define request payload
 	type UpdateRolePermissionsPayload struct {
 		RoleID        uint   `json:"role_id" binding:"required"`
 		PermissionIDs []uint `json:"permission_ids" binding:"required"`
@@ -115,5 +114,5 @@ func UpdateRolePermissions(c *gin.Context, db *gorm.DB) {
 	}
 
 	// Return updated permissions as response
-	c.JSON(http.StatusOK, gin.H{"data": updatedPermissions})
+	c.JSON(http.StatusOK, gin.H{"message": "Role permissions successfully updated", "data": updatedPermissions})
 }

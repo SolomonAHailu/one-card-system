@@ -57,6 +57,7 @@ func GetStudents(c *gin.Context, db *gorm.DB) {
 		Preload("CafeteriaAssigned").
 		Preload("DormitoryAssigned").
 		Preload("RegisteredBy").
+		Order("updated_at DESC").
 		Limit(limitInt).
 		Offset((pageInt - 1) * limitInt).
 		Find(&students).Error; err != nil {
@@ -377,4 +378,72 @@ func sendStudentToDeviceForUpdatePhoto(device adminmodels.Devices, student regis
 		return
 	}
 	defer resp.Body.Close()
+}
+
+func CreateStudentManually(c *gin.Context, db *gorm.DB) {
+	var student registrarmodels.Student
+	if err := c.ShouldBindJSON(&student); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid JSON", err)
+	}
+	if err := student.Validate(db); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Validation error", err)
+		return
+	}
+	// Fetch all devices
+	var devices []adminmodels.Devices
+	if err := db.Find(&devices).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching devices", err)
+		return
+	}
+	//validate student
+	if err := student.Validate(db); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Validation error", err)
+		return
+	}
+	//Create student
+	if err := db.Create(&student).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error inserting new student")
+		log.Println("Error inserting new student:", err)
+	}
+	//Send students to all devices
+	sendStudentToDevicesConcurrently(devices, student)
+	c.JSON(http.StatusOK, gin.H{"message": "Student successfully created", "data": student})
+}
+
+func UpdateStudentManually(c *gin.Context, db *gorm.DB) {
+	studentId := c.Param("id")
+
+	var student registrarmodels.Student
+	if err := c.ShouldBindJSON(&student); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Invalid JSON", err)
+		return
+	}
+	var existingStudent registrarmodels.Student
+	if err := db.First(&existingStudent, "id = ?", studentId).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusNotFound, "Student not found", err)
+		return
+	}
+
+	// Validate the updated student
+	if err := student.ValidateForUpdate(db, student.ID); err != nil {
+		utils.ResponseWithError(c, http.StatusBadRequest, "Validation error", err)
+		return
+	}
+
+	// Use GORM's `Updates` method to update the specific fields
+	if err := db.Model(&existingStudent).Updates(student).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error updating student", err)
+		log.Println("Error updating student:", err)
+		return
+	}
+
+	// Fetch all devices to send the updated student information
+	var devices []adminmodels.Devices
+	if err := db.Find(&devices).Error; err != nil {
+		utils.ResponseWithError(c, http.StatusInternalServerError, "Error fetching devices", err)
+		return
+	}
+	sendStudentToDevicesConcurrently(devices, existingStudent)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Student successfully updated", "data": existingStudent})
 }

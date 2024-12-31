@@ -10,6 +10,5 @@ func ResponseWithError(ctx *gin.Context, status int, message string, err ...erro
 	if err != nil {
 		log.Printf("Error: %v", err)
 	}
-	// ctx.JSON(status, gin.H{"error": message + " OR an internal server error occurred please try again later"})
 	ctx.JSON(status, gin.H{"error": message})
 }
