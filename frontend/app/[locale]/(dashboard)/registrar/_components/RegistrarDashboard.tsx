@@ -87,9 +87,11 @@ const RegistrarDashboard = () => {
     dispatch<any>(handleGetDashboardInformationForStudent());
   }, [dispatch]);
 
-  const { studentDataForDashboard, isStudentLoading } = useSelector(
-    (state: RootState) => state.student
-  );
+  // const { studentDataForDashboard, isStudentLoading } = useSelector(
+  //   (state: RootState) => state.student
+  // );
+  const { studentDataForDashboard, isGetStudentForDashboardLoading } =
+    useSelector((state: RootState) => state.student);
 
   const studentsByCategory = studentDataForDashboard?.studentsByCategory || [];
   const cardData = getCardData(studentsByCategory, t);
@@ -106,7 +108,8 @@ const RegistrarDashboard = () => {
 
   return (
     <div>
-      {isStudentLoading ? (
+      {/* {isStudentLoading ? ( */}
+      {isGetStudentForDashboardLoading ? (
         <div className="flex flex-col gap-5 w-full">
           <h2></h2> {/* for the space between */}
           <section className="grid w-full grid-cols-1 gap-4 gap-x-8 transition-all sm:grid-cols-2 xl:grid-cols-4">

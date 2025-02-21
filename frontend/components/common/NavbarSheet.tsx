@@ -52,7 +52,7 @@ const NavbarSheet = () => {
           )}
         </div>
         <SheetFooter className="text-center mt-96">
-          <Copyright />
+          <Copyright name="Samara University" text="All rights reserved." />
         </SheetFooter>
       </SheetContent>
     </Sheet>
